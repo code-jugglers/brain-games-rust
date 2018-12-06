@@ -1,0 +1,6 @@
+[package]
+name = "rust-xo"
+version = "0.1.0"
+authors = ["deebloo <dannybluedesign@gmail.com>"]
+
+[dependencies]
