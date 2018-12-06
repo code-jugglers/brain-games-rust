@@ -38,9 +38,11 @@ impl Board {
     fn make_move(&mut self, space: BoardSpace, point: Position) {
         let position = point.x * 3 + point.y;
 
+        // cast i32 to ussize. could probably just use usize in the spaces
         self.spaces[position as usize] = space;
     }
 
+    // TODO: print actual representation of board
     fn print(&self) {
         println!("{:?}", &self.spaces[0..=2]);
         println!("{:?}", &self.spaces[3..=5]);
