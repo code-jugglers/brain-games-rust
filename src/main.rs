@@ -40,6 +40,12 @@ impl Board {
 
         self.spaces[position as usize] = space;
     }
+
+    fn print(&self) {
+        println!("{:?}", &self.spaces[0..=2]);
+        println!("{:?}", &self.spaces[3..=5]);
+        println!("{:?}", &self.spaces[6..=8]);
+    }
 }
 
 fn main() {
@@ -48,5 +54,5 @@ fn main() {
     board.make_move(BoardSpace::X, Position { x: 0, y: 0 });
     board.make_move(BoardSpace::Y, Position { x: 0, y: 1 });
 
-    println!("{:?}", board.spaces);
+    board.print();
 }
