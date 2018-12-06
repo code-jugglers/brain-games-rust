@@ -1,6 +1,6 @@
 // use std::io::{stdin};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum BoardSpace {
     X,
     Y,
@@ -36,10 +36,12 @@ impl Board {
     }
 
     fn make_move(&mut self, space: BoardSpace, point: Position) {
-        let position = point.x * 3 + point.y;
-
         // cast i32 to ussize. could probably just use usize in the spaces
-        self.spaces[position as usize] = space;
+        let position = (point.x * 3 + point.y) as usize;
+
+        if self.spaces[position] == BoardSpace::Blank {
+            self.spaces[position] = space;
+        }
     }
 
     // TODO: print actual representation of board
@@ -51,7 +53,7 @@ impl Board {
 }
 
 fn main() {
-    let mut board = Board::empty();
+    let mut board: Board = Board::empty();
 
     board.make_move(BoardSpace::X, Position { x: 0, y: 0 });
     board.make_move(BoardSpace::Y, Position { x: 0, y: 1 });
