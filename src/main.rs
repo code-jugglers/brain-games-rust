@@ -8,7 +8,7 @@ enum BoardSpace {
 }
 
 #[derive(Debug)]
-struct Coords {
+struct Position {
     x: i32,
     y: i32,
 }
@@ -35,7 +35,7 @@ impl Board {
         }
     }
 
-    fn make_move(&mut self, space: BoardSpace, point: Coords) {
+    fn make_move(&mut self, space: BoardSpace, point: Position) {
         let position = point.x * 3 + point.y;
 
         self.spaces[position as usize] = space;
@@ -45,8 +45,8 @@ impl Board {
 fn main() {
     let mut board = Board::empty();
 
-    board.make_move(BoardSpace::X, Coords { x: 0, y: 0 });
-    board.make_move(BoardSpace::Y, Coords { x: 0, y: 1 });
+    board.make_move(BoardSpace::X, Position { x: 0, y: 0 });
+    board.make_move(BoardSpace::Y, Position { x: 0, y: 1 });
 
     println!("{:?}", board.spaces);
 }
