@@ -6,6 +6,15 @@ enum BoardSpace {
     O,
     Blank,
 }
+impl BoardSpace {
+    fn pretty_value(&self) -> String {
+        match self {
+            BoardSpace::Blank => String::from(" - "),
+            BoardSpace::X => String::from(" X "),
+            BoardSpace::O => String::from(" O "),
+        }
+    }
+}
 
 #[derive(Debug)]
 struct Position {
@@ -44,11 +53,20 @@ impl Board {
         }
     }
 
-    // TODO: print actual representation of board
     fn print(&self) {
-        println!("{:?}", &self.spaces[0..=2]);
-        println!("{:?}", &self.spaces[3..=5]);
-        println!("{:?}", &self.spaces[6..=8]);
+        let mut index = 0;
+
+        for space in &self.spaces {
+            if index % 3 == 0 {
+                println!();
+            }
+
+            print!("{}", space.pretty_value());
+
+            index = index + 1
+        }
+
+        println!();
     }
 }
 
