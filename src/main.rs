@@ -35,7 +35,7 @@ impl Board {
         }
     }
 
-    fn make_move(&mut self, space: BoardSpace, point: Position) {
+    fn set(&mut self, space: BoardSpace, point: Position) {
         // cast i32 to ussize. could probably just use usize in the spaces
         let position = (point.x * 3 + point.y) as usize;
 
@@ -52,11 +52,27 @@ impl Board {
     }
 }
 
+struct Bot {
+    player_space: BoardSpace,
+}
+
+impl Bot {
+    fn new(player_space: BoardSpace) -> Bot {
+        Bot { player_space }
+    }
+
+    fn make_move(self, board: &mut Board, point: Position) {
+        board.set(self.player_space, point)
+    }
+}
+
 fn main() {
     let mut board: Board = Board::empty();
+    let bot = Bot::new(BoardSpace::X);
 
-    board.make_move(BoardSpace::X, Position { x: 0, y: 0 });
-    board.make_move(BoardSpace::Y, Position { x: 0, y: 1 });
+    bot.make_move(&mut board, Position { x: 0, y: 1 });
+
+    board.set(BoardSpace::Y, Position { x: 0, y: 0 });
 
     board.print();
 }
