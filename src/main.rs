@@ -3,7 +3,7 @@
 #[derive(Debug, PartialEq)]
 enum BoardSpace {
     X,
-    Y,
+    O,
     Blank,
 }
 
@@ -35,9 +35,9 @@ impl Board {
         }
     }
 
-    fn set(&mut self, space: BoardSpace, point: Position) {
+    fn set(&mut self, space: BoardSpace, pos: Position) {
         // cast i32 to ussize. could probably just use usize in the spaces
-        let position = (point.x * 3 + point.y) as usize;
+        let position = (pos.x * 3 + pos.y) as usize;
 
         if self.spaces[position] == BoardSpace::Blank {
             self.spaces[position] = space;
@@ -52,27 +52,29 @@ impl Board {
     }
 }
 
-struct Bot {
+struct Player {
     player_space: BoardSpace,
 }
 
-impl Bot {
-    fn new(player_space: BoardSpace) -> Bot {
-        Bot { player_space }
+impl Player {
+    fn new(player_space: BoardSpace) -> Player {
+        Player { player_space }
     }
 
-    fn make_move(self, board: &mut Board, point: Position) {
-        board.set(self.player_space, point)
+    fn make_move(self, board: &mut Board, post: Position) {
+        board.set(self.player_space, post)
     }
 }
 
 fn main() {
     let mut board: Board = Board::empty();
-    let bot = Bot::new(BoardSpace::X);
 
-    bot.make_move(&mut board, Position { x: 0, y: 1 });
+    let x = Player::new(BoardSpace::X);
+    let o = Player::new(BoardSpace::O);
 
-    board.set(BoardSpace::Y, Position { x: 0, y: 0 });
+    x.make_move(&mut board, Position { x: 0, y: 0 });
+
+    o.make_move(&mut board, Position { x: 0, y: 1 });
 
     board.print();
 }
