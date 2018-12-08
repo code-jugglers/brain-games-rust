@@ -1,4 +1,4 @@
-use std::fmt;
+use std::fmt::{Display, Formatter, Result};
 
 #[derive(Debug, PartialEq)]
 enum BoardSpace {
@@ -6,15 +6,15 @@ enum BoardSpace {
     O,
     Blank,
 }
-impl fmt::Display for BoardSpace {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl Display for BoardSpace {
+    fn fmt(&self, f: &mut Formatter) -> Result {
         write!(
             f,
             "{}",
             match self {
-                BoardSpace::Blank => String::from(" - "),
-                BoardSpace::X => String::from(" X "),
-                BoardSpace::O => String::from(" O "),
+                BoardSpace::Blank => " - ",
+                BoardSpace::X => " X ",
+                BoardSpace::O => " O ",
             }
         )
     }
