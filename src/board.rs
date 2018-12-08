@@ -48,7 +48,6 @@ impl Board {
     }
 
     pub fn set(&mut self, space: BoardSpace, pos: Position) {
-        // cast i32 to ussize. could probably just use usize in the spaces
         let position = pos.x * 3 + pos.y;
 
         if self.spaces[position] == BoardSpace::Blank {
