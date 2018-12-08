@@ -1,6 +1,7 @@
 use board::{Board, BoardSpace};
 use player::Player;
 
+#[derive(Debug, Clone)]
 pub struct Bot {
     pub player: Player,
 }

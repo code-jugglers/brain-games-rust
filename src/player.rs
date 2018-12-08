@@ -1,6 +1,6 @@
 use board::{Board, BoardSpace, Position};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Player {
     pub player_space: BoardSpace,
 }

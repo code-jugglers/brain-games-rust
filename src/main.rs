@@ -10,10 +10,11 @@ use std::io;
 fn main() {
     let mut board: Board = Board::empty();
 
+    let x = Player::new(BoardSpace::X);
+    let o = Bot::new(Player::new(BoardSpace::O));
+
     loop {
         // TODO: I want these outside of the loop but for some reason It is giving me fits
-        let x = Player::new(BoardSpace::X);
-        let o = Bot::new(Player::new(BoardSpace::O));
 
         let mut user_input = String::new();
 
@@ -27,14 +28,14 @@ fn main() {
 
         let user_position: Vec<&str> = user_input.split(",").map(|pos| pos.trim()).collect();
 
-        x.make_move(
+        x.clone().make_move(
             &mut board,
             Position {
                 x: user_position[0].parse::<usize>().unwrap(),
                 y: user_position[1].parse::<usize>().unwrap(),
             },
         );
-        o.make_move(&mut board);
+        o.clone().make_move(&mut board);
 
         board.print();
     }
