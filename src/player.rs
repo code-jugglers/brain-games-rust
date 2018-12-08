@@ -1,7 +1,8 @@
 use board::{Board, BoardSpace, Position};
 
+#[derive(Debug)]
 pub struct Player {
-    player_space: BoardSpace,
+    pub player_space: BoardSpace,
 }
 impl Player {
     pub fn new(player_space: BoardSpace) -> Player {
