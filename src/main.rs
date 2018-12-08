@@ -8,31 +8,30 @@ use player::Player;
 use std::io;
 
 fn main() {
-    let mut board: Board = Board::empty();
+    let mut board = Board::empty();
 
     let x = Player::new(BoardSpace::X);
     let o = Bot::new(Player::new(BoardSpace::O));
 
     loop {
-        // TODO: I want these outside of the loop but for some reason It is giving me fits
-
         let mut user_input = String::new();
 
         board.print();
-
-        print!("Please Enter your move:");
 
         io::stdin()
             .read_line(&mut user_input)
             .expect("Failed to read line");
 
-        let user_position: Vec<&str> = user_input.split(",").map(|pos| pos.trim()).collect();
+        let user_position: Vec<usize> = user_input
+            .split(",")
+            .map(|pos| pos.trim().parse::<usize>().unwrap())
+            .collect();
 
         x.clone().make_move(
             &mut board,
             Position {
-                x: user_position[0].parse::<usize>().unwrap(),
-                y: user_position[1].parse::<usize>().unwrap(),
+                x: user_position[0],
+                y: user_position[1],
             },
         );
         o.clone().make_move(&mut board);
