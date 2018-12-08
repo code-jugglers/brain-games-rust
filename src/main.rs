@@ -11,6 +11,7 @@ fn main() {
     let mut board: Board = Board::empty();
 
     loop {
+        // TODO: I want these outside of the loop but for some reason It is giving me fits
         let x = Player::new(BoardSpace::X);
         let o = Bot::new(Player::new(BoardSpace::O));
 
