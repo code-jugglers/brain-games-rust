@@ -30,7 +30,6 @@ struct Position {
 struct Board {
     spaces: Vec<BoardSpace>,
 }
-
 impl Board {
     fn empty() -> Board {
         Board {
@@ -77,7 +76,6 @@ impl Board {
 struct Player {
     player_space: BoardSpace,
 }
-
 impl Player {
     fn new(player_space: BoardSpace) -> Player {
         Player { player_space }
