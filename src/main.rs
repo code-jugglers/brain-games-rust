@@ -1,4 +1,4 @@
-// use std::io::{stdin};
+use std::fmt;
 
 #[derive(Debug, PartialEq)]
 enum BoardSpace {
@@ -6,13 +6,17 @@ enum BoardSpace {
     O,
     Blank,
 }
-impl BoardSpace {
-    fn pretty_value(&self) -> String {
-        match self {
-            BoardSpace::Blank => String::from(" - "),
-            BoardSpace::X => String::from(" X "),
-            BoardSpace::O => String::from(" O "),
-        }
+impl fmt::Display for BoardSpace {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                BoardSpace::Blank => String::from(" - "),
+                BoardSpace::X => String::from(" X "),
+                BoardSpace::O => String::from(" O "),
+            }
+        )
     }
 }
 
@@ -61,7 +65,7 @@ impl Board {
                 println!();
             }
 
-            print!("{}", space.pretty_value());
+            print!("{}", space);
 
             index = index + 1
         }
