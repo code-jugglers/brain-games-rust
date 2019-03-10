@@ -9,7 +9,7 @@ impl Player {
         Player { player_space }
     }
 
-    pub fn make_move(self, board: &mut Board, post: Position) {
-        board.set(self.player_space, post)
+    pub fn make_move(&self, board: &mut Board, post: Position) {
+        board.set(&self.player_space, post)
     }
 }
