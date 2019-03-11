@@ -1,43 +1,110 @@
+extern crate rand;
+
 use board::{Board, BoardSpace};
-use player::Player;
+use bot::rand::Rng;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
+pub struct Move {
+    index: usize,
+    weight: usize,
+}
+
+pub type Brain = HashMap<String, HashMap<usize, usize>>;
+
+#[derive(Debug, Clone)]
 pub struct Bot {
-    pub player: Player,
-    pub brain: HashMap<String, usize>,
+    pub space: BoardSpace,
+    pub brain: Brain,
+    pub current_game_history: HashMap<String, usize>,
 }
 impl Bot {
-    pub fn new(player: Player, brain: HashMap<String, usize>) -> Bot {
-        Bot { player, brain }
-    }
-
-    pub fn make_move(&self, board: &mut Board) {
-        let index = Bot::determine_move(board);
-
-        if let Some(_) = index {
-            board.set_by_index(&self.player.player_space, index.unwrap());
+    pub fn new(space: BoardSpace, brain: Brain) -> Bot {
+        Bot {
+            space,
+            brain,
+            current_game_history: HashMap::new(),
         }
     }
 
-    pub fn learn(&mut self, board: &Board) {
-        let key = board.key();
+    pub fn make_move(&mut self, board: &mut Board) {
+        let value: Option<usize> = self.determine_move(board);
 
-        let entry = self.brain.entry(key.clone()).or_insert(0);
+        match value {
+            Some(move_index) => {
+                board.set_by_index(&self.space, move_index);
 
-        *entry += 3;
+                self.current_game_history.insert(board.key(), move_index);
+            }
+            None => println!("Bot could not find an acceptable move"),
+        }
     }
 
-    fn determine_move(board: &Board) -> Option<usize> {
-        let mut index: Option<usize> = None;
+    pub fn learn(&mut self, won: bool) {
+        for (board_key, index) in &self.current_game_history {
+            let entries = self
+                .brain
+                .entry(board_key.clone())
+                .or_insert(HashMap::new());
 
-        for (i, space) in board.spaces.iter().enumerate() {
-            if space.clone() == BoardSpace::Blank {
-                index = Some(i);
-                break;
+            let entry = entries.entry(index.clone()).or_insert(0);
+
+            if won {
+                *entry += 3;
+            } else {
+                if *entry > 3 {
+                    *entry -= 1;
+                }
+            }
+        }
+    }
+
+    fn determine_move(&mut self, board: &Board) -> Option<usize> {
+        let current_available_moves = self.get_available_moves(board);
+
+        let available_moves = self
+            .brain
+            .entry(board.key())
+            .or_insert(current_available_moves);
+
+        Bot::pick_random_percentage(&available_moves)
+    }
+
+    fn get_available_moves(&self, board: &Board) -> HashMap<usize, usize> {
+        let mut available_spaces = HashMap::new();
+
+        for (index, space) in board.spaces.iter().enumerate() {
+            if *space == BoardSpace::Blank {
+                available_spaces.insert(index, 3);
             }
         }
 
-        index
+        available_spaces
+    }
+
+    fn pick_random_percentage(moves: &HashMap<usize, usize>) -> Option<usize> {
+        let total = {
+            let mut value = 0;
+
+            for (_, weight) in moves {
+                value = value + weight;
+            }
+
+            value
+        };
+
+        let mut random = rand::thread_rng().gen_range(0, total);
+
+        for (current_move, weight) in moves {
+            if weight > &0 {
+                if random <= *weight {
+                    return Some(*current_move);
+                }
+
+                random = random - weight;
+            }
+        }
+
+        None
     }
 }
