@@ -1,89 +1,61 @@
 mod board;
 mod bot;
 
-use board::{Board, BoardSpace};
+use board::{Board, BoardSpace, GameResult};
 use bot::Bot;
-use std::collections::HashMap;
 
 fn main() {
-    let mut board = Board::empty();
+    let mut board = Board::new();
+    let mut bot_x = Bot::new(BoardSpace::X);
+    let mut bot_o = Bot::new(BoardSpace::O);
+    let mut wins_x = 0;
+    let mut wins_o = 0;
+    let mut draws = 0;
 
-    // let player = BoardSpace::X;
-    // let mut bot = Bot::new(BoardSpace::O, HashMap::new());
+    for i in 0..2000000 {
+        board.reset();
 
-    // loop {
-    //     let mut user_input = String::new();
+        let res = play(&mut board, &mut bot_x, &mut bot_o);
 
-    //     board.print();
+        if res == GameResult::XWwin {
+            wins_x = wins_x + 1;
+        } else if res == GameResult::OWin {
+            wins_o = wins_o + 1;
+        } else {
+            draws = draws + 1;
+        }
 
-    //     io::stdin()
-    //         .read_line(&mut user_input)
-    //         .expect("Failed to read line");
+        bot_x.learn(&board);
+        bot_o.learn(&board);
 
-    //     let user_position: Vec<usize> = user_input
-    //         .split(",")
-    //         .map(|pos| pos.trim().parse::<usize>().unwrap())
-    //         .collect();
-
-    //     board.set(
-    //         &player,
-    //         Position {
-    //             row: user_position[0],
-    //             col: user_position[1],
-    //         },
-    //     );
-
-    //     if board.determine_winner() != BoardSpace::Blank {
-    //         bot.learn(false);
-
-    //         println!("{} WINS!", board.determine_winner());
-
-    //         break;
-    //     }
-
-    //     bot.make_move(&mut board);
-
-    //     if board.determine_winner() != BoardSpace::Blank {
-    //         bot.learn(true);
-
-    //         println!("{} WINS!", board.determine_winner());
-
-    //         break;
-    //     }
-
-    //     board.print();
-    // }
-
-    let mut bot1 = Bot::new(BoardSpace::X, HashMap::new());
-    let mut bot2 = Bot::new(BoardSpace::O, HashMap::new());
-
-    for _ in 0..=10 {
-        loop {
-            bot1.make_move(&mut board);
-
-            if board.determine_winner() == BoardSpace::X {
-                board.print();
-                bot1.learn(true);
-                bot2.learn(false);
-
-                println!("===");
-                println!("{} WINS!", BoardSpace::X);
-
-                break;
-            }
-
-            bot2.make_move(&mut board);
-
-            if board.determine_winner() == BoardSpace::O {
-                board.print();
-                bot1.learn(false);
-                bot2.learn(true);
-
-                println!("===");
-                println!("{} WINS!", BoardSpace::O);
-
-                break;
-            }
+        if i % 10000 == 0 {
+            println!("{}", board);
+            println!("=====================");
+            println!("{}", res);
+            println!("=====================");
+            println!("X Wins: {}", wins_x);
+            println!("O Wins: {}", wins_o);
+            println!("Draws: {}", draws);
         }
     }
+}
+
+fn play(board: &mut Board, bot_x: &mut Bot, bot_o: &mut Bot) -> GameResult {
+    bot_x.make_move(board);
+
+    let x_res = board.check_board();
+
+    if x_res == GameResult::Undecided {
+        bot_o.make_move(board);
+
+        let o_res = board.check_board();
+
+        if o_res == GameResult::Undecided {
+            return play(board, bot_x, bot_o);
+        }
+
+        return o_res;
+    }
+
+    x_res
 }
