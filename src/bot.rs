@@ -5,7 +5,7 @@ use bot::rand::Rng;
 use std::collections::HashMap;
 use std::mem::replace;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct MoveEntry {
     move_index: usize,
     weight: usize,
@@ -26,17 +26,16 @@ impl Bot {
     }
 
     pub fn make_move(&mut self, board: &mut Board) {
-        let space: BoardSpace = self.space.clone();
-
         if let Some(value) = self.determine_move(board) {
-            board.set_by_index(value, space);
+            board.set_by_index(value, self.space);
         }
     }
 
     pub fn learn(&mut self, board: &Board) {
+        // println!("muh brain \n{:?}", self.brain);
         let res = board.check_board();
 
-        let won = (self.space == BoardSpace::X && res == GameResult::XWwin)
+        let won = (self.space == BoardSpace::X && res == GameResult::XWin)
             || (self.space == BoardSpace::O && res == GameResult::OWin);
 
         let bot_moves = board

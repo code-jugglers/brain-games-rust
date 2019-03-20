@@ -1,6 +1,11 @@
 use std::fmt::{Display, Formatter, Result};
 
-#[derive(PartialEq, Clone)]
+/// The board is modeled as a Vec of BoardSpaces, indexed as shown below:
+/// 0 1 2
+/// 3 4 5
+/// 6 7 8
+
+#[derive(PartialEq, Clone, Copy)]
 pub enum BoardSpace {
     X,
     O,
@@ -23,7 +28,7 @@ impl BoardSpace {
 
 #[derive(PartialEq, Clone)]
 pub enum GameResult {
-    XWwin,
+    XWin,
     OWin,
     Draw,
     Undecided,
@@ -31,7 +36,7 @@ pub enum GameResult {
 impl Display for GameResult {
     fn fmt(&self, f: &mut Formatter) -> Result {
         match self {
-            GameResult::XWwin => write!(f, "{}", "X Wins!"),
+            GameResult::XWin => write!(f, "{}", "X Wins!"),
             GameResult::OWin => write!(f, "{}", "O Wins!"),
             GameResult::Draw => write!(f, "{}", "It is a DRAW!"),
             GameResult::Undecided => write!(f, "{}", "No winner yet"),
@@ -101,7 +106,7 @@ impl Board {
             self.move_history.push(HistoryEntry {
                 key,
                 move_index,
-                player: player.clone(),
+                player,
             });
 
             self.spaces[move_index] = player;
@@ -170,7 +175,7 @@ impl Board {
         if space_1_parsed == space_2_parsed && space_2_parsed == space_3_parsed {
             if *space_1_parsed != BoardSpace::Empty {
                 return match space_1_parsed {
-                    BoardSpace::X => GameResult::XWwin,
+                    BoardSpace::X => GameResult::XWin,
                     BoardSpace::O => GameResult::OWin,
                     BoardSpace::Empty => GameResult::Undecided,
                 };
@@ -201,9 +206,9 @@ mod tests {
 
     #[test]
     fn game_result_should_be_correct_horizontally() {
-        let mut board = Board::new();
+        let mut board1 = Board::new();
 
-        board.spaces = [
+        board1.spaces = [
             BoardSpace::X,
             BoardSpace::X,
             BoardSpace::X,
@@ -215,7 +220,40 @@ mod tests {
             BoardSpace::Empty,
         ];
 
-        assert!(board.check_board() == GameResult::XWwin);
+        assert!(board1.check_board() == GameResult::XWin);
+
+        let mut board2 = Board::new();
+
+        board2.spaces = [
+            BoardSpace::Empty,
+            BoardSpace::Empty,
+            BoardSpace::Empty,
+            BoardSpace::O,
+            BoardSpace::O,
+            BoardSpace::O,
+            BoardSpace::Empty,
+            BoardSpace::Empty,
+            BoardSpace::Empty,
+        ];
+
+        assert!(board2.check_board() == GameResult::OWin);
+
+        let mut board3 = Board::new();
+
+        board3.spaces = [
+            BoardSpace::Empty,
+            BoardSpace::Empty,
+            BoardSpace::Empty,
+            BoardSpace::Empty,
+            BoardSpace::Empty,
+            BoardSpace::Empty,
+            BoardSpace::X,
+            BoardSpace::X,
+            BoardSpace::X,
+        ];
+
+        assert!(board3.check_board() == GameResult::XWin);
+
     }
 
     #[test]
@@ -234,7 +272,7 @@ mod tests {
             BoardSpace::Empty,
         ];
 
-        assert!(board.check_board() == GameResult::XWwin);
+        assert!(board.check_board() == GameResult::XWin);
     }
 
     #[test]
@@ -253,7 +291,7 @@ mod tests {
             BoardSpace::X,
         ];
 
-        assert!(board.check_board() == GameResult::XWwin);
+        assert!(board.check_board() == GameResult::XWin);
 
         board.reset();
 
@@ -269,6 +307,6 @@ mod tests {
             BoardSpace::Empty,
         ];
 
-        assert!(board.check_board() == GameResult::XWwin);
+        assert!(board.check_board() == GameResult::XWin);
     }
 }

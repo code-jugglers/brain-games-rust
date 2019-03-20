@@ -17,7 +17,7 @@ fn main() {
 
         let res = play(&mut board, &mut bot_x, &mut bot_o);
 
-        if res == GameResult::XWwin {
+        if res == GameResult::XWin {
             wins_x = wins_x + 1;
         } else if res == GameResult::OWin {
             wins_o = wins_o + 1;
