@@ -115,17 +115,19 @@ impl Bot {
     }
 
     fn get_random_percentage(available_moves: &Vec<MoveEntry>) -> Option<MoveEntry> {
-        let total = available_moves.iter().fold(0, |acc, m| acc + m.weight);
-        let mut random = rand::thread_rng().gen_range(0, total);
+        let total: usize = available_moves.iter().fold(0, |acc, m| acc + m.weight);
+        let mut random: usize = rand::thread_rng().gen_range(0, total);
 
         for current_move in available_moves {
-            if current_move.weight != 0 {
-                if random <= current_move.weight {
-                    return Some(current_move.clone());
-                }
-
-                random = random - current_move.weight;
+            if current_move.weight == 0 {
+                continue;
             }
+
+            if random <= current_move.weight {
+                return Some(current_move.clone());
+            }
+
+            random = random - current_move.weight;
         }
 
         None

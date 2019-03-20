@@ -12,7 +12,7 @@ fn main() {
     let mut wins_o = 0;
     let mut draws = 0;
 
-    for i in 0..2000000 {
+    for i in 0..10000000 {
         board.reset();
 
         let res = play(&mut board, &mut bot_x, &mut bot_o);
