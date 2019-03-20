@@ -125,10 +125,7 @@ impl Board {
     }
 
     pub fn check_board(&self) -> GameResult {
-        if self.spaces.iter().all(|item| *item != BoardSpace::Empty) {
-            return GameResult::Draw;
-        }
-
+        
         // Check rows
         for index in 0..Board::ROWS {
             let row = index * Board::ROWS;
@@ -156,6 +153,10 @@ impl Board {
         let left_diag = self.check_spaces(2, 4, 6);
         if left_diag != GameResult::Undecided {
             return left_diag;
+        }
+
+        if self.spaces.iter().all(|item| *item != BoardSpace::Empty) {
+            return GameResult::Draw;
         }
 
         GameResult::Undecided
