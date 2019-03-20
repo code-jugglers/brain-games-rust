@@ -16,6 +16,7 @@ impl Display for BoardSpace {
         write!(f, "{}", self.to_string())
     }
 }
+
 impl BoardSpace {
     fn to_string(&self) -> &str {
         match self {
@@ -36,10 +37,10 @@ pub enum GameResult {
 impl Display for GameResult {
     fn fmt(&self, f: &mut Formatter) -> Result {
         match self {
-            GameResult::XWin => write!(f, "{}", "X Wins!"),
-            GameResult::OWin => write!(f, "{}", "O Wins!"),
-            GameResult::Draw => write!(f, "{}", "It is a DRAW!"),
-            GameResult::Undecided => write!(f, "{}", "No winner yet"),
+            GameResult::XWin => write!(f, "X Wins!"),
+            GameResult::OWin => write!(f, "O Wins!"),
+            GameResult::Draw => write!(f, "It is a DRAW!"),
+            GameResult::Undecided => write!(f, "No winner yet"),
         }
     }
 }
