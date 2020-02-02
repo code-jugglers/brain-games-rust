@@ -31,9 +31,9 @@ impl Bot {
         None
     }
 
-    pub fn learn(&mut self, moves: Vec<MoveEntry>, did_win: bool) {
+    pub fn learn(&mut self, moves: &Vec<MoveEntry>, did_win: bool) {
         for m in moves {
-            let move_entry = self.memory.entry(m.key).or_insert(HashMap::new());
+            let move_entry = self.memory.entry(m.key.clone()).or_insert(HashMap::new());
             let current_move = move_entry.entry(m.position).or_insert(0);
 
             *current_move = if did_win {
@@ -74,7 +74,7 @@ mod tests {
 
         let mut bot = Bot::new(String::from("0"), BoardSpace::X);
 
-        bot.learn(board.moves, true);
+        bot.learn(&board.moves, true);
 
         println!("{:?}", bot.memory);
     }
