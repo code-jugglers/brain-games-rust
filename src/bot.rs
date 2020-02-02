@@ -1,5 +1,6 @@
 use crate::board::{BoardSpaces, Move, MoveEntry};
 use crate::board_space::BoardSpace;
+use rand::seq::SliceRandom;
 use std::collections::HashMap;
 
 pub type BotMemory = HashMap<String, HashMap<Move, u32>>;
@@ -20,15 +21,26 @@ impl Bot {
     }
 
     pub fn determine_move(&self, board_spaces: BoardSpaces) -> Option<Move> {
+        let available_moves = self.get_available_moves(board_spaces);
+
+        match available_moves.choose(&mut rand::thread_rng()) {
+            Some(m) => Some(m.clone()),
+            None => None,
+        }
+    }
+
+    pub fn get_available_moves(&self, board_spaces: BoardSpaces) -> Vec<Move> {
+        let mut available_moves = vec![];
+
         for (col_index, col) in board_spaces.iter().enumerate() {
             for (cell_index, cell) in col.iter().enumerate() {
                 if cell == &BoardSpace::Empty {
-                    return Some([col_index, cell_index]);
+                    available_moves.push([col_index, cell_index]);
                 }
             }
         }
 
-        None
+        available_moves
     }
 
     pub fn learn(&mut self, moves: &Vec<MoveEntry>, did_win: bool) {
