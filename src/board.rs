@@ -33,7 +33,7 @@ impl Board {
         }
     }
 
-    fn key(&self) -> String {
+    pub fn key(&self) -> String {
         let mut result: String = String::new();
 
         for col in &self.spaces {

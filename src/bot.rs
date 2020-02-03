@@ -1,41 +1,77 @@
 use crate::board::{BoardSpaces, Move, MoveEntry};
 use crate::board_space::BoardSpace;
 use rand::seq::SliceRandom;
+use rand::Rng;
 use std::collections::HashMap;
 
-pub type BotMemory = HashMap<String, HashMap<Move, u32>>;
+#[derive(Debug, Clone, Copy)]
+pub struct BotMemoryEntry {
+    position: Move,
+    weight: u32,
+}
+
+pub type BotMemory = HashMap<String, Vec<BotMemoryEntry>>;
 
 #[derive(Debug)]
 pub struct Bot {
-    pub id: String,
     pub space: BoardSpace,
     pub memory: BotMemory,
 }
 impl Bot {
-    pub fn new(id: String, space: BoardSpace) -> Bot {
+    pub fn new(space: BoardSpace) -> Bot {
         Bot {
-            id,
             space,
             memory: HashMap::new(),
         }
     }
 
-    pub fn determine_move(&self, board_spaces: BoardSpaces) -> Option<Move> {
-        let available_moves = self.get_available_moves(board_spaces);
+    pub fn determine_move(&mut self, board_key: String, board_spaces: BoardSpaces) -> Option<Move> {
+        let memory = self.memory.entry(board_key).or_insert(Vec::new());
 
-        match available_moves.choose(&mut rand::thread_rng()) {
-            Some(m) => Some(m.clone()),
-            None => None,
+        if memory.len() > 0 {
+            let total = memory.iter().fold(0, |a, b| a + b.weight);
+            let mut rng = rand::thread_rng();
+            let mut random = rng.gen_range(0, total);
+
+            for i in 0..total {
+                let current = memory[i as usize];
+
+                if current.weight == 0 {
+                    continue;
+                }
+
+                if random <= current.weight {
+                    return Some(current.position);
+                }
+
+                random = random - current.weight;
+            }
+
+            None
+        } else {
+            let available_moves = Bot::get_available_moves(board_spaces);
+
+            for am in &available_moves {
+                memory.push(am.clone());
+            }
+
+            match &available_moves.choose(&mut rand::thread_rng()) {
+                Some(m) => Some(m.position.clone()),
+                None => None,
+            }
         }
     }
 
-    pub fn get_available_moves(&self, board_spaces: BoardSpaces) -> Vec<Move> {
-        let mut available_moves = vec![];
+    pub fn get_available_moves(board_spaces: BoardSpaces) -> Vec<BotMemoryEntry> {
+        let mut available_moves = Vec::new();
 
         for (col_index, col) in board_spaces.iter().enumerate() {
             for (cell_index, cell) in col.iter().enumerate() {
                 if cell == &BoardSpace::Empty {
-                    available_moves.push([col_index, cell_index]);
+                    available_moves.push(BotMemoryEntry {
+                        position: [col_index, cell_index],
+                        weight: 3,
+                    });
                 }
             }
         }
@@ -45,15 +81,25 @@ impl Bot {
 
     pub fn learn(&mut self, moves: &Vec<MoveEntry>, did_win: bool) {
         for m in moves {
-            let move_entry = self.memory.entry(m.key.clone()).or_insert(HashMap::new());
-            let current_move = move_entry.entry(m.position).or_insert(0);
+            let game_state_entry = self.memory.entry(m.key.clone()).or_insert(Vec::new());
 
-            *current_move = if did_win {
-                *current_move + 6
-            } else if *current_move > 0 {
-                *current_move - 1
+            let current_move = game_state_entry.iter_mut().find(|memory| {
+                memory.position[0] == m.position[0] && memory.position[1] == m.position[1]
+            });
+
+            if let Some(m) = current_move {
+                m.weight = if did_win {
+                    m.weight + 6
+                } else if m.weight > 0 {
+                    m.weight - 1
+                } else {
+                    0
+                }
             } else {
-                0
+                game_state_entry.push(BotMemoryEntry {
+                    position: m.position,
+                    weight: 3,
+                })
             }
         }
     }
@@ -67,9 +113,9 @@ mod tests {
     #[test]
     fn should_return_a_valid_move() {
         let board = Board::new();
-        let bot = Bot::new(String::from("0"), BoardSpace::X);
+        let mut bot = Bot::new(BoardSpace::X);
 
-        let move_found: bool = match bot.determine_move(board.spaces) {
+        let move_found: bool = match bot.determine_move(String::from(""), board.spaces) {
             Some(_) => true,
             None => false,
         };
@@ -84,7 +130,7 @@ mod tests {
         board.make_move(BoardSpace::X, 1, 1);
         board.make_move(BoardSpace::X, 2, 2);
 
-        let mut bot = Bot::new(String::from("0"), BoardSpace::X);
+        let mut bot = Bot::new(BoardSpace::X);
 
         bot.learn(&board.moves, true);
 
