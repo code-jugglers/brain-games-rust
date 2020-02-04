@@ -27,24 +27,20 @@ impl Bot {
 
     pub fn determine_move(&mut self, board_key: String, board_spaces: BoardSpaces) -> Option<Move> {
         let memory = self.memory.entry(board_key).or_insert(Vec::new());
+        let total = memory.iter().fold(0, |a, b| a + b.weight);
 
-        if memory.len() > 0 {
-            let total = memory.iter().fold(0, |a, b| a + b.weight);
+        if total > 1 {
             let mut rng = rand::thread_rng();
-            let mut random = rng.gen_range(0, total);
+            let mut random = rng.gen_range(1, total);
 
-            for i in 0..total {
-                let current = memory[i as usize];
+            for current in memory {
+                // println!("{:?} {}", current, random);
 
-                if current.weight == 0 {
-                    continue;
-                }
-
-                if random <= current.weight {
+                if current.weight > 0 && random <= current.weight {
                     return Some(current.position);
+                } else {
+                    random = random - current.weight;
                 }
-
-                random = random - current.weight;
             }
 
             None
@@ -89,11 +85,11 @@ impl Bot {
 
             if let Some(m) = current_move {
                 m.weight = if did_win {
-                    m.weight + 6
-                } else if m.weight > 0 {
+                    m.weight + 3
+                } else if m.weight > 1 {
                     m.weight - 1
                 } else {
-                    0
+                    3
                 }
             } else {
                 game_state_entry.push(BotMemoryEntry {

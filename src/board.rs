@@ -4,6 +4,14 @@ use std::fmt::{Display, Formatter, Result};
 pub type BoardSpaces = [[BoardSpace; 3]; 3];
 pub type Move = [usize; 2];
 
+#[derive(Debug, PartialEq)]
+pub enum GameResult {
+    Xwin,
+    Owin,
+    Tie,
+    Incomplete,
+}
+
 #[derive(Debug)]
 pub struct MoveEntry {
     pub key: String,
@@ -61,7 +69,7 @@ impl Board {
         }
     }
 
-    pub fn determine_winner(&self) -> BoardSpace {
+    pub fn determine_winner(&self) -> GameResult {
         // check columns
         for col in 0..=2 {
             let start = self.spaces[col][0];
@@ -70,7 +78,11 @@ impl Board {
                 && start == self.spaces[col][1]
                 && start == self.spaces[col][2]
             {
-                return self.spaces[col][0];
+                return if self.spaces[col][0] == BoardSpace::X {
+                    GameResult::Xwin
+                } else {
+                    GameResult::Owin
+                };
             }
         }
 
@@ -82,25 +94,56 @@ impl Board {
                 && start == self.spaces[1][row]
                 && start == self.spaces[2][row]
             {
-                return self.spaces[0][row];
+                return if self.spaces[0][row] == BoardSpace::X {
+                    GameResult::Xwin
+                } else {
+                    GameResult::Owin
+                };
             }
         }
 
         // Check Diagonals Left -> Right
         if self.spaces[0][0] == self.spaces[1][1] && self.spaces[0][0] == self.spaces[2][2] {
             if self.spaces[0][0] != BoardSpace::Empty {
-                return self.spaces[0][0];
+                return if self.spaces[0][0] == BoardSpace::X {
+                    GameResult::Xwin
+                } else {
+                    GameResult::Owin
+                };
             }
         }
 
         // Checl Diagonals Right -> Left
         if self.spaces[0][2] == self.spaces[1][1] && self.spaces[0][2] == self.spaces[2][0] {
             if self.spaces[0][2] != BoardSpace::Empty {
-                return self.spaces[0][2];
+                return if self.spaces[0][2] == BoardSpace::X {
+                    GameResult::Xwin
+                } else {
+                    GameResult::Owin
+                };
             }
         }
 
-        BoardSpace::Empty
+        // check if there are ANY open spaces
+        if self.get_available_moves().len() <= 0 {
+            return GameResult::Tie;
+        }
+
+        GameResult::Incomplete
+    }
+
+    pub fn get_available_moves(&self) -> Vec<Move> {
+        let mut available_moves = Vec::new();
+
+        for (col_index, col) in self.spaces.iter().enumerate() {
+            for (cell_index, cell) in col.iter().enumerate() {
+                if cell == &BoardSpace::Empty {
+                    available_moves.push([col_index, cell_index]);
+                }
+            }
+        }
+
+        available_moves
     }
 
     pub fn to_string(&self) -> String {
@@ -180,7 +223,7 @@ mod tests {
         board.make_move(BoardSpace::X, 0, 1);
         board.make_move(BoardSpace::X, 0, 2);
 
-        assert_eq!(board.determine_winner(), BoardSpace::X);
+        assert_eq!(board.determine_winner(), GameResult::Xwin);
     }
 
     #[test]
@@ -191,7 +234,7 @@ mod tests {
         board.make_move(BoardSpace::X, 1, 1);
         board.make_move(BoardSpace::X, 1, 2);
 
-        assert_eq!(board.determine_winner(), BoardSpace::X);
+        assert_eq!(board.determine_winner(), GameResult::Xwin);
     }
 
     #[test]
@@ -202,7 +245,7 @@ mod tests {
         board.make_move(BoardSpace::X, 2, 1);
         board.make_move(BoardSpace::X, 2, 2);
 
-        assert_eq!(board.determine_winner(), BoardSpace::X);
+        assert_eq!(board.determine_winner(), GameResult::Xwin);
     }
 
     #[test]
@@ -213,7 +256,7 @@ mod tests {
         board.make_move(BoardSpace::X, 1, 0);
         board.make_move(BoardSpace::X, 2, 0);
 
-        assert_eq!(board.determine_winner(), BoardSpace::X);
+        assert_eq!(board.determine_winner(), GameResult::Xwin);
     }
 
     #[test]
@@ -224,7 +267,7 @@ mod tests {
         board.make_move(BoardSpace::X, 1, 1);
         board.make_move(BoardSpace::X, 2, 1);
 
-        assert_eq!(board.determine_winner(), BoardSpace::X);
+        assert_eq!(board.determine_winner(), GameResult::Xwin);
     }
 
     #[test]
@@ -235,7 +278,7 @@ mod tests {
         board.make_move(BoardSpace::O, 1, 2);
         board.make_move(BoardSpace::O, 2, 2);
 
-        assert_eq!(board.determine_winner(), BoardSpace::O);
+        assert_eq!(board.determine_winner(), GameResult::Owin);
     }
 
     #[test]
@@ -246,7 +289,7 @@ mod tests {
         board.make_move(BoardSpace::O, 1, 1);
         board.make_move(BoardSpace::O, 2, 2);
 
-        assert_eq!(board.determine_winner(), BoardSpace::O);
+        assert_eq!(board.determine_winner(), GameResult::Owin);
     }
 
     #[test]
@@ -257,7 +300,7 @@ mod tests {
         board.make_move(BoardSpace::O, 1, 1);
         board.make_move(BoardSpace::O, 2, 0);
 
-        assert_eq!(board.determine_winner(), BoardSpace::O);
+        assert_eq!(board.determine_winner(), GameResult::Owin);
     }
 
     #[test]
@@ -282,5 +325,17 @@ mod tests {
         assert_eq!(board.moves[2].space, BoardSpace::X);
         assert_eq!(board.moves[2].position[0], 2);
         assert_eq!(board.moves[2].position[1], 0);
+    }
+
+    #[test]
+    fn should_return_incomplete() {
+        let mut board = Board::new();
+
+        board.make_move(BoardSpace::O, 0, 0);
+        board.make_move(BoardSpace::O, 2, 0);
+        board.make_move(BoardSpace::X, 2, 1);
+        board.make_move(BoardSpace::X, 2, 2);
+
+        assert_eq!(board.determine_winner(), GameResult::Incomplete);
     }
 }
