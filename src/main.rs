@@ -12,7 +12,7 @@ fn main() {
     let mut x_wins = 0;
     let mut y_wins = 0;
     let mut ties = 0;
-    let iterations = 10000000;
+    let iterations = 1000000;
 
     for i in 0..iterations {
         let mut board = Board::new();

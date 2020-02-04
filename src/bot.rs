@@ -1,6 +1,5 @@
 use crate::board::{BoardSpaces, Move, MoveEntry};
 use crate::board_space::BoardSpace;
-use rand::seq::SliceRandom;
 use rand::Rng;
 use std::collections::HashMap;
 
@@ -26,36 +25,24 @@ impl Bot {
     }
 
     pub fn determine_move(&mut self, board_key: String, board_spaces: BoardSpaces) -> Option<Move> {
-        let memory = self.memory.entry(board_key).or_insert(Vec::new());
+        let memory = self
+            .memory
+            .entry(board_key)
+            .or_insert(Bot::get_available_moves(board_spaces));
+
         let total = memory.iter().fold(0, |a, b| a + b.weight);
+        let mut rng = rand::thread_rng();
+        let mut random = rng.gen_range(1, total);
 
-        if total > 1 {
-            let mut rng = rand::thread_rng();
-            let mut random = rng.gen_range(1, total);
-
-            for current in memory {
-                // println!("{:?} {}", current, random);
-
-                if current.weight > 0 && random <= current.weight {
-                    return Some(current.position);
-                } else {
-                    random = random - current.weight;
-                }
-            }
-
-            None
-        } else {
-            let available_moves = Bot::get_available_moves(board_spaces);
-
-            for am in &available_moves {
-                memory.push(am.clone());
-            }
-
-            match &available_moves.choose(&mut rand::thread_rng()) {
-                Some(m) => Some(m.position.clone()),
-                None => None,
+        for current in memory {
+            if random <= current.weight {
+                return Some(current.position);
+            } else {
+                random = random - current.weight;
             }
         }
+
+        None
     }
 
     pub fn get_available_moves(board_spaces: BoardSpaces) -> Vec<BotMemoryEntry> {
@@ -77,25 +64,27 @@ impl Bot {
 
     pub fn learn(&mut self, moves: &Vec<MoveEntry>, did_win: bool) {
         for m in moves {
-            let game_state_entry = self.memory.entry(m.key.clone()).or_insert(Vec::new());
+            if m.space == self.space {
+                let game_state_entry = self.memory.entry(m.key.clone()).or_insert(Vec::new());
 
-            let current_move = game_state_entry.iter_mut().find(|memory| {
-                memory.position[0] == m.position[0] && memory.position[1] == m.position[1]
-            });
+                // Safe to unwrap.
+                // If an error is thrown here there is something wrong with the move selection
+                let current_move = game_state_entry
+                    .iter_mut()
+                    .find(|entry| {
+                        entry.position[0] == m.position[0] && entry.position[1] == m.position[1]
+                    })
+                    .unwrap();
 
-            if let Some(m) = current_move {
-                m.weight = if did_win {
-                    m.weight + 3
-                } else if m.weight > 1 {
-                    m.weight - 1
+                current_move.weight = if did_win {
+                    current_move.weight + 3
                 } else {
-                    3
+                    current_move.weight - 1
+                };
+
+                if current_move.weight > 0 {
+                    current_move.weight = 3;
                 }
-            } else {
-                game_state_entry.push(BotMemoryEntry {
-                    position: m.position,
-                    weight: 3,
-                })
             }
         }
     }
