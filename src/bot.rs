@@ -32,14 +32,22 @@ impl Bot {
 
         let total = memory.iter().fold(0, |a, b| a + b.weight);
         let mut rng = rand::thread_rng();
-        let mut random = rng.gen_range(1, total);
+        let mut random = if total > 1 {
+            rng.gen_range(1, total)
+        } else {
+            1
+        };
 
         for current in memory {
+            if current.weight == 0 {
+                continue;
+            }
+
             if random <= current.weight {
                 return Some(current.position);
-            } else {
-                random = random - current.weight;
             }
+
+            random = random - current.weight;
         }
 
         None
@@ -82,8 +90,13 @@ impl Bot {
                     current_move.weight - 1
                 };
 
-                if current_move.weight > 0 {
-                    current_move.weight = 3;
+                if game_state_entry
+                    .iter()
+                    .fold(true, |val, entry| entry.weight == 0 && val)
+                {
+                    for entry in game_state_entry {
+                        entry.weight = 3;
+                    }
                 }
             }
         }

@@ -6,8 +6,8 @@ pub type Move = [usize; 2];
 
 #[derive(Debug, PartialEq)]
 pub enum GameResult {
-    Xwin,
-    Owin,
+    X,
+    O,
     Tie,
     Incomplete,
 }
@@ -79,9 +79,9 @@ impl Board {
                 && start == self.spaces[col][2]
             {
                 return if self.spaces[col][0] == BoardSpace::X {
-                    GameResult::Xwin
+                    GameResult::X
                 } else {
-                    GameResult::Owin
+                    GameResult::O
                 };
             }
         }
@@ -95,9 +95,9 @@ impl Board {
                 && start == self.spaces[2][row]
             {
                 return if self.spaces[0][row] == BoardSpace::X {
-                    GameResult::Xwin
+                    GameResult::X
                 } else {
-                    GameResult::Owin
+                    GameResult::O
                 };
             }
         }
@@ -106,9 +106,9 @@ impl Board {
         if self.spaces[0][0] == self.spaces[1][1] && self.spaces[0][0] == self.spaces[2][2] {
             if self.spaces[0][0] != BoardSpace::Empty {
                 return if self.spaces[0][0] == BoardSpace::X {
-                    GameResult::Xwin
+                    GameResult::X
                 } else {
-                    GameResult::Owin
+                    GameResult::O
                 };
             }
         }
@@ -117,22 +117,22 @@ impl Board {
         if self.spaces[0][2] == self.spaces[1][1] && self.spaces[0][2] == self.spaces[2][0] {
             if self.spaces[0][2] != BoardSpace::Empty {
                 return if self.spaces[0][2] == BoardSpace::X {
-                    GameResult::Xwin
+                    GameResult::X
                 } else {
-                    GameResult::Owin
+                    GameResult::O
                 };
             }
         }
 
         // check if there are ANY open spaces
-        if self.get_available_moves().len() <= 0 {
+        if self.get_empty_spaces().len() <= 0 {
             return GameResult::Tie;
         }
 
         GameResult::Incomplete
     }
 
-    pub fn get_available_moves(&self) -> Vec<Move> {
+    pub fn get_empty_spaces(&self) -> Vec<Move> {
         let mut available_moves = Vec::new();
 
         for (col_index, col) in self.spaces.iter().enumerate() {
@@ -223,7 +223,7 @@ mod tests {
         board.make_move(BoardSpace::X, 0, 1);
         board.make_move(BoardSpace::X, 0, 2);
 
-        assert_eq!(board.determine_winner(), GameResult::Xwin);
+        assert_eq!(board.determine_winner(), GameResult::X);
     }
 
     #[test]
@@ -234,7 +234,7 @@ mod tests {
         board.make_move(BoardSpace::X, 1, 1);
         board.make_move(BoardSpace::X, 1, 2);
 
-        assert_eq!(board.determine_winner(), GameResult::Xwin);
+        assert_eq!(board.determine_winner(), GameResult::X);
     }
 
     #[test]
@@ -245,7 +245,7 @@ mod tests {
         board.make_move(BoardSpace::X, 2, 1);
         board.make_move(BoardSpace::X, 2, 2);
 
-        assert_eq!(board.determine_winner(), GameResult::Xwin);
+        assert_eq!(board.determine_winner(), GameResult::X);
     }
 
     #[test]
@@ -256,7 +256,7 @@ mod tests {
         board.make_move(BoardSpace::X, 1, 0);
         board.make_move(BoardSpace::X, 2, 0);
 
-        assert_eq!(board.determine_winner(), GameResult::Xwin);
+        assert_eq!(board.determine_winner(), GameResult::X);
     }
 
     #[test]
@@ -267,7 +267,7 @@ mod tests {
         board.make_move(BoardSpace::X, 1, 1);
         board.make_move(BoardSpace::X, 2, 1);
 
-        assert_eq!(board.determine_winner(), GameResult::Xwin);
+        assert_eq!(board.determine_winner(), GameResult::X);
     }
 
     #[test]
@@ -278,7 +278,7 @@ mod tests {
         board.make_move(BoardSpace::O, 1, 2);
         board.make_move(BoardSpace::O, 2, 2);
 
-        assert_eq!(board.determine_winner(), GameResult::Owin);
+        assert_eq!(board.determine_winner(), GameResult::O);
     }
 
     #[test]
@@ -289,7 +289,7 @@ mod tests {
         board.make_move(BoardSpace::O, 1, 1);
         board.make_move(BoardSpace::O, 2, 2);
 
-        assert_eq!(board.determine_winner(), GameResult::Owin);
+        assert_eq!(board.determine_winner(), GameResult::O);
     }
 
     #[test]
@@ -300,7 +300,7 @@ mod tests {
         board.make_move(BoardSpace::O, 1, 1);
         board.make_move(BoardSpace::O, 2, 0);
 
-        assert_eq!(board.determine_winner(), GameResult::Owin);
+        assert_eq!(board.determine_winner(), GameResult::O);
     }
 
     #[test]

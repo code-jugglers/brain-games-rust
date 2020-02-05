@@ -19,12 +19,12 @@ fn main() {
 
         let winner = play(&mut board, &mut player_1, &mut player_2);
 
-        if winner == GameResult::Xwin {
+        if winner == GameResult::X {
             player_1.learn(&board.moves, true);
             player_2.learn(&board.moves, false);
 
             x_wins = x_wins + 1;
-        } else if winner == GameResult::Owin {
+        } else if winner == GameResult::O {
             player_1.learn(&board.moves, false);
             player_2.learn(&board.moves, true);
 
