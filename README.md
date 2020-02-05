@@ -10,7 +10,7 @@ What you should observe is that the bots will begin to tie the further along the
 cargo run --release
 ```
 
-## Explaination:
+## Explanation:
 
 This implementation is simply a simulation of the below.
 
