@@ -10,9 +10,9 @@ fn main() {
     let mut player_1 = Bot::new(BoardSpace::X);
     let mut player_2 = Bot::new(BoardSpace::O);
     let mut x_wins = 0;
-    let mut y_wins = 0;
+    let mut o_wins = 0;
     let mut ties = 0;
-    let iterations = 1000000;
+    let iterations = 3000000;
 
     for i in 0..iterations {
         let mut board = Board::new();
@@ -28,29 +28,29 @@ fn main() {
             player_1.learn(&board.moves, false);
             player_2.learn(&board.moves, true);
 
-            y_wins = y_wins + 1;
+            o_wins = o_wins + 1;
         } else {
             ties = ties + 1;
         }
 
-        if i % 50000 == 0 {
+        if i % 100000 == 0 {
             println!("=========== GAME {} =========", i + 1);
             println!("{}", board);
             println!("X WINS: {}", x_wins);
-            println!("O WINS: {}", y_wins);
+            println!("O WINS: {}", o_wins);
             println!("Ties  : {}", ties);
         } else if i == iterations - 1 {
             println!("=========== FINAL =========");
             println!("{}", board);
             println!("X WINS: {}", x_wins);
-            println!("O WINS: {}", y_wins);
+            println!("O WINS: {}", o_wins);
             println!("Ties  : {}", ties);
         }
     }
 
     fn play(board: &mut Board, player_1: &mut Bot, player_2: &mut Bot) -> GameResult {
         let mut current_player: &mut Bot = player_1;
-        let mut current_player_id: String = String::from("0");
+        let mut current_player_id: &str = "0";
         let mut game_result: GameResult = GameResult::Incomplete;
 
         while game_result == GameResult::Incomplete {
@@ -60,12 +60,12 @@ fn main() {
 
             board.make_move(current_player.space, m[0], m[1]);
 
-            if current_player_id == String::from("0") {
+            if current_player_id == "0" {
                 current_player = player_2;
-                current_player_id = String::from("1");
+                current_player_id = "1";
             } else {
                 current_player = player_1;
-                current_player_id = String::from("0");
+                current_player_id = "0";
             }
 
             game_result = board.determine_winner();

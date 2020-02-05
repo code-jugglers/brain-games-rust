@@ -1,12 +1,10 @@
 # "Brain" games in rust
 
-## Games
-
 ### Tic Tac Toe
 
 A simple tic tac toe bot. You can't play against it yet but you can watch two bots play against each other.
-The program will spit out the results incrementally over 1000000 games.
-What you should observe is that the bots will begin to tie the further along they get until neither bot can gain an advantage
+The program will spit out the results incrementally over 3,000,000 games.
+What you should observe is that the bots will begin to tie the further along they get until neither bot can gain an advantage.
 
 ```BASH
 cargo run --release
