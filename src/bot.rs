@@ -90,6 +90,7 @@ impl Bot {
                     current_move.weight - 1
                 };
 
+                // If every entry is 0 reset them all
                 if game_state_entry
                     .iter()
                     .fold(true, |val, entry| entry.weight == 0 && val)
