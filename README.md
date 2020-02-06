@@ -10,6 +10,8 @@ What you should observe is that the bots will begin to tie the further along the
 cargo run --release
 ```
 
+## Example Results:
+
 ![Results Image](/images/game-results.png)
 
 ## Explanation:
