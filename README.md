@@ -10,10 +10,8 @@ What you should observe is that the bots will begin to tie the further along the
 cargo run --release
 ```
 
-[]()
+![Results Image](/images/results.png)
 
 ## Explanation:
-
-![Results Image](/images/results.png)
 
 [![Alt text](https://img.youtube.com/vi/R9c-_neaxeU/0.jpg)](https://www.youtube.com/watch?v=R9c-_neaxeU)
