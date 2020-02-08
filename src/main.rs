@@ -5,21 +5,9 @@ mod bot;
 use board::{Board, GameResult};
 use board_space::BoardSpace;
 use bot::Bot;
-use std::env;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    match args[1].as_str() {
-        "play" => play(),
-        "train" => train(),
-        _ => println!("command not found")
-    }
-
-
-    fn play() {
-        println!("play not yet implemented");
-    }
+    train();
 
     fn train() {
         const ITERATIONS: u32 = 3000000;
