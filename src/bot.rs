@@ -4,6 +4,7 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::File;
+use std::path::Path;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct BotMemoryEntry {
@@ -21,9 +22,17 @@ pub struct Bot {
 }
 impl Bot {
     pub fn new(space: BoardSpace, file_path: &'static str) -> Bot {
+        let memory = if Path::new(file_path).exists() {
+            let data: BotMemory = serde_json::from_reader(File::open(file_path).unwrap()).unwrap();
+
+            data
+        } else {
+            HashMap::new()
+        };
+
         Bot {
             space,
-            memory: HashMap::new(),
+            memory,
             file_path,
         }
     }
