@@ -1,9 +1,11 @@
 use crate::board::{BoardSpaces, Move, MoveEntry};
 use crate::board_space::BoardSpace;
 use rand::Rng;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fs::File;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct BotMemoryEntry {
     position: Move,
     weight: u32,
@@ -15,12 +17,14 @@ pub type BotMemory = HashMap<String, Vec<BotMemoryEntry>>;
 pub struct Bot {
     pub space: BoardSpace,
     pub memory: BotMemory,
+    pub file_path: &'static str,
 }
 impl Bot {
-    pub fn new(space: BoardSpace) -> Bot {
+    pub fn new(space: BoardSpace, file_path: &'static str) -> Bot {
         Bot {
             space,
             memory: HashMap::new(),
+            file_path,
         }
     }
 
@@ -89,7 +93,7 @@ impl Bot {
                 // If every entry is 0 reset them all
                 if game_state_entry
                     .iter()
-                    .fold(true, |val, entry| entry.weight <= 0 && val)
+                    .fold(true, |val, entry| entry.weight == 0 && val)
                 {
                     for entry in game_state_entry {
                         entry.weight = 3;
@@ -97,6 +101,10 @@ impl Bot {
                 }
             }
         }
+    }
+
+    pub fn save_brain_to_file(&self) {
+        serde_json::to_writer(File::create(self.file_path).unwrap(), &self.memory).unwrap();
     }
 }
 
@@ -108,7 +116,7 @@ mod tests {
     #[test]
     fn should_return_a_valid_move() {
         let board = Board::new();
-        let mut bot = Bot::new(BoardSpace::X);
+        let mut bot = Bot::new(BoardSpace::X, "bot_x.json");
 
         let move_found: bool = match bot.determine_move(String::from(""), board.spaces) {
             Some(_) => true,
@@ -125,7 +133,7 @@ mod tests {
         board.make_move(BoardSpace::X, 1, 1);
         board.make_move(BoardSpace::X, 2, 2);
 
-        let mut bot = Bot::new(BoardSpace::X);
+        let mut bot = Bot::new(BoardSpace::X, "bot_x.json");
 
         bot.learn(&board.moves, true);
 

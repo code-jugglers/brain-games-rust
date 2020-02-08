@@ -7,8 +7,8 @@ use board_space::BoardSpace;
 use bot::Bot;
 
 fn main() {
-    let mut player_1 = Bot::new(BoardSpace::X);
-    let mut player_2 = Bot::new(BoardSpace::O);
+    let mut player_1 = Bot::new(BoardSpace::X, "brain_x.json");
+    let mut player_2 = Bot::new(BoardSpace::O, "brain_o.json");
     let mut x_wins = 0;
     let mut o_wins = 0;
     let mut ties = 0;
@@ -33,7 +33,7 @@ fn main() {
             ties = ties + 1;
         }
 
-        if i % 10000 == 0 {
+        if i % 100000 == 0 {
             println!("=========== GAME {} =========", i + 1);
             println!("{}", board);
             println!("X WINS: {}", x_wins);
@@ -47,6 +47,9 @@ fn main() {
             println!("Ties  : {}", ties);
         }
     }
+
+    player_1.save_brain_to_file();
+    player_2.save_brain_to_file();
 
     fn play(board: &mut Board, player_1: &mut Bot, player_2: &mut Bot) -> GameResult {
         let mut current_player: &mut Bot = player_1;
