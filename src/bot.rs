@@ -39,11 +39,7 @@ impl Bot {
         };
 
         for current in memory {
-            if current.weight == 0 {
-                continue;
-            }
-
-            if random <= current.weight {
+            if current.weight > 0 && random <= current.weight {
                 return Some(current.position);
             }
 
@@ -93,7 +89,7 @@ impl Bot {
                 // If every entry is 0 reset them all
                 if game_state_entry
                     .iter()
-                    .fold(true, |val, entry| entry.weight == 0 && val)
+                    .fold(true, |val, entry| entry.weight <= 0 && val)
                 {
                     for entry in game_state_entry {
                         entry.weight = 3;
