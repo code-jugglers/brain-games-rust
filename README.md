@@ -19,8 +19,8 @@ cargo build --release
 ```
 
 ```BASH
-./target/release/brain_games play_x # play against the x bot
-./target/release/brain_games play_o # play against the o bot
+./target/release/brain_games play_x # play against X
+./target/release/brain_games play_o # play against O
 ```
 
 ## Example Results:
