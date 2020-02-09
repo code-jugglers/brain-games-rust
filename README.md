@@ -23,10 +23,6 @@ cargo build --release
 ./target/release/brain_games play_o # play against the o bot
 ```
 
-## Example Results:
-
-![Results Image](/images/game-results.png)
-
 ## Explanation:
 
 [![Alt text](https://img.youtube.com/vi/R9c-_neaxeU/0.jpg)](https://www.youtube.com/watch?v=R9c-_neaxeU)
