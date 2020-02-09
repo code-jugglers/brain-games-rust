@@ -7,7 +7,13 @@ What you should observe is that the bots will begin to tie the further along the
 After a round of training is compelte the bots will dump their "brains" into local files and use them fo continued rounds. You can also explore these files to see which moves a bot is most likesly to take for a given board state.
 
 ```BASH
-cargo run --release
+# build program
+cargo build --release
+```
+
+```BASH
+# run training program
+./target/release/brain_games train
 ```
 
 ## Example Results:

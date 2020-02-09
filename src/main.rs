@@ -5,8 +5,29 @@ mod bot;
 use board::{Board, GameResult};
 use board_space::BoardSpace;
 use bot::Bot;
+use std::env;
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() >= 2 {
+        let command = args[1].as_str();
+
+        match command {
+            "train" => train(),
+            "play" => play(),
+            _ => println!("command {} not found", command)
+        }
+    } else {
+        println!("no command found");
+    }
+}
+
+fn play() {
+    println!("play not implemented");
+}
+
+fn train() {
     const ITERATIONS: u32 = 3000000;
 
     let mut player_1 = Bot::new(BoardSpace::X, "brain_x.json");
