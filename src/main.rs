@@ -101,7 +101,7 @@ fn get_move_from_user_input() -> Move {
     let row = parsed_move.next().unwrap();
     let col = parsed_move.next().unwrap();
 
-    [row, col]
+    [col, row]
 }
 
 
