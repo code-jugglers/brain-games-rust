@@ -16,10 +16,10 @@ fn main() {
 
         match command {
             "train" => {
-                train(3000000, "brain_1.json", "brain_2.json");
+                train(3000000, "brain_x.json", "brain_o.json");
             },
-            "play_x" => play_bot(BoardSpace::X, "brain_1.json"),
-            "play_o" => play_bot(BoardSpace::O, "brain_2.json"),
+            "play_x" => play_bot(BoardSpace::X, "brain_x.json"),
+            "play_o" => play_bot(BoardSpace::O, "brain_o.json"),
             _ => println!("command {} not found", command)
         }
     } else {
