@@ -2,10 +2,11 @@ mod board;
 mod board_space;
 mod bot;
 
-use board::{Board, GameResult};
+use board::{Board, GameResult, Move};
 use board_space::BoardSpace;
 use bot::Bot;
 use std::env;
+use std::io;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -15,7 +16,8 @@ fn main() {
 
         match command {
             "train" => train(),
-            "play" => play(),
+            "play_x" => play_x(),
+            "play_o" => play_o(),
             _ => println!("command {} not found", command)
         }
     } else {
@@ -23,9 +25,85 @@ fn main() {
     }
 }
 
-fn play() {
-    println!("play not implemented");
+fn play_x() {
+    let mut board = Board::new();
+    let mut game_result: GameResult = GameResult::Incomplete;
+    let mut bots_turn = true;
+
+    let mut bot = Bot::new(BoardSpace::X, "brain_x.json");
+
+    while game_result == GameResult::Incomplete {
+        if bots_turn {
+            let m = bot
+                .determine_move(board.key(), board.spaces)
+                .unwrap();
+
+            board.make_move(bot.space, m[0], m[1]);
+
+            bots_turn = false;
+        } else {
+            let m = get_move_from_user_input();
+
+            board.make_move(BoardSpace::O, m[0], m[1]);
+
+            bots_turn = true;
+        }
+
+        println!("{}", board);
+
+        game_result = board.determine_winner();
+    }
+
+    println!("THE WINNER IS {:?}", game_result);
 }
+
+fn play_o() {
+    let mut board = Board::new();
+    let mut game_result: GameResult = GameResult::Incomplete;
+    let mut bots_turn = false;
+
+    let mut bot = Bot::new(BoardSpace::O, "brain_o.json");
+
+    println!("{}", board);
+
+    while game_result == GameResult::Incomplete {
+        if bots_turn {
+            let m = bot
+                .determine_move(board.key(), board.spaces)
+                .unwrap();
+
+            board.make_move(bot.space, m[0], m[1]);
+
+            bots_turn = false;
+        } else {
+            let m = get_move_from_user_input();
+
+            board.make_move(BoardSpace::X, m[0], m[1]);
+
+            bots_turn = true;
+        }
+
+        println!("{}", board);
+
+        game_result = board.determine_winner();
+    }
+
+    println!("THE WINNER IS {:?}", game_result);
+}
+
+fn get_move_from_user_input() -> Move {
+    println!("Enter your move:");
+
+    let mut m: String = String::new();
+    io::stdin().read_line(&mut m).expect("No move entered");
+
+    let mut parsed_move = m.split_whitespace().map(|m| m.parse::<usize>().unwrap());
+    let row = parsed_move.next().unwrap();
+    let col = parsed_move.next().unwrap();
+
+    [row, col]
+}
+
 
 fn train() {
     const ITERATIONS: u32 = 3000000;
