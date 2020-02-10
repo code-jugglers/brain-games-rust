@@ -18,7 +18,7 @@ fn main() {
             "train" => train(3000000, "brain_x.json", "brain_o.json"),
             "play_x" => play_bot(BoardSpace::X, "brain_x.json"),
             "play_o" => play_bot(BoardSpace::O, "brain_o.json"),
-            _ => println!("command {} not found", command)
+            _ => println!("command {} not found", command),
         }
     } else {
         println!("no command found");
@@ -43,9 +43,7 @@ fn play_bot(bot_space: BoardSpace, brain_path: &'static str) {
 
     while game_result == GameResult::Incomplete {
         if bots_turn {
-            let m = bot
-                .determine_move(board.key(), board.spaces)
-                .unwrap();
+            let m = bot.determine_move(&board).unwrap();
 
             board.make_move(bot.space, m[0], m[1]);
 
@@ -65,10 +63,15 @@ fn play_bot(bot_space: BoardSpace, brain_path: &'static str) {
         game_result = board.determine_winner();
     }
 
-    bot.learn(&board.moves, game_result == GameResult::X);
+    bot.learn(&board, game_result == GameResult::X);
     bot.save_brain_to_file();
 
-    println!("THE WINNER IS {:?}", game_result);
+    match game_result {
+        GameResult::X => println!("X WINS!"),
+        GameResult::O => println!("O WINS!"),
+        GameResult::Tie => println!("IT IS A TIE!"),
+        _ => {}
+    }
 }
 
 fn get_move_from_user_input() -> Move {
@@ -84,7 +87,6 @@ fn get_move_from_user_input() -> Move {
     [col, row]
 }
 
-
 fn train(iterations: u32, brain_1: &'static str, brain_2: &'static str) {
     let mut player_1 = Bot::new(BoardSpace::X, brain_1);
     let mut player_2 = Bot::new(BoardSpace::O, brain_2);
@@ -98,13 +100,13 @@ fn train(iterations: u32, brain_1: &'static str, brain_2: &'static str) {
         let winner = play(&mut board, &mut player_1, &mut player_2);
 
         if winner == GameResult::X {
-            player_1.learn(&board.moves, true);
-            player_2.learn(&board.moves, false);
+            player_1.learn(&board, true);
+            player_2.learn(&board, false);
 
             x_wins = x_wins + 1;
         } else if winner == GameResult::O {
-            player_1.learn(&board.moves, false);
-            player_2.learn(&board.moves, true);
+            player_1.learn(&board, false);
+            player_2.learn(&board, true);
 
             o_wins = o_wins + 1;
         } else {
@@ -135,9 +137,7 @@ fn train(iterations: u32, brain_1: &'static str, brain_2: &'static str) {
         let mut game_result: GameResult = GameResult::Incomplete;
 
         while game_result == GameResult::Incomplete {
-            let m = current_player
-                .determine_move(board.key(), board.spaces)
-                .unwrap();
+            let m = current_player.determine_move(&board).unwrap();
 
             board.make_move(current_player.space, m[0], m[1]);
 

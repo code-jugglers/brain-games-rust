@@ -1,5 +1,6 @@
-use crate::board::{BoardSpaces, Move, MoveEntry};
+use crate::board::{Board, Move};
 use crate::board_space::BoardSpace;
+
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -37,11 +38,11 @@ impl Bot {
         }
     }
 
-    pub fn determine_move(&mut self, board_key: String, board_spaces: BoardSpaces) -> Option<Move> {
+    pub fn determine_move(&mut self, board: &Board) -> Option<Move> {
         let memory = self
             .memory
-            .entry(board_key)
-            .or_insert(Bot::get_available_moves(board_spaces));
+            .entry(board.key())
+            .or_insert(Bot::get_default_moves(&board));
 
         let total = memory.iter().fold(0, |a, b| a + b.weight);
         let mut rng = rand::thread_rng();
@@ -62,25 +63,19 @@ impl Bot {
         None
     }
 
-    pub fn get_available_moves(board_spaces: BoardSpaces) -> Vec<BotMemoryEntry> {
-        let mut available_moves = Vec::new();
-
-        for (col_index, col) in board_spaces.iter().enumerate() {
-            for (cell_index, cell) in col.iter().enumerate() {
-                if cell == &BoardSpace::Empty {
-                    available_moves.push(BotMemoryEntry {
-                        position: [col_index, cell_index],
-                        weight: 3,
-                    });
-                }
-            }
-        }
-
-        available_moves
+    pub fn get_default_moves(board: &Board) -> Vec<BotMemoryEntry> {
+        board
+            .get_available_spaces()
+            .into_iter()
+            .map(|position| BotMemoryEntry {
+                position,
+                weight: 3,
+            })
+            .collect()
     }
 
-    pub fn learn(&mut self, moves: &Vec<MoveEntry>, did_win: bool) {
-        for (i, m) in moves.iter().enumerate() {
+    pub fn learn(&mut self, board: &Board, did_win: bool) {
+        for (i, m) in board.moves.iter().enumerate() {
             if m.space == self.space {
                 let game_state_entry = self.memory.entry(m.key.clone()).or_insert(Vec::new());
 
@@ -94,7 +89,7 @@ impl Bot {
                     .unwrap();
 
                 current_move.weight = if did_win {
-                    if i == moves.len() - 1 {
+                    if i == board.moves.len() - 1 {
                         // if this is the last move aka the winning move jack the weight way up
                         current_move.weight + 50
                     } else {
@@ -132,7 +127,7 @@ mod tests {
         let board = Board::new();
         let mut bot = Bot::new(BoardSpace::X, "bot_x.json");
 
-        let move_found: bool = match bot.determine_move(String::from(""), board.spaces) {
+        let move_found: bool = match bot.determine_move(&board) {
             Some(_) => true,
             None => false,
         };
@@ -149,7 +144,7 @@ mod tests {
 
         let mut bot = Bot::new(BoardSpace::X, "bot_x.json");
 
-        bot.learn(&board.moves, true);
+        bot.learn(&board, true);
 
         println!("{:?}", bot.memory);
     }

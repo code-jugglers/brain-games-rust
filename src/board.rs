@@ -125,14 +125,14 @@ impl Board {
         }
 
         // check if there are ANY open spaces
-        if self.get_empty_spaces().len() <= 0 {
+        if self.get_available_spaces().len() <= 0 {
             return GameResult::Tie;
         }
 
         GameResult::Incomplete
     }
 
-    pub fn get_empty_spaces(&self) -> Vec<Move> {
+    pub fn get_available_spaces(&self) -> Vec<Move> {
         let mut available_moves = Vec::new();
 
         for (col_index, col) in self.spaces.iter().enumerate() {
