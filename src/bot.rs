@@ -75,7 +75,7 @@ impl Bot {
     }
 
     pub fn learn(&mut self, board: &Board, did_win: bool) {
-        for (i, m) in board.moves.iter().enumerate() {
+        for m in &board.moves {
             if m.space == self.space {
                 let game_state_entry = self.memory.entry(m.key.clone()).or_insert(Vec::new());
 
@@ -89,12 +89,7 @@ impl Bot {
                     .unwrap();
 
                 current_move.weight = if did_win {
-                    if i == board.moves.len() - 1 {
-                        // if this is the last move aka the winning move jack the weight way up
-                        current_move.weight + 100
-                    } else {
-                        current_move.weight + 3
-                    }
+                    current_move.weight + 3
                 } else {
                     current_move.weight - 1
                 };

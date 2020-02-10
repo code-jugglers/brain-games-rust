@@ -63,10 +63,12 @@ fn play_bot(bot_space: BoardSpace, brain_path: &'static str) {
         game_result = board.determine_winner();
     }
 
-    if bot_space == BoardSpace::X {
-        bot.learn(&board, game_result == GameResult::X);
-    } else {
-        bot.learn(&board, game_result == GameResult::O);
+    if game_result != GameResult::Tie {
+        if bot_space == BoardSpace::X {
+            bot.learn(&board, game_result == GameResult::X);
+        } else {
+            bot.learn(&board, game_result == GameResult::O);
+        }
     }
 
     bot.save_brain_to_file();
@@ -93,8 +95,8 @@ fn get_move_from_user_input() -> Move {
 }
 
 fn train(iterations: u32, brain_1: &'static str, brain_2: &'static str) {
-    let mut player_1 = Bot::new(BoardSpace::X, brain_1);
-    let mut player_2 = Bot::new(BoardSpace::O, brain_2);
+    let mut player_x = Bot::new(BoardSpace::X, brain_1);
+    let mut player_o = Bot::new(BoardSpace::O, brain_2);
     let mut x_wins = 0;
     let mut o_wins = 0;
     let mut ties = 0;
@@ -102,16 +104,16 @@ fn train(iterations: u32, brain_1: &'static str, brain_2: &'static str) {
     for i in 0..iterations {
         let mut board = Board::new();
 
-        let winner = play(&mut board, &mut player_1, &mut player_2);
+        let winner = play(&mut board, &mut player_x, &mut player_o);
 
         if winner == GameResult::X {
-            player_1.learn(&board, true);
-            player_2.learn(&board, false);
+            player_x.learn(&board, true);
+            player_o.learn(&board, false);
 
             x_wins = x_wins + 1;
         } else if winner == GameResult::O {
-            player_1.learn(&board, false);
-            player_2.learn(&board, true);
+            player_x.learn(&board, false);
+            player_o.learn(&board, true);
 
             o_wins = o_wins + 1;
         } else {
@@ -133,12 +135,12 @@ fn train(iterations: u32, brain_1: &'static str, brain_2: &'static str) {
         }
     }
 
-    player_1.save_brain_to_file();
-    player_2.save_brain_to_file();
+    player_x.save_brain_to_file();
+    player_o.save_brain_to_file();
 
-    fn play(board: &mut Board, player_1: &mut Bot, player_2: &mut Bot) -> GameResult {
-        let mut current_player: &mut Bot = player_1;
-        let mut current_player_id: &str = "0";
+    fn play(board: &mut Board, player_x: &mut Bot, player_o: &mut Bot) -> GameResult {
+        let mut current_player: &mut Bot = player_x;
+        let mut current_player_id = "0";
         let mut game_result: GameResult = GameResult::Incomplete;
 
         while game_result == GameResult::Incomplete {
@@ -147,10 +149,10 @@ fn train(iterations: u32, brain_1: &'static str, brain_2: &'static str) {
             board.make_move(current_player.space, m[0], m[1]);
 
             if current_player_id == "0" {
-                current_player = player_2;
+                current_player = player_o;
                 current_player_id = "1";
             } else {
-                current_player = player_1;
+                current_player = player_x;
                 current_player_id = "0";
             }
 
