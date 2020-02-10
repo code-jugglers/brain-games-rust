@@ -63,7 +63,12 @@ fn play_bot(bot_space: BoardSpace, brain_path: &'static str) {
         game_result = board.determine_winner();
     }
 
-    bot.learn(&board, game_result == GameResult::X);
+    if bot_space == BoardSpace::X {
+        bot.learn(&board, game_result == GameResult::X);
+    } else {
+        bot.learn(&board, game_result == GameResult::O);
+    }
+
     bot.save_brain_to_file();
 
     match game_result {

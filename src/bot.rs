@@ -91,7 +91,7 @@ impl Bot {
                 current_move.weight = if did_win {
                     if i == board.moves.len() - 1 {
                         // if this is the last move aka the winning move jack the weight way up
-                        current_move.weight + 50
+                        current_move.weight + 100
                     } else {
                         current_move.weight + 3
                     }
