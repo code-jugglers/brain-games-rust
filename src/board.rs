@@ -1,165 +1,106 @@
-use crate::board_space::BoardSpace;
-use std::fmt::{Display, Formatter, Result};
-
-pub type BoardSpaces = [[BoardSpace; 3]; 3];
-pub type Move = [usize; 2];
-
-#[derive(Debug, PartialEq)]
-pub enum GameResult {
+#[derive(Debug, PartialEq, Copy, Clone)]
+pub enum BoardSpaceState {
+    Empty,
     X,
     O,
-    Tie,
-    Incomplete,
 }
 
-#[derive(Debug)]
-pub struct MoveEntry {
-    pub key: String,
-    pub space: BoardSpace,
-    pub position: Move,
-}
+pub type BoardState = [BoardSpaceState; 9];
 
-#[derive(Debug)]
 pub struct Board {
-    pub spaces: BoardSpaces,
-    pub moves: Vec<MoveEntry>,
+    pub spaces: BoardState,
 }
-impl Display for Board {
-    fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(f, "{}", self.to_string())
-    }
-}
+
 impl Board {
     pub fn new() -> Board {
         Board {
             spaces: [
-                [BoardSpace::Empty, BoardSpace::Empty, BoardSpace::Empty],
-                [BoardSpace::Empty, BoardSpace::Empty, BoardSpace::Empty],
-                [BoardSpace::Empty, BoardSpace::Empty, BoardSpace::Empty],
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
             ],
-            moves: vec![],
         }
     }
 
-    pub fn key(&self) -> String {
-        let mut result: String = String::new();
-
-        for col in &self.spaces {
-            for cell in col {
-                result = result + cell.to_string();
-            }
-        }
-
-        result
+    pub fn set_by_index(&mut self, i: usize, space: BoardSpaceState) {
+        self.spaces[i] = space;
     }
 
-    pub fn make_move(&mut self, space: BoardSpace, col: usize, row: usize) -> bool {
-        if self.spaces[col][row] == BoardSpace::Empty {
-            self.moves.push(MoveEntry {
-                space,
-                key: self.key(),
-                position: [col, row],
-            });
+    #[allow(dead_code)]
+    pub fn set(&mut self, row: usize, col: usize, space: BoardSpaceState) {
+        let index = self.get_index(row, col);
 
-            self.spaces[col][row] = space;
-
-            true
-        } else {
-            false
-        }
+        self.set_by_index(index, space);
     }
 
-    pub fn determine_winner(&self) -> GameResult {
-        // check columns
-        for col in 0..=2 {
-            let start = self.spaces[col][0];
+    pub fn moves_available(&self) -> bool {
+        self.spaces
+            .iter()
+            .any(|&space| space == BoardSpaceState::Empty)
+    }
 
-            if start != BoardSpace::Empty
-                && start == self.spaces[col][1]
-                && start == self.spaces[col][2]
-            {
-                return if self.spaces[col][0] == BoardSpace::X {
-                    GameResult::X
-                } else {
-                    GameResult::O
-                };
-            }
-        }
-
+    pub fn determine_winner(&self) -> Option<BoardSpaceState> {
         // check rows
-        for row in 0..=2 {
-            let start = self.spaces[0][row];
+        for row in 0..3 {
+            let check = self.check_spaces(
+                self.get_index(row, 0),
+                self.get_index(row, 1),
+                self.get_index(row, 2),
+            );
 
-            if start != BoardSpace::Empty
-                && start == self.spaces[1][row]
-                && start == self.spaces[2][row]
-            {
-                return if self.spaces[0][row] == BoardSpace::X {
-                    GameResult::X
-                } else {
-                    GameResult::O
-                };
+            if let Some(result) = check {
+                return Some(result);
             }
         }
 
-        // Check Diagonals Left -> Right
-        if self.spaces[0][0] == self.spaces[1][1] && self.spaces[0][0] == self.spaces[2][2] {
-            if self.spaces[0][0] != BoardSpace::Empty {
-                return if self.spaces[0][0] == BoardSpace::X {
-                    GameResult::X
-                } else {
-                    GameResult::O
-                };
+        // check cols
+        for col in 0..3 {
+            let check = self.check_spaces(
+                self.get_index(0, col),
+                self.get_index(1, col),
+                self.get_index(2, col),
+            );
+
+            if let Some(result) = check {
+                return Some(result);
             }
         }
 
-        // Checl Diagonals Right -> Left
-        if self.spaces[0][2] == self.spaces[1][1] && self.spaces[0][2] == self.spaces[2][0] {
-            if self.spaces[0][2] != BoardSpace::Empty {
-                return if self.spaces[0][2] == BoardSpace::X {
-                    GameResult::X
-                } else {
-                    GameResult::O
-                };
-            }
+        // check diag L -> R
+        if let Some(result) = self.check_spaces(0, 4, 8) {
+            return Some(result);
         }
 
-        // check if there are ANY open spaces
-        if self.get_available_spaces().len() <= 0 {
-            return GameResult::Tie;
+        // check diag R -> L
+        if let Some(result) = self.check_spaces(2, 4, 6) {
+            return Some(result);
         }
 
-        GameResult::Incomplete
+        None
     }
 
-    pub fn get_available_spaces(&self) -> Vec<Move> {
-        let mut available_moves = Vec::new();
+    fn check_spaces(&self, i_1: usize, i_2: usize, i_3: usize) -> Option<BoardSpaceState> {
+        let space_1 = self.spaces[i_1];
+        let space_2 = self.spaces[i_2];
+        let space_3 = self.spaces[i_3];
 
-        for (col_index, col) in self.spaces.iter().enumerate() {
-            for (cell_index, cell) in col.iter().enumerate() {
-                if cell == &BoardSpace::Empty {
-                    available_moves.push([col_index, cell_index]);
-                }
+        if space_1 == space_2 && space_2 == space_3 {
+            if space_1 != BoardSpaceState::Empty {
+                return Some(space_1);
             }
         }
 
-        available_moves
+        None
     }
 
-    pub fn to_string(&self) -> String {
-        let mut result: String = String::new();
-
-        result = result + "\n";
-
-        for col in &self.spaces {
-            for cell in col {
-                result = result + cell.to_string() + "   ";
-            }
-
-            result = result + "\n\n";
-        }
-
-        result
+    fn get_index(&self, row: usize, col: usize) -> usize {
+        row * 3 + col
     }
 }
 
@@ -168,174 +109,167 @@ mod tests {
     use super::*;
 
     #[test]
-    fn should_be_3x3() {
+    fn should_set_by_index() {
+        let mut board = Board::new();
+
+        board.set_by_index(0, BoardSpaceState::X);
+
+        assert_eq!(
+            board.spaces,
+            [
+                BoardSpaceState::X,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+            ]
+        )
+    }
+
+    #[test]
+    fn should_set_by_row_col() {
+        let mut board = Board::new();
+
+        board.set(0, 0, BoardSpaceState::X);
+        board.set(1, 1, BoardSpaceState::X);
+        board.set(2, 2, BoardSpaceState::X);
+
+        assert_eq!(
+            board.spaces,
+            [
+                BoardSpaceState::X,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::X,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::Empty,
+                BoardSpaceState::X,
+            ]
+        )
+    }
+
+    #[test]
+    fn should_check_if_moves_available_1() {
         let board = Board::new();
 
-        assert_eq!(board.spaces.len(), 3);
-        assert_eq!(board.spaces[0].len(), 3);
-        assert_eq!(board.spaces[1].len(), 3);
-        assert_eq!(board.spaces[2].len(), 3);
+        assert_eq!(board.moves_available(), true);
+
+        let mut board = Board::new();
+
+        for space in 0..9 {
+            board.set_by_index(space, BoardSpaceState::X);
+        }
+
+        assert_eq!(board.moves_available(), false);
     }
 
     #[test]
-    fn should_place_x_at_0_0() {
+    fn should_check_if_moves_available_2() {
         let mut board = Board::new();
 
-        assert_eq!(board.spaces[0][0], BoardSpace::Empty);
+        board.set_by_index(0, BoardSpaceState::X);
+        board.set_by_index(1, BoardSpaceState::O);
 
-        board.make_move(BoardSpace::X, 0, 0);
-
-        assert_eq!(board.spaces[0][0], BoardSpace::X);
+        assert_eq!(board.moves_available(), true);
     }
 
     #[test]
-    fn should_place_o_at_0_0() {
+    fn should_determine_row_winner_1() {
         let mut board = Board::new();
+        let row = 0;
 
-        assert_eq!(board.spaces[0][0], BoardSpace::Empty);
+        board.set(row, 0, BoardSpaceState::X);
+        board.set(row, 1, BoardSpaceState::X);
+        board.set(row, 2, BoardSpaceState::X);
 
-        board.make_move(BoardSpace::O, 0, 0);
-
-        assert_eq!(board.spaces[0][0], BoardSpace::O);
+        assert_eq!(board.determine_winner(), Some(BoardSpaceState::X));
     }
 
     #[test]
-    fn should_return_true_if_space_is_empty() {
+    fn should_determine_row_winner_2() {
         let mut board = Board::new();
+        let row = 1;
 
-        assert_eq!(board.make_move(BoardSpace::X, 0, 0), true);
+        board.set(row, 0, BoardSpaceState::X);
+        board.set(row, 1, BoardSpaceState::X);
+        board.set(row, 2, BoardSpaceState::X);
+
+        assert_eq!(board.determine_winner(), Some(BoardSpaceState::X));
     }
 
     #[test]
-    fn should_return_false_if_space_is_not_empty() {
+    fn should_determine_row_winner_3() {
         let mut board = Board::new();
+        let row = 2;
 
-        board.make_move(BoardSpace::X, 0, 0);
+        board.set(row, 0, BoardSpaceState::X);
+        board.set(row, 1, BoardSpaceState::X);
+        board.set(row, 2, BoardSpaceState::X);
 
-        assert_eq!(board.make_move(BoardSpace::X, 0, 0), false);
+        assert_eq!(board.determine_winner(), Some(BoardSpaceState::X));
     }
 
     #[test]
-    fn should_return_x_as_winner_for_col_1() {
+    fn should_determine_col_winner_1() {
         let mut board = Board::new();
+        let col = 0;
 
-        board.make_move(BoardSpace::X, 0, 0);
-        board.make_move(BoardSpace::X, 0, 1);
-        board.make_move(BoardSpace::X, 0, 2);
+        board.set(0, col, BoardSpaceState::O);
+        board.set(1, col, BoardSpaceState::O);
+        board.set(2, col, BoardSpaceState::O);
 
-        assert_eq!(board.determine_winner(), GameResult::X);
+        assert_eq!(board.determine_winner(), Some(BoardSpaceState::O));
     }
 
     #[test]
-    fn should_return_x_as_winner_for_col_2() {
+    fn should_determine_col_winner_2() {
         let mut board = Board::new();
+        let col = 1;
 
-        board.make_move(BoardSpace::X, 1, 0);
-        board.make_move(BoardSpace::X, 1, 1);
-        board.make_move(BoardSpace::X, 1, 2);
+        board.set(0, col, BoardSpaceState::O);
+        board.set(1, col, BoardSpaceState::O);
+        board.set(2, col, BoardSpaceState::O);
 
-        assert_eq!(board.determine_winner(), GameResult::X);
+        assert_eq!(board.determine_winner(), Some(BoardSpaceState::O));
     }
 
     #[test]
-    fn should_return_x_as_winner_for_col_3() {
+    fn should_determine_col_winner_3() {
         let mut board = Board::new();
+        let col = 2;
 
-        board.make_move(BoardSpace::X, 2, 0);
-        board.make_move(BoardSpace::X, 2, 1);
-        board.make_move(BoardSpace::X, 2, 2);
+        board.set(0, col, BoardSpaceState::O);
+        board.set(1, col, BoardSpaceState::O);
+        board.set(2, col, BoardSpaceState::O);
 
-        assert_eq!(board.determine_winner(), GameResult::X);
+        assert_eq!(board.determine_winner(), Some(BoardSpaceState::O));
     }
 
     #[test]
-    fn should_return_x_as_winner_for_row_1() {
+    fn should_determine_diag_winner_1() {
         let mut board = Board::new();
 
-        board.make_move(BoardSpace::X, 0, 0);
-        board.make_move(BoardSpace::X, 1, 0);
-        board.make_move(BoardSpace::X, 2, 0);
+        board.set(0, 0, BoardSpaceState::X);
+        board.set(1, 1, BoardSpaceState::X);
+        board.set(2, 2, BoardSpaceState::X);
 
-        assert_eq!(board.determine_winner(), GameResult::X);
+        assert_eq!(board.determine_winner(), Some(BoardSpaceState::X));
     }
 
     #[test]
-    fn should_return_x_as_winner_for_row_2() {
+    fn should_determine_diag_winner_2() {
         let mut board = Board::new();
 
-        board.make_move(BoardSpace::X, 0, 1);
-        board.make_move(BoardSpace::X, 1, 1);
-        board.make_move(BoardSpace::X, 2, 1);
+        board.set(0, 2, BoardSpaceState::O);
+        board.set(1, 1, BoardSpaceState::O);
+        board.set(2, 0, BoardSpaceState::O);
 
-        assert_eq!(board.determine_winner(), GameResult::X);
-    }
-
-    #[test]
-    fn should_return_o_as_winner_for_row_3() {
-        let mut board = Board::new();
-
-        board.make_move(BoardSpace::O, 0, 2);
-        board.make_move(BoardSpace::O, 1, 2);
-        board.make_move(BoardSpace::O, 2, 2);
-
-        assert_eq!(board.determine_winner(), GameResult::O);
-    }
-
-    #[test]
-    fn should_return_o_as_winner_for_diag_left_right() {
-        let mut board = Board::new();
-
-        board.make_move(BoardSpace::O, 0, 0);
-        board.make_move(BoardSpace::O, 1, 1);
-        board.make_move(BoardSpace::O, 2, 2);
-
-        assert_eq!(board.determine_winner(), GameResult::O);
-    }
-
-    #[test]
-    fn should_return_o_as_winner_for_diag_right_left() {
-        let mut board = Board::new();
-
-        board.make_move(BoardSpace::O, 0, 2);
-        board.make_move(BoardSpace::O, 1, 1);
-        board.make_move(BoardSpace::O, 2, 0);
-
-        assert_eq!(board.determine_winner(), GameResult::O);
-    }
-
-    #[test]
-    fn should_keep_track_of_moves() {
-        let mut board = Board::new();
-
-        board.make_move(BoardSpace::X, 0, 2);
-        board.make_move(BoardSpace::O, 1, 1);
-        board.make_move(BoardSpace::X, 2, 0);
-
-        assert_eq!(board.moves[0].key, String::from("---------"));
-        assert_eq!(board.moves[0].space, BoardSpace::X);
-        assert_eq!(board.moves[0].position[0], 0);
-        assert_eq!(board.moves[0].position[1], 2);
-
-        assert_eq!(board.moves[1].key, String::from("--X------"));
-        assert_eq!(board.moves[1].space, BoardSpace::O);
-        assert_eq!(board.moves[1].position[0], 1);
-        assert_eq!(board.moves[1].position[1], 1);
-
-        assert_eq!(board.moves[2].key, String::from("--X-O----"));
-        assert_eq!(board.moves[2].space, BoardSpace::X);
-        assert_eq!(board.moves[2].position[0], 2);
-        assert_eq!(board.moves[2].position[1], 0);
-    }
-
-    #[test]
-    fn should_return_incomplete() {
-        let mut board = Board::new();
-
-        board.make_move(BoardSpace::O, 0, 0);
-        board.make_move(BoardSpace::O, 2, 0);
-        board.make_move(BoardSpace::X, 2, 1);
-        board.make_move(BoardSpace::X, 2, 2);
-
-        assert_eq!(board.determine_winner(), GameResult::Incomplete);
+        assert_eq!(board.determine_winner(), Some(BoardSpaceState::O));
     }
 }

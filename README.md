@@ -9,18 +9,17 @@ After a round of training is complete the bots will dump their "brains" into loc
 Once the bots have been trained you can play against them. Enter moves by entering first the column and then the row separated by a space. For example the top left corner would be "0 0" and the center right would be "2 1".
 
 ```BASH
-# build program
-cargo build --release
+wasm-pack build --target web -d www/pkg
 ```
 
 ```BASH
 # run training program
-./target/release/brain_games train
+cargo run --release train
 ```
 
 ```BASH
-./target/release/brain_games play_x # play against X
-./target/release/brain_games play_o # play against O
+cargo run --release play_x # play against X
+cargo run --release play_o # play against O
 ```
 
 ## Explanation:
