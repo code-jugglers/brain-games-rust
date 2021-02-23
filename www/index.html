@@ -12,15 +12,24 @@
         font-family: monospace;
         font-size: 1.5rem;
       }
+
+      #train {
+        width: 200px;
+      }
+
+      #board button {
+        width: calc(200px / 3);
+        height: calc(200px / 3);
+      }
     </style>
 
-    <!-- <p>Games: <span id="total">0</span></p>
+    <section>
+      <p id="train_results"></p>
 
-    <div id="board"></div> -->
+      <button id="train">Train</button>
 
-    <p id="results"></p>
-
-    <button id="train">Train</button>
+      <div id="board"></div>
+    </section>
 
     <script type="module">
       import { main } from "./js/main.js";

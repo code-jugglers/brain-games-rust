@@ -43,30 +43,52 @@ impl Game {
         val
     }
 
+    pub fn reset_board(&mut self) {
+        self.board = Board::new();
+    }
+
+    pub fn make_move_x(&mut self, index: usize) {
+        self.board.set_by_index(index, BoardSpaceState::Player(Player::X));
+
+        let bot_move = self.player_o.determine_move(&self.board);
+
+        if let Some(m) = bot_move {
+            self.board
+                .set_by_index(m, BoardSpaceState::Player(Player::O));
+        }
+    }
+
     pub fn train(&mut self, game_count: u32) -> String {
         let mut x_win = 0;
         let mut o_win = 0;
         let mut tie = 0;
 
         for _ in 1..=game_count {
-           let res = self.play();
+            let res = self.play();
 
-           if let Some(res) = res {
-               if res == "X Wins!" {
-                   x_win+=1;
-               } else if res == "O Wins!" {
-                   o_win+=1;
-               } else {
-                   tie+=1;
-               }
-           }
+            if let Some(res) = res {
+                if res == "X Wins!" {
+                    x_win += 1;
+                } else if res == "O Wins!" {
+                    o_win += 1;
+                } else {
+                    tie += 1;
+                }
+            }
         }
 
-        "X: ".to_string() +  &x_win.to_string() + "\nO: " + &o_win.to_string() + "\nTIE: " + &tie.to_string()
+        self.reset_board();
+
+        "X: ".to_string()
+            + &x_win.to_string()
+            + "\nO: "
+            + &o_win.to_string()
+            + "\nTIE: "
+            + &tie.to_string()
     }
 
     pub fn play(&mut self) -> Option<String> {
-        self.board = Board::new();
+        self.reset_board();
 
         let mut current_player: BoardSpaceState = BoardSpaceState::Player(Player::X);
         let mut winner: Option<BoardSpaceState> = None;
@@ -99,13 +121,13 @@ impl Game {
                         self.player_o.learn(&self.board, false);
 
                         return Some(String::from("X Wins!"));
-                    },
+                    }
                     BoardSpaceState::Player(Player::O) => {
                         self.player_x.learn(&self.board, false);
                         self.player_o.learn(&self.board, true);
 
                         return Some(String::from("O Wins!"));
-                    },
+                    }
                     BoardSpaceState::Empty => {}
                 }
             } else if !moves_available {

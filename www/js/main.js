@@ -1,10 +1,11 @@
+const train_btn = document.getElementById("train");
+const results_container = document.getElementById("train_results");
+const board = document.getElementById("board");
+
 export async function main() {
   console.log("APP STARTING");
 
-  const train_btn = document.getElementById("train");
-  const results_container = document.getElementById("results");
-
-  const worker = await createGameWorker();
+  const worker = await GameWorker.create();
 
   train_btn.addEventListener("click", async () => {
     results_container.innerHTML = "Training...";
@@ -13,31 +14,103 @@ export async function main() {
 
     results_container.innerHTML = training_results.replaceAll("\n", "<br>");
   });
+
+  render(worker);
+
+  board.addEventListener("click", async (e) => {
+    const index = Number(e.target.dataset.index);
+
+    worker.play_x(index);
+
+    await render(worker);
+  });
 }
 
-function createGameWorker() {
-  return new Promise((resolve) => {
-    const worker = new Worker("js/game.worker.js", { type: "module" });
+async function render(worker) {
+  board.innerHTML = "";
 
-    worker.addEventListener("message", (msg) => {
-      if (msg.data.status === "READY") {
-        resolve({
-          train() {
-            return new Promise((resolve) => {
-              function listen(msg) {
-                if (msg.data.status === "TRAINING_COMPLETE") {
-                  worker.removeEventListener("message", listen);
+  const board_state = await worker.get_board();
 
-                  resolve(msg.data.message);
-                }
-              }
+  const res = board_state
+    .split("")
+    .map((space) => space.trim())
+    .filter((space) => !!space)
+    .map((space, i) => {
+      const el = document.createElement("button");
+      el.innerHTML = space;
+      el.dataset.index = i;
 
-              worker.addEventListener("message", listen);
-              worker.postMessage({ action: "TRAIN" });
-            });
-          },
-        });
-      }
+      return el;
     });
+
+  res.forEach((space, i) => {
+    if (i > 0 && i % 3 === 0) {
+      board.append(document.createElement("br"));
+    }
+
+    board.append(space);
   });
+}
+
+class GameWorker extends Worker {
+  static create() {
+    return new Promise((resolve) => {
+      const worker = new GameWorker();
+
+      worker.addEventListener("message", (msg) => {
+        if (msg.data.status === "READY") {
+          resolve(worker);
+        }
+      });
+    });
+  }
+
+  constructor() {
+    super("js/game.worker.js", { type: "module" });
+  }
+
+  train() {
+    return new Promise((resolve) => {
+      function listen(msg) {
+        if (msg.data.status === "TRAINING_COMPLETE") {
+          this.removeEventListener("message", listen);
+
+          resolve(msg.data.message);
+        }
+      }
+
+      this.addEventListener("message", listen);
+      this.postMessage({ action: "TRAIN" });
+    });
+  }
+
+  get_board() {
+    return new Promise((resolve) => {
+      function listen(msg) {
+        if (msg.data.status === "GET_BOARD_COMPLETE") {
+          this.removeEventListener("message", listen);
+
+          resolve(msg.data.message);
+        }
+      }
+
+      this.addEventListener("message", listen);
+      this.postMessage({ action: "GET_BOARD" });
+    });
+  }
+
+  play_x(index) {
+    return new Promise((resolve) => {
+      function listen(msg) {
+        if (msg.data.status === "PLAY_X_COMPLETE") {
+          this.removeEventListener("message", listen);
+
+          resolve(msg.data.message);
+        }
+      }
+
+      this.addEventListener("message", listen);
+      this.postMessage({ action: "PLAY_X", payload: index });
+    });
+  }
 }
