@@ -12,7 +12,10 @@ wasm-pack build --target web -d www/pkg
 ```
 
 Then open point a local server to www and play right away or train first.
-The wasm specific code is in "lib" and the standard rust program starts in "main" (will be updated soon to play and train)
+The wasm specific code is in "lib" and the standard rust program starts in "main" (will be updated soon to play and train).
+
+## NOTE
+currently only works in chrome or chromium since I am using the "module" type of web worker. Will work fine in others with some bundling.
 
 ## Explanation:
 
