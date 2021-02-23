@@ -12,16 +12,6 @@ Once the bots have been trained you can play against them. Enter moves by enteri
 wasm-pack build --target web -d www/pkg
 ```
 
-```BASH
-# run training program
-cargo run --release train
-```
-
-```BASH
-cargo run --release play_x # play against X
-cargo run --release play_o # play against O
-```
-
 ## Explanation:
 
 [![Alt text](https://img.youtube.com/vi/R9c-_neaxeU/0.jpg)](https://www.youtube.com/watch?v=R9c-_neaxeU)
