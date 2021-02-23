@@ -58,6 +58,17 @@ impl Game {
         }
     }
 
+    pub fn make_move_o(&mut self, index: usize) {
+        self.board.set_by_index(index, BoardSpaceState::Player(Player::O));
+
+        let bot_move = self.player_x.determine_move(&self.board);
+
+        if let Some(m) = bot_move {
+            self.board
+                .set_by_index(m, BoardSpaceState::Player(Player::X));
+        }
+    }
+
     pub fn train(&mut self, game_count: u32) -> String {
         let mut x_win = 0;
         let mut o_win = 0;

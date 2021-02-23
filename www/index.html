@@ -18,6 +18,10 @@
         width: 200px;
       }
 
+      xo-board {
+        display: block;
+      }
+
       #board button {
         width: calc(200px / 3);
         height: calc(200px / 3);
@@ -29,12 +33,14 @@
 
       <button id="train">Train</button>
 
-      <div id="board"></div>
+      <xo-board id="board"></xo-board>
 
       <button id="reset">Reset</button>
     </section>
 
     <script type="module">
+      import "./js/board.js";
+
       import { main } from "./js/main.js";
 
       main();
