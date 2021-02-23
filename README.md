@@ -12,6 +12,7 @@ wasm-pack build --target web -d www/pkg
 ```
 
 Then open point a local server to www and play right away or train first.
+The wasm specific code is in "lib" and the standard rust program starts in "main" (will be updated soon to play and train)
 
 ## Explanation:
 
