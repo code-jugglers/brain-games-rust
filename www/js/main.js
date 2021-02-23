@@ -13,9 +13,17 @@ export async function main() {
   await update();
 
   train_btn.addEventListener("click", async () => {
-    results_container.innerHTML = "Training...";
+    let timer = 0;
+
+    const interval = setInterval(() => {
+      timer++;
+
+      results_container.innerHTML = `Training... ${timer}s`;
+    }, 1000);
 
     const training_results = await worker.train();
+
+    clearInterval(interval);
 
     results_container.innerHTML = training_results.replaceAll("\n", "<br>");
   });

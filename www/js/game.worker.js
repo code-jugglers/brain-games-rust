@@ -14,7 +14,7 @@ export async function main() {
   self.onmessage = (msg) => {
     switch (msg.data.action) {
       case "TRAIN":
-        const message = game.train(1000000);
+        const message = game.train(3000000);
 
         self.postMessage({ status: "TRAINING_COMPLETE", message });
 
