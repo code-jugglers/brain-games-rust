@@ -1,4 +1,5 @@
 const train_btn = document.getElementById("train");
+const reset_btn = document.getElementById("reset");
 const results_container = document.getElementById("train_results");
 const board = document.getElementById("board");
 
@@ -13,6 +14,12 @@ export async function main() {
     const training_results = await worker.train();
 
     results_container.innerHTML = training_results.replaceAll("\n", "<br>");
+  });
+
+  reset_btn.addEventListener("click", async () => {
+    worker.reset_board();
+
+    await render(worker);
   });
 
   render(worker);
@@ -111,6 +118,21 @@ class GameWorker extends Worker {
 
       this.addEventListener("message", listen);
       this.postMessage({ action: "PLAY_X", payload: index });
+    });
+  }
+
+  reset_board() {
+    return new Promise((resolve) => {
+      function listen(msg) {
+        if (msg.data.status === "RESET_BOARD_COMPLETE") {
+          this.removeEventListener("message", listen);
+
+          resolve();
+        }
+      }
+
+      this.addEventListener("message", listen);
+      this.postMessage({ action: "RESET_BOARD" });
     });
   }
 }

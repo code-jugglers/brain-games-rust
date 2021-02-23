@@ -29,13 +29,18 @@ export async function main() {
         break;
 
       case "PLAY_X":
-        console.log("#######", msg.data);
-
         const index = msg.data.payload;
 
         game.make_move_x(index);
 
         self.postMessage({ status: "PLAY_X_COMPLETE" });
+
+        break;
+
+      case "RESET_BOARD":
+        game.reset_board();
+
+        self.postMessage({ status: "RESET_BOARD_COMPLETE" });
 
         break;
     }
