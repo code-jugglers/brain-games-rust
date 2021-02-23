@@ -1,27 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <style>
-        * {
-            font-family: monospace;
-            font-size: 1.5rem;
-        }
+      * {
+        font-family: monospace;
+        font-size: 1.5rem;
+      }
     </style>
 
-    <div id="board"></div>
+    <!-- <p>Games: <span id="total">0</span></p>
+
+    <div id="board"></div> -->
 
     <p id="results"></p>
-    
-    <script type="module">
-        import { main } from './js/main.js';
 
-        main();
+    <button id="train">Train</button>
+
+    <script type="module">
+      import { main } from "./js/main.js";
+
+      main();
     </script>
-</body>
+  </body>
 </html>

@@ -43,9 +43,31 @@ impl Game {
         val
     }
 
-    pub fn train() {}
+    pub fn train(&mut self, game_count: u32) -> String {
+        let mut x_win = 0;
+        let mut o_win = 0;
+        let mut tie = 0;
+
+        for _ in 1..=game_count {
+           let res = self.play();
+
+           if let Some(res) = res {
+               if res == "X Wins!" {
+                   x_win+=1;
+               } else if res == "O Wins!" {
+                   o_win+=1;
+               } else {
+                   tie+=1;
+               }
+           }
+        }
+
+        "X: ".to_string() +  &x_win.to_string() + "\nO: " + &o_win.to_string() + "\nTIE: " + &tie.to_string()
+    }
 
     pub fn play(&mut self) -> Option<String> {
+        self.board = Board::new();
+
         let mut current_player: BoardSpaceState = BoardSpaceState::Player(Player::X);
         let mut winner: Option<BoardSpaceState> = None;
         let mut moves_available = true;
@@ -72,8 +94,18 @@ impl Game {
 
             if let Some(res) = winner {
                 match res {
-                    BoardSpaceState::Player(Player::O) => return Some(String::from("O Wins!")),
-                    BoardSpaceState::Player(Player::X) => return Some(String::from("X Wins!")),
+                    BoardSpaceState::Player(Player::X) => {
+                        self.player_x.learn(&self.board, true);
+                        self.player_o.learn(&self.board, false);
+
+                        return Some(String::from("X Wins!"));
+                    },
+                    BoardSpaceState::Player(Player::O) => {
+                        self.player_x.learn(&self.board, false);
+                        self.player_o.learn(&self.board, true);
+
+                        return Some(String::from("O Wins!"));
+                    },
                     BoardSpaceState::Empty => {}
                 }
             } else if !moves_available {

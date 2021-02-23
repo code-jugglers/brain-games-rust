@@ -221,17 +221,17 @@ mod tests {
             [
                 Move {
                     index: 0,
-                    key: "X--------".to_string(),
+                    key: "---------".to_string(),
                     space: BoardSpaceState::Player(Player::X)
                 },
                 Move {
                     index: 4,
-                    key: "X---O----".to_string(),
+                    key: "X--------".to_string(),
                     space: BoardSpaceState::Player(Player::O)
                 },
                 Move {
                     index: 8,
-                    key: "X---O---X".to_string(),
+                    key: "X---O----".to_string(),
                     space: BoardSpaceState::Player(Player::X)
                 }
             ]

@@ -1,14 +1,43 @@
-import init, { Game } from '../pkg/brain_games.js';
-
 export async function main() {
-    await init();
+  console.log("APP STARTING");
 
-    const board_container = document.getElementById("board");
-    const results = document.getElementById("results");
+  const train_btn = document.getElementById("train");
+  const results_container = document.getElementById("results");
 
-    const game = Game.new();
-    const res = game.play();
+  const worker = await createGameWorker();
 
-    board_container.innerHTML = game.board().replaceAll('\n', '<br>');
-    results.innerHTML = res;
+  train_btn.addEventListener("click", async () => {
+    results_container.innerHTML = "Training...";
+
+    const training_results = await worker.train();
+
+    results_container.innerHTML = training_results.replaceAll("\n", "<br>");
+  });
+}
+
+function createGameWorker() {
+  return new Promise((resolve) => {
+    const worker = new Worker("js/game.worker.js", { type: "module" });
+
+    worker.addEventListener("message", (msg) => {
+      if (msg.data.status === "READY") {
+        resolve({
+          train() {
+            return new Promise((resolve) => {
+              function listen(msg) {
+                if (msg.data.status === "TRAINING_COMPLETE") {
+                  worker.removeEventListener("message", listen);
+
+                  resolve(msg.data.message);
+                }
+              }
+
+              worker.addEventListener("message", listen);
+              worker.postMessage({ action: "TRAIN" });
+            });
+          },
+        });
+      }
+    });
+  });
 }
