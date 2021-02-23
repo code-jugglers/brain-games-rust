@@ -1,4 +1,4 @@
-use crate::board::Board;
+use crate::board::{Board, BoardSpaceState};
 use rand::Rng;
 use std::collections::HashMap;
 
@@ -40,6 +40,27 @@ impl Bot {
         }
 
         None
+    }
+
+    pub fn learn(&mut self, board: &Board, did_win: bool) {
+        for m in &board.moves {
+            let key = m.key.clone();
+            let game_state_entry = self.memory.entry(key).or_insert(vec![]);
+
+            // this should be safe. If we panic here something went wrong as the bot was deciding moves
+            game_state_entry[m.index] = if did_win {
+                game_state_entry[m.index] + 3
+            } else {
+                game_state_entry[m.index] - 1
+            };
+
+            let all_0 = game_state_entry.iter().all(|&val| val <= 0);
+
+            // if all values are 0 remove it and let the bot start over
+            if all_0 {
+                self.memory.remove(&m.key);
+            }
+        }
     }
 
     pub fn get_default_moves(board: &Board) -> Vec<u32> {

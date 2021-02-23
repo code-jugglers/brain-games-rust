@@ -34,6 +34,18 @@ fn main() {
         if let Some(res) = winner {
             println!("Winner: {:?}", res);
             println!("{:?}", board.spaces);
+
+            match res {
+                BoardSpaceState::Player(Player::X) => {
+                    player_x.learn(&board, true);
+                    player_o.learn(&board, false);
+                }
+                BoardSpaceState::Player(Player::O) => {
+                    player_x.learn(&board, false);
+                    player_o.learn(&board, true);
+                }
+                BoardSpaceState::Empty => {}
+            }
         } else if !moves_available {
             println!("IT IS A TIE!");
             println!("{:?}", board.spaces);
