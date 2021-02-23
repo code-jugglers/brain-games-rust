@@ -53,16 +53,16 @@ impl Game {
         while moves_available && winner == None {
             if current_player == BoardSpaceState::Player(Player::X) {
                 let current_move = self.player_x.determine_move(&self.board);
+                let space_state = BoardSpaceState::Player(Player::X);
 
-                self.board
-                    .set_by_index(current_move.unwrap(), BoardSpaceState::Player(Player::X));
+                self.board.set_by_index(current_move.unwrap(), space_state);
 
                 current_player = BoardSpaceState::Player(Player::O);
             } else {
                 let current_move = self.player_o.determine_move(&self.board);
+                let space_state = BoardSpaceState::Player(Player::O);
 
-                self.board
-                    .set_by_index(current_move.unwrap(), BoardSpaceState::Player(Player::O));
+                self.board.set_by_index(current_move.unwrap(), space_state);
 
                 current_player = BoardSpaceState::Player(Player::X);
             }

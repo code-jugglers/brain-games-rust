@@ -68,7 +68,7 @@ impl Board {
         let mut available_moves = Vec::new();
 
         for (index, space) in self.spaces.iter().enumerate() {
-            if space != &BoardSpaceState::Empty {
+            if space == &BoardSpaceState::Empty {
                 available_moves.push(index);
             }
         }

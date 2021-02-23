@@ -22,6 +22,7 @@ impl Bot {
             .or_insert(Bot::get_default_moves(&board));
 
         let total = memory.iter().fold(0, |a, b| a + b);
+
         let mut rng = rand::thread_rng();
 
         let mut random = if total > 1 {
@@ -30,33 +31,17 @@ impl Bot {
             1
         };
 
-        for current in memory {
-            let val = current.clone();
-
-            if val > 0 && random <= val {
-                return Some(val as usize);
+        for (index, current) in memory.iter().enumerate() {
+            if *current > 0 && random <= *current {
+                return Some(index);
             }
 
-            random -= val;
+            random = random - *current;
         }
 
         None
     }
 
-    pub fn learn(&mut self, board: &Board, did_win: bool) {
-        for m in &board.moves {
-            let key = m.key.clone();
-            let game_state_entry = self.memory.entry(key).or_insert(vec![]);
-            let current_move = game_state_entry[m.index];
-
-            game_state_entry[m.index] = if did_win {
-                current_move + 3
-            } else {
-                current_move - 1
-            };
-        }
-    }
-    
     pub fn get_default_moves(board: &Board) -> Vec<u32> {
         let mut spaces = vec![0, 0, 0, 0, 0, 0, 0, 0, 0];
 
