@@ -23,8 +23,8 @@ impl Game {
     pub fn new() -> Game {
         Game {
             board: Board::new(),
-            player_x: Bot::new(),
-            player_o: Bot::new(),
+            player_x: Bot::new(BoardSpaceState::Player(Player::X)),
+            player_o: Bot::new(BoardSpaceState::Player(Player::O)),
         }
     }
 

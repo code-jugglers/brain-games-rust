@@ -6,8 +6,8 @@ use bot::Bot;
 
 fn main() {
     let mut board = Board::new();
-    let mut player_x = Bot::new();
-    let mut player_o = Bot::new();
+    let mut player_x = Bot::new(BoardSpaceState::Player(Player::X));
+    let mut player_o = Bot::new(BoardSpaceState::Player(Player::O));
 
     let mut current_player: BoardSpaceState = BoardSpaceState::Player(Player::X);
     let mut winner: Option<BoardSpaceState> = None;

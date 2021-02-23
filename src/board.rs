@@ -77,13 +77,13 @@ impl Board {
     }
 
     pub fn set_by_index(&mut self, index: usize, space: BoardSpaceState) {
-        self.spaces[index] = space;
-
         self.moves.push(Move {
             index,
             key: self.key(),
             space,
-        })
+        });
+
+        self.spaces[index] = space;
     }
 
     #[allow(dead_code)]

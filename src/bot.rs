@@ -6,12 +6,14 @@ pub type BotMemory = HashMap<String, Vec<u32>>;
 
 pub struct Bot {
     memory: BotMemory,
+    player: BoardSpaceState,
 }
 
 impl Bot {
-    pub fn new() -> Bot {
+    pub fn new(player: BoardSpaceState) -> Bot {
         Bot {
             memory: HashMap::new(),
+            player,
         }
     }
 
@@ -43,22 +45,28 @@ impl Bot {
     }
 
     pub fn learn(&mut self, board: &Board, did_win: bool) {
+        println!("{:?}", self.player);
+
         for m in &board.moves {
-            let key = m.key.clone();
-            let game_state_entry = self.memory.entry(key).or_insert(vec![]);
+            println!("{:?}", m);
 
-            // this should be safe. If we panic here something went wrong as the bot was deciding moves
-            game_state_entry[m.index] = if did_win {
-                game_state_entry[m.index] + 3
-            } else {
-                game_state_entry[m.index] - 1
-            };
+            if m.space == self.player {
+                let key = m.key.clone();
+                let game_state_entry = self.memory.entry(key).or_insert(vec![]);
 
-            let all_0 = game_state_entry.iter().all(|&val| val <= 0);
+                // this should be safe. If we panic here something went wrong as the bot was deciding moves
+                game_state_entry[m.index] = if did_win {
+                    game_state_entry[m.index] + 3
+                } else {
+                    game_state_entry[m.index] - 1
+                };
 
-            // if all values are 0 remove it and let the bot start over
-            if all_0 {
-                self.memory.remove(&m.key);
+                let all_0 = game_state_entry.iter().all(|&val| val <= 0);
+
+                // if all values are 0 remove it and let the bot start over
+                if all_0 {
+                    self.memory.remove(&m.key);
+                }
             }
         }
     }
