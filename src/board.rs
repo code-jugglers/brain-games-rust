@@ -1,14 +1,39 @@
+use std::fmt;
+
 #[derive(Debug, PartialEq, Copy, Clone)]
-pub enum BoardSpaceState {
-    Empty,
+pub enum Player {
     X,
     O,
 }
 
+#[derive(Debug, PartialEq, Copy, Clone)]
+pub enum BoardSpaceState {
+    Empty,
+    Player(Player),
+}
+
+impl fmt::Display for BoardSpaceState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            BoardSpaceState::Player(Player::X) => write!(f, "X"),
+            BoardSpaceState::Player(Player::O) => write!(f, "O"),
+            BoardSpaceState::Empty => write!(f, "-"),
+        }
+    }
+}
+
 pub type BoardState = [BoardSpaceState; 9];
+
+#[derive(Debug, PartialEq)]
+pub struct Move {
+    pub key: String,
+    pub space: BoardSpaceState,
+    pub index: usize,
+}
 
 pub struct Board {
     pub spaces: BoardState,
+    pub moves: Vec<Move>,
 }
 
 impl Board {
@@ -25,11 +50,40 @@ impl Board {
                 BoardSpaceState::Empty,
                 BoardSpaceState::Empty,
             ],
+            moves: vec![],
         }
     }
 
-    pub fn set_by_index(&mut self, i: usize, space: BoardSpaceState) {
-        self.spaces[i] = space;
+    pub fn key(&self) -> String {
+        let mut result = String::new();
+
+        for space in &self.spaces {
+            result = result + &space.to_string();
+        }
+
+        result
+    }
+
+    pub fn get_available_spaces(&self) -> Vec<usize> {
+        let mut available_moves = Vec::new();
+
+        for (index, space) in self.spaces.iter().enumerate() {
+            if space != &BoardSpaceState::Empty {
+                available_moves.push(index);
+            }
+        }
+
+        available_moves
+    }
+
+    pub fn set_by_index(&mut self, index: usize, space: BoardSpaceState) {
+        self.spaces[index] = space;
+
+        self.moves.push(Move {
+            index,
+            key: self.key(),
+            space,
+        })
     }
 
     #[allow(dead_code)]
@@ -112,12 +166,12 @@ mod tests {
     fn should_set_by_index() {
         let mut board = Board::new();
 
-        board.set_by_index(0, BoardSpaceState::X);
+        board.set_by_index(0, BoardSpaceState::Player(Player::X));
 
         assert_eq!(
             board.spaces,
             [
-                BoardSpaceState::X,
+                BoardSpaceState::Player(Player::X),
                 BoardSpaceState::Empty,
                 BoardSpaceState::Empty,
                 BoardSpaceState::Empty,
@@ -134,22 +188,52 @@ mod tests {
     fn should_set_by_row_col() {
         let mut board = Board::new();
 
-        board.set(0, 0, BoardSpaceState::X);
-        board.set(1, 1, BoardSpaceState::X);
-        board.set(2, 2, BoardSpaceState::X);
+        board.set(0, 0, BoardSpaceState::Player(Player::X));
+        board.set(1, 1, BoardSpaceState::Player(Player::X));
+        board.set(2, 2, BoardSpaceState::Player(Player::X));
 
         assert_eq!(
             board.spaces,
             [
-                BoardSpaceState::X,
+                BoardSpaceState::Player(Player::X),
                 BoardSpaceState::Empty,
                 BoardSpaceState::Empty,
                 BoardSpaceState::Empty,
-                BoardSpaceState::X,
+                BoardSpaceState::Player(Player::X),
                 BoardSpaceState::Empty,
                 BoardSpaceState::Empty,
                 BoardSpaceState::Empty,
-                BoardSpaceState::X,
+                BoardSpaceState::Player(Player::X),
+            ]
+        )
+    }
+
+    #[test]
+    fn should_track_past_moves() {
+        let mut board = Board::new();
+
+        board.set(0, 0, BoardSpaceState::Player(Player::X));
+        board.set(1, 1, BoardSpaceState::Player(Player::O));
+        board.set(2, 2, BoardSpaceState::Player(Player::X));
+
+        assert_eq!(
+            board.moves,
+            [
+                Move {
+                    index: 0,
+                    key: "X--------".to_string(),
+                    space: BoardSpaceState::Player(Player::X)
+                },
+                Move {
+                    index: 4,
+                    key: "X---O----".to_string(),
+                    space: BoardSpaceState::Player(Player::O)
+                },
+                Move {
+                    index: 8,
+                    key: "X---O---X".to_string(),
+                    space: BoardSpaceState::Player(Player::X)
+                }
             ]
         )
     }
@@ -163,7 +247,7 @@ mod tests {
         let mut board = Board::new();
 
         for space in 0..9 {
-            board.set_by_index(space, BoardSpaceState::X);
+            board.set_by_index(space, BoardSpaceState::Player(Player::X));
         }
 
         assert_eq!(board.moves_available(), false);
@@ -173,8 +257,8 @@ mod tests {
     fn should_check_if_moves_available_2() {
         let mut board = Board::new();
 
-        board.set_by_index(0, BoardSpaceState::X);
-        board.set_by_index(1, BoardSpaceState::O);
+        board.set_by_index(0, BoardSpaceState::Player(Player::X));
+        board.set_by_index(1, BoardSpaceState::Player(Player::O));
 
         assert_eq!(board.moves_available(), true);
     }
@@ -184,11 +268,14 @@ mod tests {
         let mut board = Board::new();
         let row = 0;
 
-        board.set(row, 0, BoardSpaceState::X);
-        board.set(row, 1, BoardSpaceState::X);
-        board.set(row, 2, BoardSpaceState::X);
+        board.set(row, 0, BoardSpaceState::Player(Player::X));
+        board.set(row, 1, BoardSpaceState::Player(Player::X));
+        board.set(row, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(board.determine_winner(), Some(BoardSpaceState::X));
+        assert_eq!(
+            board.determine_winner(),
+            Some(BoardSpaceState::Player(Player::X))
+        );
     }
 
     #[test]
@@ -196,11 +283,14 @@ mod tests {
         let mut board = Board::new();
         let row = 1;
 
-        board.set(row, 0, BoardSpaceState::X);
-        board.set(row, 1, BoardSpaceState::X);
-        board.set(row, 2, BoardSpaceState::X);
+        board.set(row, 0, BoardSpaceState::Player(Player::X));
+        board.set(row, 1, BoardSpaceState::Player(Player::X));
+        board.set(row, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(board.determine_winner(), Some(BoardSpaceState::X));
+        assert_eq!(
+            board.determine_winner(),
+            Some(BoardSpaceState::Player(Player::X))
+        );
     }
 
     #[test]
@@ -208,11 +298,14 @@ mod tests {
         let mut board = Board::new();
         let row = 2;
 
-        board.set(row, 0, BoardSpaceState::X);
-        board.set(row, 1, BoardSpaceState::X);
-        board.set(row, 2, BoardSpaceState::X);
+        board.set(row, 0, BoardSpaceState::Player(Player::X));
+        board.set(row, 1, BoardSpaceState::Player(Player::X));
+        board.set(row, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(board.determine_winner(), Some(BoardSpaceState::X));
+        assert_eq!(
+            board.determine_winner(),
+            Some(BoardSpaceState::Player(Player::X))
+        );
     }
 
     #[test]
@@ -220,11 +313,14 @@ mod tests {
         let mut board = Board::new();
         let col = 0;
 
-        board.set(0, col, BoardSpaceState::O);
-        board.set(1, col, BoardSpaceState::O);
-        board.set(2, col, BoardSpaceState::O);
+        board.set(0, col, BoardSpaceState::Player(Player::O));
+        board.set(1, col, BoardSpaceState::Player(Player::O));
+        board.set(2, col, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(board.determine_winner(), Some(BoardSpaceState::O));
+        assert_eq!(
+            board.determine_winner(),
+            Some(BoardSpaceState::Player(Player::O))
+        );
     }
 
     #[test]
@@ -232,11 +328,14 @@ mod tests {
         let mut board = Board::new();
         let col = 1;
 
-        board.set(0, col, BoardSpaceState::O);
-        board.set(1, col, BoardSpaceState::O);
-        board.set(2, col, BoardSpaceState::O);
+        board.set(0, col, BoardSpaceState::Player(Player::O));
+        board.set(1, col, BoardSpaceState::Player(Player::O));
+        board.set(2, col, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(board.determine_winner(), Some(BoardSpaceState::O));
+        assert_eq!(
+            board.determine_winner(),
+            Some(BoardSpaceState::Player(Player::O))
+        );
     }
 
     #[test]
@@ -244,32 +343,41 @@ mod tests {
         let mut board = Board::new();
         let col = 2;
 
-        board.set(0, col, BoardSpaceState::O);
-        board.set(1, col, BoardSpaceState::O);
-        board.set(2, col, BoardSpaceState::O);
+        board.set(0, col, BoardSpaceState::Player(Player::O));
+        board.set(1, col, BoardSpaceState::Player(Player::O));
+        board.set(2, col, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(board.determine_winner(), Some(BoardSpaceState::O));
+        assert_eq!(
+            board.determine_winner(),
+            Some(BoardSpaceState::Player(Player::O))
+        );
     }
 
     #[test]
     fn should_determine_diag_winner_1() {
         let mut board = Board::new();
 
-        board.set(0, 0, BoardSpaceState::X);
-        board.set(1, 1, BoardSpaceState::X);
-        board.set(2, 2, BoardSpaceState::X);
+        board.set(0, 0, BoardSpaceState::Player(Player::X));
+        board.set(1, 1, BoardSpaceState::Player(Player::X));
+        board.set(2, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(board.determine_winner(), Some(BoardSpaceState::X));
+        assert_eq!(
+            board.determine_winner(),
+            Some(BoardSpaceState::Player(Player::X))
+        );
     }
 
     #[test]
     fn should_determine_diag_winner_2() {
         let mut board = Board::new();
 
-        board.set(0, 2, BoardSpaceState::O);
-        board.set(1, 1, BoardSpaceState::O);
-        board.set(2, 0, BoardSpaceState::O);
+        board.set(0, 2, BoardSpaceState::Player(Player::O));
+        board.set(1, 1, BoardSpaceState::Player(Player::O));
+        board.set(2, 0, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(board.determine_winner(), Some(BoardSpaceState::O));
+        assert_eq!(
+            board.determine_winner(),
+            Some(BoardSpaceState::Player(Player::O))
+        );
     }
 }

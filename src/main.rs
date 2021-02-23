@@ -1,31 +1,31 @@
 mod board;
 mod bot;
 
-use board::{Board, BoardSpaceState};
+use board::{Board, BoardSpaceState, Player};
 use bot::Bot;
 
 fn main() {
     let mut board = Board::new();
-    let player_x = Bot::new();
-    let player_o = Bot::new();
+    let mut player_x = Bot::new();
+    let mut player_o = Bot::new();
 
-    let mut current_player: BoardSpaceState = BoardSpaceState::X;
+    let mut current_player: BoardSpaceState = BoardSpaceState::Player(Player::X);
     let mut winner: Option<BoardSpaceState> = None;
     let mut moves_available = true;
 
     while moves_available && winner == None {
-        if current_player == BoardSpaceState::X {
-            let current_move = player_x.determine_move(&board.spaces);
+        if current_player == BoardSpaceState::Player(Player::X) {
+            let current_move = player_x.determine_move(&board);
 
-            board.set_by_index(current_move.unwrap(), BoardSpaceState::X);
+            board.set_by_index(current_move.unwrap(), BoardSpaceState::Player(Player::X));
 
-            current_player = BoardSpaceState::O;
+            current_player = BoardSpaceState::Player(Player::O);
         } else {
-            let current_move = player_o.determine_move(&board.spaces);
+            let current_move = player_o.determine_move(&board);
 
-            board.set_by_index(current_move.unwrap(), BoardSpaceState::O);
+            board.set_by_index(current_move.unwrap(), BoardSpaceState::Player(Player::O));
 
-            current_player = BoardSpaceState::X;
+            current_player = BoardSpaceState::Player(Player::X);
         }
 
         winner = board.determine_winner();

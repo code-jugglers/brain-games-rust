@@ -1,9 +1,8 @@
 mod board;
 mod bot;
 
-use board::{Board, BoardSpaceState};
+use board::{Board, BoardSpaceState, Player};
 use bot::Bot;
-use std::fmt;
 use wasm_bindgen::prelude::*;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -11,16 +10,6 @@ use wasm_bindgen::prelude::*;
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
-impl fmt::Display for BoardSpaceState {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            BoardSpaceState::X => write!(f, "X"),
-            BoardSpaceState::O => write!(f, "O"),
-            BoardSpaceState::Empty => write!(f, "-"),
-        }
-    }
-}
 
 #[wasm_bindgen]
 pub struct Game {
@@ -57,25 +46,25 @@ impl Game {
     pub fn train() {}
 
     pub fn play(&mut self) -> Option<String> {
-        let mut current_player: BoardSpaceState = BoardSpaceState::X;
+        let mut current_player: BoardSpaceState = BoardSpaceState::Player(Player::X);
         let mut winner: Option<BoardSpaceState> = None;
         let mut moves_available = true;
 
         while moves_available && winner == None {
-            if current_player == BoardSpaceState::X {
-                let current_move = self.player_x.determine_move(&self.board.spaces);
+            if current_player == BoardSpaceState::Player(Player::X) {
+                let current_move = self.player_x.determine_move(&self.board);
 
                 self.board
-                    .set_by_index(current_move.unwrap(), BoardSpaceState::X);
+                    .set_by_index(current_move.unwrap(), BoardSpaceState::Player(Player::X));
 
-                current_player = BoardSpaceState::O;
+                current_player = BoardSpaceState::Player(Player::O);
             } else {
-                let current_move = self.player_o.determine_move(&self.board.spaces);
+                let current_move = self.player_o.determine_move(&self.board);
 
                 self.board
-                    .set_by_index(current_move.unwrap(), BoardSpaceState::O);
+                    .set_by_index(current_move.unwrap(), BoardSpaceState::Player(Player::O));
 
-                current_player = BoardSpaceState::X;
+                current_player = BoardSpaceState::Player(Player::X);
             }
 
             winner = self.board.determine_winner();
@@ -83,8 +72,8 @@ impl Game {
 
             if let Some(res) = winner {
                 match res {
-                    BoardSpaceState::O => return Some(String::from("O Wins!")),
-                    BoardSpaceState::X => return Some(String::from("X Wins!")),
+                    BoardSpaceState::Player(Player::O) => return Some(String::from("O Wins!")),
+                    BoardSpaceState::Player(Player::X) => return Some(String::from("X Wins!")),
                     BoardSpaceState::Empty => {}
                 }
             } else if !moves_available {
