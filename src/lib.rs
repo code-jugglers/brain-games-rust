@@ -78,9 +78,9 @@ impl Game {
                     tie += 1;
                 }
             }
-        }
 
-        self.reset_board();
+            self.reset_board();
+        }
 
         "X: ".to_string()
             + &x_win.to_string()
@@ -91,8 +91,6 @@ impl Game {
     }
 
     pub fn play(&mut self) -> Option<String> {
-        self.reset_board();
-
         let result = play::play(&mut self.board, &mut self.player_x, &mut self.player_o);
 
         if let Some(res) = result {

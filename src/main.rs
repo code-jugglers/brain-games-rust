@@ -10,8 +10,27 @@ fn main() {
     let mut player_x = Bot::new(BoardSpaceState::Player(Player::X));
     let mut player_o = Bot::new(BoardSpaceState::Player(Player::O));
 
-    let result = play::play(&mut board, &mut player_x, &mut player_o);
+    let mut x_win = 0;
+    let mut o_win = 0;
+    let mut tie = 0;
 
-    println!("Winner: {:?}", result);
-    println!("{:?}", board.spaces);
+    for _ in 1..=3000000 {
+        let res = play::play(&mut board, &mut player_x, &mut player_o);
+
+        if let Some(res) = res {
+            if res == play::GameResult::XWin {
+                x_win += 1;
+            } else if res == play::GameResult::OWin {
+                o_win += 1;
+            } else {
+                tie += 1;
+            }
+        }
+
+        board = Board::new();
+    }
+
+    println!("X: {:?}", x_win);
+    println!("O: {:?}", o_win);
+    println!("TIE: {:?}", tie);
 }

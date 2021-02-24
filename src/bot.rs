@@ -53,8 +53,10 @@ impl Bot {
                 // this should be safe. If we panic here something went wrong as the bot was deciding moves
                 game_state_entry[m.index] = if did_win {
                     game_state_entry[m.index] + 3
-                } else {
+                } else if game_state_entry[m.index] > 0 {
                     game_state_entry[m.index] - 1
+                } else {
+                    0
                 };
 
                 let all_0 = game_state_entry.iter().all(|&val| val <= 0);
