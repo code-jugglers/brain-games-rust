@@ -70,9 +70,9 @@ impl Game {
             let res = self.play();
 
             if let Some(res) = res {
-                if res == "X Wins!" {
+                if res == "X" {
                     x_win += 1;
-                } else if res == "O Wins!" {
+                } else if res == "O" {
                     o_win += 1;
                 } else {
                     tie += 1;

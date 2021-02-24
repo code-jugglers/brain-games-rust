@@ -2,7 +2,7 @@ use crate::board::{Board, BoardSpaceState, Player};
 use crate::bot::Bot;
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum GameResult {
     XWin,
     OWin,
