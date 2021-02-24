@@ -1,8 +1,6 @@
 import { html, render } from "https://unpkg.com/lit-html?module";
 
 export class Board extends HTMLElement {
-  board;
-
   set board_state(board_state) {
     this.board = board_state.split("");
 
@@ -18,7 +16,11 @@ export class Board extends HTMLElement {
           render.push(html`<br />`);
         }
 
-        render.push(html`<button data-index=${i}>${space}</button>`);
+        render.push(
+          html`<button data-index=${i} .disabled=${space !== "-"}>
+            ${space}
+          </button>`
+        );
 
         return render;
       })}
