@@ -4,10 +4,7 @@ export class Board extends HTMLElement {
   board;
 
   set board_state(board_state) {
-    this.board = board_state
-      .split("")
-      .map((space) => space.trim())
-      .filter((space) => !!space);
+    this.board = board_state.split("");
 
     this.render();
   }

@@ -30,18 +30,7 @@ impl Game {
     }
 
     pub fn board(&self) -> String {
-        let mut val = String::new();
-
-        for (i, space) in self.board.spaces.iter().enumerate() {
-            if i > 0 && i % 3 == 0 {
-                val += &String::from("\n")
-            }
-
-            val += &space.to_string();
-            val += &String::from(" ");
-        }
-
-        val
+        self.board.key()
     }
 
     pub fn reset_board(&mut self) {
