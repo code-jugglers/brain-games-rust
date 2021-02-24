@@ -1,5 +1,6 @@
 mod board;
 mod bot;
+mod play;
 
 use board::{Board, BoardSpaceState, Player};
 use bot::Bot;
@@ -48,7 +49,8 @@ impl Game {
     }
 
     pub fn make_move_x(&mut self, index: usize) {
-        self.board.set_by_index(index, BoardSpaceState::Player(Player::X));
+        self.board
+            .set_by_index(index, BoardSpaceState::Player(Player::X));
 
         let bot_move = self.player_o.determine_move(&self.board);
 
@@ -59,7 +61,8 @@ impl Game {
     }
 
     pub fn make_move_o(&mut self, index: usize) {
-        self.board.set_by_index(index, BoardSpaceState::Player(Player::O));
+        self.board
+            .set_by_index(index, BoardSpaceState::Player(Player::O));
 
         let bot_move = self.player_x.determine_move(&self.board);
 
@@ -101,49 +104,10 @@ impl Game {
     pub fn play(&mut self) -> Option<String> {
         self.reset_board();
 
-        let mut current_player: BoardSpaceState = BoardSpaceState::Player(Player::X);
-        let mut winner: Option<BoardSpaceState> = None;
-        let mut moves_available = true;
+        let result = play::play(&mut self.board, &mut self.player_x, &mut self.player_o);
 
-        while moves_available && winner == None {
-            if current_player == BoardSpaceState::Player(Player::X) {
-                let current_move = self.player_x.determine_move(&self.board);
-                let space_state = BoardSpaceState::Player(Player::X);
-
-                self.board.set_by_index(current_move.unwrap(), space_state);
-
-                current_player = BoardSpaceState::Player(Player::O);
-            } else {
-                let current_move = self.player_o.determine_move(&self.board);
-                let space_state = BoardSpaceState::Player(Player::O);
-
-                self.board.set_by_index(current_move.unwrap(), space_state);
-
-                current_player = BoardSpaceState::Player(Player::X);
-            }
-
-            winner = self.board.determine_winner();
-            moves_available = self.board.moves_available();
-
-            if let Some(res) = winner {
-                match res {
-                    BoardSpaceState::Player(Player::X) => {
-                        self.player_x.learn(&self.board, true);
-                        self.player_o.learn(&self.board, false);
-
-                        return Some(String::from("X Wins!"));
-                    }
-                    BoardSpaceState::Player(Player::O) => {
-                        self.player_x.learn(&self.board, false);
-                        self.player_o.learn(&self.board, true);
-
-                        return Some(String::from("O Wins!"));
-                    }
-                    BoardSpaceState::Empty => {}
-                }
-            } else if !moves_available {
-                return Some(String::from("TIE!"));
-            }
+        if let Some(res) = result {
+            return Some(res.to_string());
         }
 
         None

@@ -45,11 +45,7 @@ impl Bot {
     }
 
     pub fn learn(&mut self, board: &Board, did_win: bool) {
-        println!("{:?}", self.player);
-
         for m in &board.moves {
-            println!("{:?}", m);
-
             if m.space == self.player {
                 let key = m.key.clone();
                 let game_state_entry = self.memory.entry(key).or_insert(vec![]);

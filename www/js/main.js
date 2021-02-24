@@ -15,6 +15,8 @@ export async function main() {
   train_btn.addEventListener("click", async () => {
     let timer = 0;
 
+    results_container.innerHTML = `Training... ${timer}s`;
+
     const interval = setInterval(() => {
       timer++;
 
