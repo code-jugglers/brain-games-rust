@@ -45,3 +45,17 @@ Given this game, the bot is just as likely to take index 1 as index 0. The end r
 | | |X|
 |X|O|X|
 | | |O|
+
+Could be follow by this:
+| | | |
+|-|-|-|
+| |O|X|
+|X|O|X|
+| | |O|
+
+Or this:
+| | | |
+|-|-|-|
+|O| |X|
+|X|O|X|
+| | |O|
