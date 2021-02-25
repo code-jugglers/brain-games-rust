@@ -30,6 +30,8 @@ currently only works in chrome or chromium since I am using the "module" type of
 
 ## Explanation:
 
+The implementation here isn't machine learning as we would think about it with neural networks and the like. It is very brute force and isn't something that would scale much past something like "tic tac toe" since it requires the bot to be aware of all potential game states. This bot is an emulation of the match box "computer" described in the video below. A fun exercise and nothing more.
+
 [![Alt text](https://img.youtube.com/vi/R9c-_neaxeU/0.jpg)](https://www.youtube.com/watch?v=R9c-_neaxeU)
 
 ## Observations
