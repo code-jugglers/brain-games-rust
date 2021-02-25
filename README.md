@@ -54,14 +54,14 @@ Given this game, the bot is just as likely to take index 1 as index 0. The end r
 |X|O|X|
 | | |O|
 
-Could be follow by this:
+this move:
 | | | |
 |-|-|-|
 | |O|X|
 |X|O|X|
 | | |O|
 
-Or this:
+is seen to be just as good as this one:
 | | | |
 |-|-|-|
 |O| |X|
