@@ -31,3 +31,17 @@ currently only works in chrome or chromium since I am using the "module" type of
 ## Explanation:
 
 [![Alt text](https://img.youtube.com/vi/R9c-_neaxeU/0.jpg)](https://www.youtube.com/watch?v=R9c-_neaxeU)
+
+## Observations
+
+The bots don't generally find the optimal solution. They will sometimes block instead of going for the win but if and only if they will win at the end. A win is a win.
+
+Ex. (Bot is O)
+
+Given this game, the bot is just as likely to take index 1 as index 0. The end result is the same but the bot "plays with" it's oponent. Could be improved by boosting winning moves.
+
+| | | |
+|-|-|-|
+| | |X|
+|X|O|X|
+| | |O|
