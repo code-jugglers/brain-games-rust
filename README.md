@@ -1,7 +1,7 @@
 # "Brain" games in rust
 
 A simple tic tac toe bot.
-The program that trains two "dumb" bots over 3,000,000 games, one playing Xs and one playing Os.
+The program that trains two "dumb" bots over 1,000,000 games, one playing Xs and one playing Os.
 What you should observe is that the bots will begin to tie the further along they get until neither bot can gain an advantage.
 
 The training portion of the program is written in rust and compiled with wasm-pack.
