@@ -10,7 +10,7 @@ Those output files are loading via a Web Worker to keep the training loop off of
 ## Running in browser
 
 ```BASH
-wasm-pack build --target web -d www/pkg
+./build_wasm
 ```
 
 Then open point a local server to www and play right away or train first.
