@@ -13,7 +13,7 @@ Those output files are loading via a Web Worker to keep the training loop off of
 ./build_wasm
 ```
 
-Then open point a local server to www and play right away or train first.
+Then point a local server to www and play right away or train first.
 The wasm specific code is in "lib" and the standard rust program starts in "main" (will be updated soon to play and train).
 
 ## Running native
