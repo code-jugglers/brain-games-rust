@@ -51,6 +51,7 @@ impl Bot {
                 let game_state_entry = self.memory.entry(key).or_insert(vec![]);
 
                 // this should be safe. If we panic here something went wrong as the bot was deciding moves
+                // 0 out if loosing move
                 game_state_entry[m.index] = if did_win {
                     game_state_entry[m.index] + 3
                 } else if game_state_entry[m.index] > 0 {
@@ -73,7 +74,7 @@ impl Bot {
         let mut spaces = vec![0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         for available_space in board.get_available_spaces() {
-            spaces[available_space] = 3
+            spaces[available_space] = 10
         }
 
         spaces
