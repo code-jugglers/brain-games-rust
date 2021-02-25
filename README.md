@@ -46,7 +46,7 @@ They will sometimes block instead of going for the win but if and only if they w
 
 Ex. (Bot is O)
 
-Given this game, the bot is just as likely to take index 1 as index 0. The end result is the same but the bot "plays with" it's oponent. Could be improved by boosting winning moves.
+Given this game, the bot is just as likely to take index 1 or 7 as index 0. The end result is the same but the bot "plays with" it's oponent. Could be improved by boosting winning moves.
 
 | | | |
 |-|-|-|
