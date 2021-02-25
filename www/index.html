@@ -13,18 +13,17 @@
         font-size: 1.5rem;
       }
 
-      #train,
-      #reset {
-        width: 300px;
-      }
-
       xo-board {
-        display: block;
-        width: 300px;
+        display: flex;
+        max-width: 400px;
+        flex-wrap: wrap;
       }
 
       button {
         cursor: pointer;
+        display: block;
+        max-width: 400px;
+        width: 100%;
       }
 
       button:disabled {
@@ -32,9 +31,23 @@
       }
 
       #board button {
-        width: calc(300px / 3);
+        background: none;
+        border: none;
+        flex: 0 0 33.333333%;
         height: calc(300px / 3);
       }
+
+      #board button:nth-child(2n) {
+        border-left: solid 1px gray;
+        border-right: solid 1px gray;
+      } 
+
+      #board button:nth-child(5),
+      #board button:nth-child(6),
+      #board button:nth-child(7) {
+        border-top: solid 1px gray;
+        border-bottom: solid 1px gray;
+      } 
     </style>
 
     <section>

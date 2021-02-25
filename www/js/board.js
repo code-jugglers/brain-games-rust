@@ -7,6 +7,12 @@ export class Board extends HTMLElement {
     this.render();
   }
 
+  set disabled(val) {
+    this._disabled = val;
+
+    this.render();
+  }
+
   template() {
     return html`
       ${this.board.map((space, i) => {
@@ -17,9 +23,11 @@ export class Board extends HTMLElement {
         }
 
         render.push(
-          html`<button data-index=${i} .disabled=${space !== "-"}>
-            ${space}
-          </button>`
+          html`
+            <button data-index=${i} .disabled=${space !== "-" || this._disabled}>
+              ${space}
+            </button>
+          `
         );
 
         return render;

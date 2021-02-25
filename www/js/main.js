@@ -16,6 +16,9 @@ export async function main() {
     let timer = 0;
 
     results_container.innerHTML = `Training... ${timer}s`;
+    train_btn.disabled = true;
+    reset_btn.disabled = true;
+    board.disabled = true;
 
     const interval = setInterval(() => {
       timer++;
@@ -28,6 +31,9 @@ export async function main() {
     clearInterval(interval);
 
     results_container.innerHTML = training_results.replaceAll("\n", "<br>");
+    train_btn.disabled = false;
+    reset_btn.disabled = false;
+    board.disabled = false;
   });
 
   reset_btn.addEventListener("click", async () => {
