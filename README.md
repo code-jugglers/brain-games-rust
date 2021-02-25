@@ -34,6 +34,13 @@ currently only works in chrome or chromium since I am using the "module" type of
 
 ## Observations
 
+When training the bot the first time (1000000) games. You will generally end up with ~65000 wins for Xs and ~35000 for Os with the rest being ties.
+If you train them a seecond time those numbers drop to just a couple hundred each and eventually trailing off with neither X or O being able to win any games.
+Since at the heart the decisions are "random" there is still a chance that either bot could loose a game but it is very unlikely.
+
+The starting value for each potential move impacts the numbers above a significant amount as well as how well the bot will play against a person.
+If the number is to low (3) then it is possible for a play to throw non obvious moves at the bot and it will fail to play optimally. If that number is to high (100) then it takes significantly MORE games then 1000000 to teach the bot to play well. The current values sits at 10.
+
 The bots don't generally find the optimal solution. They will sometimes block instead of going for the win but if and only if they will win at the end. A win is a win.
 
 Ex. (Bot is O)
