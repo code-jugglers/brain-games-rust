@@ -59,3 +59,5 @@ Or this:
 |O| |X|
 |X|O|X|
 | | |O|
+
+To the bot both moves are equally good since they both lead to a winning result.
