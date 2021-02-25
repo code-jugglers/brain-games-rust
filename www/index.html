@@ -30,6 +30,12 @@
         cursor: not-allowed;
       }
 
+      .button-container {
+        display: flex;
+        max-width: 400px;
+        margin-bottom: 2rem;
+      }
+
       #board button:disabled {
         color: #000000;
       }
@@ -44,24 +50,25 @@
       #board button:nth-child(2n) {
         border-left: solid 1px gray;
         border-right: solid 1px gray;
-      } 
+      }
 
       #board button:nth-child(5),
       #board button:nth-child(6),
       #board button:nth-child(7) {
         border-top: solid 1px gray;
         border-bottom: solid 1px gray;
-      } 
+      }
     </style>
 
     <section>
       <p id="train_results"></p>
 
-      <button id="train">Train</button>
+      <div class="button-container">
+        <button id="train">Train</button>
+        <button id="reset">Reset</button>
+      </div>
 
       <xo-board id="board"></xo-board>
-
-      <button id="reset">Reset</button>
     </section>
 
     <script type="module">
