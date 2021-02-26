@@ -39,6 +39,8 @@ The implementation here isn't machine learning as we would think about it with n
 When training the bot the first time (1000000) games. You will generally end up with ~65000 wins for Xs and ~35000 for Os with the rest being ties.
 If you train them a seecond time those numbers drop to just a couple hundred each and eventually trailing off with neither X or O being able to win any games. Since the decisions are "random" there is still a chance that either bot could loose a game but it is very unlikely.
 
+The bot CAN be tricked by playing odd or obviously bad moves.
+
 By tweaking a few parameters and updating a bit of the bot's "learn" function we can change how we teach the bot the game. For example, in tic tac toe, if two players play optimal games, the game will always end in a tie. If ending in a tie is ultimately the end result, what would happen if you told the bot that a tie was as good as a win? Is there a measureably difference between a bot that is taught to win vs a bot that is taught not to loose?
 
 The starting value for each potential move impacts the numbers above significantly and affects how well the bot will play against a person.
