@@ -5,8 +5,8 @@ main().then(() => {
 });
 
 export async function main() {
-  console.log('test');
-  
+  console.log("test");
+
   await init();
 
   const game = Game.new(); // initialize game
@@ -16,9 +16,10 @@ export async function main() {
   self.onmessage = (msg) => {
     switch (msg.data.action) {
       case "TRAIN":
-        const message = game.train(1000000);
-
-        self.postMessage({ status: "TRAINING_COMPLETE", message });
+        self.postMessage({
+          status: "TRAINING_COMPLETE",
+          message: game.train(1000000),
+        });
 
         break;
 
@@ -32,9 +33,11 @@ export async function main() {
 
       case "PLAY_X":
         const index = msg.data.payload;
-        const message = game.make_move_x(index);
 
-        self.postMessage({ status: "PLAY_X_COMPLETE", message });
+        self.postMessage({
+          status: "PLAY_X_COMPLETE",
+          message: game.make_move_x(index),
+        });
 
         break;
 

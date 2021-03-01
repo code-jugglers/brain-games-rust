@@ -3,6 +3,7 @@ import { GameWorker } from "./game.js";
 const train_btn = document.getElementById("train");
 const reset_btn = document.getElementById("reset");
 const results_container = document.getElementById("train_results");
+const game_results_container = document.getElementById("game_results");
 const board = document.getElementById("board");
 
 export async function main() {
@@ -40,16 +41,24 @@ export async function main() {
     await worker.reset_board();
 
     await update();
+
+    board.disabled = false;
+    game_results_container.innerHTML = "";
   });
 
   board.addEventListener("click", async (e) => {
     const index = Number(e.target.dataset.index);
 
-    const res = await worker.play_x(index);
-
-    console.log(res);
+    const winner = await worker.play_x(index);
 
     await update();
+
+    if (winner) {
+      board.disabled = true;
+
+      game_results_container.innerHTML =
+        winner === "TIE" ? `It is a tie!` : `${winner} wins!`;
+    }
   });
 
   async function update() {
