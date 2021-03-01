@@ -5,8 +5,6 @@ main().then(() => {
 });
 
 export async function main() {
-  console.log("test");
-
   await init();
 
   const game = Game.new(); // initialize game
