@@ -2,7 +2,7 @@ mod board;
 mod bot;
 mod play;
 
-use board::{Board, BoardSpaceState, Player};
+use board::{Board, BoardSpaceState, GameResult, Player};
 use bot::Bot;
 
 fn main() {
@@ -14,13 +14,13 @@ fn main() {
     let mut o_win = 0;
     let mut tie = 0;
 
-    for _ in 1..=3000000 {
+    for _ in 1..=100000 {
         let res = play::play(&mut board, &mut player_x, &mut player_o);
 
         if let Some(res) = res {
-            if res == play::GameResult::XWin {
+            if res == GameResult::XWin {
                 x_win += 1;
-            } else if res == play::GameResult::OWin {
+            } else if res == GameResult::OWin {
                 o_win += 1;
             } else {
                 tie += 1;

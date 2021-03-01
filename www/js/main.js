@@ -37,7 +37,7 @@ export async function main() {
   });
 
   reset_btn.addEventListener("click", async () => {
-    worker.reset_board();
+    await worker.reset_board();
 
     await update();
   });
@@ -45,7 +45,9 @@ export async function main() {
   board.addEventListener("click", async (e) => {
     const index = Number(e.target.dataset.index);
 
-    worker.play_x(index);
+    const res = await worker.play_x(index);
+
+    console.log(res);
 
     await update();
   });

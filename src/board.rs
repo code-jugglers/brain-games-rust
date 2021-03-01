@@ -22,6 +22,23 @@ impl fmt::Display for BoardSpaceState {
     }
 }
 
+#[derive(Debug, PartialEq)]
+pub enum GameResult {
+    XWin,
+    OWin,
+    Tie,
+}
+
+impl fmt::Display for GameResult {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            GameResult::XWin => write!(f, "X"),
+            GameResult::OWin => write!(f, "O"),
+            GameResult::Tie => write!(f, "TIE"),
+        }
+    }
+}
+
 pub type BoardState = [BoardSpaceState; 9];
 
 #[derive(Debug, PartialEq)]
@@ -99,7 +116,7 @@ impl Board {
             .any(|&space| space == BoardSpaceState::Empty)
     }
 
-    pub fn determine_winner(&self) -> Option<BoardSpaceState> {
+    pub fn determine_winner(&self) -> Option<GameResult> {
         // check rows
         for row in 0..3 {
             let check = self.check_spaces(
@@ -136,17 +153,25 @@ impl Board {
             return Some(result);
         }
 
+        let moves_available = self.moves_available();
+
+        if !moves_available {
+            return Some(GameResult::Tie);
+        }
+
         None
     }
 
-    fn check_spaces(&self, i_1: usize, i_2: usize, i_3: usize) -> Option<BoardSpaceState> {
+    fn check_spaces(&self, i_1: usize, i_2: usize, i_3: usize) -> Option<GameResult> {
         let space_1 = self.spaces[i_1];
         let space_2 = self.spaces[i_2];
         let space_3 = self.spaces[i_3];
 
         if space_1 == space_2 && space_2 == space_3 {
-            if space_1 != BoardSpaceState::Empty {
-                return Some(space_1);
+            if space_1 == BoardSpaceState::Player(Player::X) {
+                return Some(GameResult::XWin);
+            } else if space_1 == BoardSpaceState::Player(Player::O) {
+                return Some(GameResult::OWin);
             }
         }
 

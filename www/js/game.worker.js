@@ -5,6 +5,8 @@ main().then(() => {
 });
 
 export async function main() {
+  console.log('test');
+  
   await init();
 
   const game = Game.new(); // initialize game
@@ -30,10 +32,9 @@ export async function main() {
 
       case "PLAY_X":
         const index = msg.data.payload;
+        const message = game.make_move_x(index);
 
-        game.make_move_x(index);
-
-        self.postMessage({ status: "PLAY_X_COMPLETE" });
+        self.postMessage({ status: "PLAY_X_COMPLETE", message });
 
         break;
 

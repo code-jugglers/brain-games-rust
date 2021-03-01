@@ -2,7 +2,7 @@ mod board;
 mod bot;
 mod play;
 
-use board::{Board, BoardSpaceState, Player};
+use board::{Board, BoardSpaceState, GameResult, Player};
 use bot::Bot;
 use wasm_bindgen::prelude::*;
 
@@ -37,28 +37,44 @@ impl Game {
         self.board = Board::new();
     }
 
-    pub fn make_move_x(&mut self, index: usize) {
+    pub fn make_move_x(&mut self, index: usize) -> Option<String> {
         self.board
             .set_by_index(index, BoardSpaceState::Player(Player::X));
 
+        if let Some(res) = self.board.determine_winner() {
+            return Some(res.to_string());
+        }
+
         let bot_move = self.player_o.determine_move(&self.board);
 
-        if let Some(m) = bot_move {
-            self.board
-                .set_by_index(m, BoardSpaceState::Player(Player::O));
+        self.board
+            .set_by_index(bot_move.unwrap(), BoardSpaceState::Player(Player::O));
+
+        if let Some(res) = self.board.determine_winner() {
+            return Some(res.to_string());
         }
+
+        None
     }
 
-    pub fn make_move_o(&mut self, index: usize) {
+    pub fn make_move_o(&mut self, index: usize) -> Option<String> {
         self.board
             .set_by_index(index, BoardSpaceState::Player(Player::O));
 
+        if let Some(res) = self.board.determine_winner() {
+            return Some(res.to_string());
+        }
+
         let bot_move = self.player_x.determine_move(&self.board);
 
-        if let Some(m) = bot_move {
-            self.board
-                .set_by_index(m, BoardSpaceState::Player(Player::X));
+        self.board
+            .set_by_index(bot_move.unwrap(), BoardSpaceState::Player(Player::X));
+
+        if let Some(res) = self.board.determine_winner() {
+            return Some(res.to_string());
         }
+
+        None
     }
 
     pub fn train(&mut self, game_count: u32) -> String {
@@ -67,12 +83,12 @@ impl Game {
         let mut tie = 0;
 
         for _ in 1..=game_count {
-            let res = self.play();
+            let result = play::play(&mut self.board, &mut self.player_x, &mut self.player_o);
 
-            if let Some(res) = res {
-                if res == "X" {
+            if let Some(res) = result {
+                if res == GameResult::XWin {
                     x_win += 1;
-                } else if res == "O" {
+                } else if res == GameResult::OWin {
                     o_win += 1;
                 } else {
                     tie += 1;
@@ -88,15 +104,5 @@ impl Game {
             + &o_win.to_string()
             + "\nTIE: "
             + &tie.to_string()
-    }
-
-    pub fn play(&mut self) -> Option<String> {
-        let result = play::play(&mut self.board, &mut self.player_x, &mut self.player_o);
-
-        if let Some(res) = result {
-            return Some(res.to_string());
-        }
-
-        None
     }
 }
