@@ -37,12 +37,21 @@ export async function main() {
 
         break;
 
+      case "PLAY_BOT_X":
+        game.make_bot_move_x();
+
+        self.postMessage({
+          status: "PLAY_BOT_X_COMPLETE",
+        });
+
+        break;
+
       case "PLAY_O":
         self.postMessage({
           status: "PLAY_O_COMPLETE",
           message: game.make_move_o(msg.data.payload),
         });
-  
+
         break;
 
       case "RESET_BOARD":

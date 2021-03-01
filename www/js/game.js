@@ -60,6 +60,36 @@ export class GameWorker extends Worker {
     });
   }
 
+  play_bot_x() {
+    return new Promise((resolve) => {
+      function listen(msg) {
+        if (msg.data.status === "PLAY_BOT_X_COMPLETE") {
+          this.removeEventListener("message", listen);
+
+          resolve();
+        }
+      }
+
+      this.addEventListener("message", listen);
+      this.postMessage({ action: "PLAY_BOT_X" });
+    });
+  }
+
+  play_o(index) {
+    return new Promise((resolve) => {
+      function listen(msg) {
+        if (msg.data.status === "PLAY_O_COMPLETE") {
+          this.removeEventListener("message", listen);
+
+          resolve(msg.data.message);
+        }
+      }
+
+      this.addEventListener("message", listen);
+      this.postMessage({ action: "PLAY_O", payload: index });
+    });
+  }
+
   reset_board() {
     return new Promise((resolve) => {
       function listen(msg) {

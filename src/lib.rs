@@ -57,6 +57,13 @@ impl Game {
         None
     }
 
+    pub fn make_bot_move_x(&mut self) {
+        let bot_move = self.player_x.determine_move(&self.board);
+
+        self.board
+            .set_by_index(bot_move.unwrap(), BoardSpaceState::Player(Player::X));
+    }
+
     pub fn make_move_o(&mut self, index: usize) -> Option<String> {
         self.board
             .set_by_index(index, BoardSpaceState::Player(Player::O));
