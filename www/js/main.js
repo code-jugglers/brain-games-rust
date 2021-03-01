@@ -27,6 +27,7 @@ export async function main() {
     results_container.innerHTML = `Training... ${timer}s`;
     train_btn.disabled = true;
     reset_btn.disabled = true;
+    play_o_btn.disabled = true;
     board.disabled = true;
 
     const interval = setInterval(() => {
