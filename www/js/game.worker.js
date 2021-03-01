@@ -30,13 +30,19 @@ export async function main() {
         break;
 
       case "PLAY_X":
-        const index = msg.data.payload;
-
         self.postMessage({
           status: "PLAY_X_COMPLETE",
-          message: game.make_move_x(index),
+          message: game.make_move_x(msg.data.payload),
         });
 
+        break;
+
+      case "PLAY_O":
+        self.postMessage({
+          status: "PLAY_O_COMPLETE",
+          message: game.make_move_o(msg.data.payload),
+        });
+  
         break;
 
       case "RESET_BOARD":
