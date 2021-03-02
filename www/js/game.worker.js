@@ -16,7 +16,7 @@ export async function main() {
       case "TRAIN":
         self.postMessage({
           status: "TRAINING_COMPLETE",
-          message: game.train(100000),
+          message: game.train(500000),
         });
 
         break;

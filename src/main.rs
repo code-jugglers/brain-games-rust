@@ -14,7 +14,7 @@ fn main() {
     let mut o_win = 0;
     let mut tie = 0;
 
-    for _ in 1..=100000 {
+    for _ in 1..=500000 {
         let res = play::play(&mut board, &mut player_x, &mut player_o);
 
         if let Some(res) = res {

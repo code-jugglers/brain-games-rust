@@ -36,8 +36,8 @@ The implementation here isn't machine learning as we would think about it with n
 
 ## Observations
 
-When training the bot the first time (1000000) games. You will generally end up with ~65000 wins for Xs and ~35000 for Os with the rest being ties.
-If you train them a seecond time those numbers drop to just a couple hundred each and eventually trailing off with neither X or O being able to win any games. Since the decisions are "random" there is still a chance that either bot could loose a game but it is very unlikely.
+When training the bot the first time (500000) games. You will generally end up with ~10000 wins for Xs and ~5000 for Os with the rest being ties.
+The bots should eventually no longer being
 
 The bot CAN be tricked by playing odd or obviously bad moves. At the moment the strategy for NOT LOOSING to the bot. When it one move away from winning, dont' block. It won't be as used to seeing that sort of play and kinda panics and there is a chance it will place elsewhere.
 
@@ -53,6 +53,7 @@ Ex. (Bot is O)
 
 Given this game, the bot is just as likely to take index 1 or 7 as index 0. The end result is the same but the bot "plays with" it's oponent. Could be improved by boosting winning moves or even clearing out other options if a winning move is available. A potential downside of vastly upping winning moves is that the oponent bot would see variations less often and therefore be open to being tripped up by suboptimal moves.
 
+Given this game:
 | | | |
 |-|-|-|
 | | |X|
