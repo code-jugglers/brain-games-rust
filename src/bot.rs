@@ -54,13 +54,19 @@ impl Bot {
 
                 // this should be safe. If we panic here something went wrong as the bot was deciding moves
                 game_state_entry[m.index] = if did_win {
+                    // If winning move give extreme boost
                     if i == max_moves - 1 {
                         game_state_entry[m.index] + 1000
                     } else {
                         game_state_entry[m.index] + 3
                     }
                 } else if game_state_entry[m.index] > 0 {
-                    game_state_entry[m.index] - 1
+                    // if the bot has lost the game 0 out the last move it made since it failed to prevent a loss
+                    if i == max_moves - 2 {
+                        0
+                    } else {
+                        game_state_entry[m.index] - 1
+                    }
                 } else {
                     0
                 };

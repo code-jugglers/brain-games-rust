@@ -89,28 +89,8 @@ impl Game {
         let mut o_win = 0;
         let mut tie = 0;
 
-        let mut dummy_o = Bot::new(BoardSpaceState::Player(Player::O));
-
-        for _ in 1..=game_count / 2 {
-            let result = play::play(&mut self.board, &mut self.player_x, &mut dummy_o);
-
-            if let Some(res) = result {
-                if res == GameResult::XWin {
-                    x_win += 1;
-                } else if res == GameResult::OWin {
-                    o_win += 1;
-                } else {
-                    tie += 1;
-                }
-            }
-
-            self.reset_board();
-        }
-
-        let mut dummy_x = Bot::new(BoardSpaceState::Player(Player::X));
-
-        for _ in 1..=game_count / 2 {
-            let result = play::play(&mut self.board, &mut dummy_x, &mut self.player_o);
+        for _ in 1..=game_count {
+            let result = play::play(&mut self.board, &mut self.player_x, &mut self.player_o);
 
             if let Some(res) = result {
                 if res == GameResult::XWin {
