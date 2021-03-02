@@ -52,6 +52,8 @@ impl Bot {
 
                 // this should be safe. If we panic here something went wrong as the bot was deciding moves
                 // 0 out if loosing move
+                // TODO: If last move is the winning move give it a significant boost
+                // TODO: IF last move causes a loss 0 it out
                 game_state_entry[m.index] = if did_win {
                     game_state_entry[m.index] + 3
                 } else if game_state_entry[m.index] > 0 {
