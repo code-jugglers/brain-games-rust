@@ -106,7 +106,7 @@ impl Game {
 
             self.reset_board();
         }
-        
+
         let mut dummy_x = Bot::new(BoardSpaceState::Player(Player::X));
 
         for _ in 1..=game_count / 2 {

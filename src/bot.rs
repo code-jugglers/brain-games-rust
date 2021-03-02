@@ -45,17 +45,20 @@ impl Bot {
     }
 
     pub fn learn(&mut self, board: &Board, did_win: bool) {
-        for m in &board.moves {
+        let max_moves = board.moves.len();
+
+        for (i, m) in board.moves.iter().enumerate() {
             if m.space == self.player {
                 let key = m.key.clone();
                 let game_state_entry = self.memory.entry(key).or_insert(vec![]);
 
                 // this should be safe. If we panic here something went wrong as the bot was deciding moves
-                // 0 out if loosing move
-                // TODO: If last move is the winning move give it a significant boost
-                // TODO: IF last move causes a loss 0 it out
                 game_state_entry[m.index] = if did_win {
-                    game_state_entry[m.index] + 3
+                    if i == max_moves - 1 {
+                        game_state_entry[m.index] + 1000
+                    } else {
+                        game_state_entry[m.index] + 3
+                    }
                 } else if game_state_entry[m.index] > 0 {
                     game_state_entry[m.index] - 1
                 } else {
