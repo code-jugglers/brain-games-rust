@@ -3,8 +3,8 @@ export class GameWorker extends Worker {
     return new Promise((resolve) => {
       const worker = new GameWorker();
 
-      worker.addEventListener("message", (msg) => {
-        if (msg.data.status === "READY") {
+      worker.addEventListener('message', (msg) => {
+        if (msg.data.status === 'READY') {
           resolve(worker);
         }
       });
@@ -12,96 +12,45 @@ export class GameWorker extends Worker {
   }
 
   constructor() {
-    super("js/game.worker.js", { type: "module" });
+    super('js/game.worker.js', { type: 'module' });
   }
 
   train() {
-    return new Promise((resolve) => {
-      function listen(msg) {
-        if (msg.data.status === "TRAINING_COMPLETE") {
-          this.removeEventListener("message", listen);
-
-          resolve(msg.data.message);
-        }
-      }
-
-      this.addEventListener("message", listen);
-      this.postMessage({ action: "TRAIN" });
-    });
+    return this.run_command('TRAIN');
   }
 
   get_board() {
-    return new Promise((resolve) => {
-      function listen(msg) {
-        if (msg.data.status === "GET_BOARD_COMPLETE") {
-          this.removeEventListener("message", listen);
-
-          resolve(msg.data.message);
-        }
-      }
-
-      this.addEventListener("message", listen);
-      this.postMessage({ action: "GET_BOARD" });
-    });
+    return this.run_command('GET_BOARD');
   }
 
   play_x(index) {
-    return new Promise((resolve) => {
-      function listen(msg) {
-        if (msg.data.status === "PLAY_X_COMPLETE") {
-          this.removeEventListener("message", listen);
-
-          resolve(msg.data.message);
-        }
-      }
-
-      this.addEventListener("message", listen);
-      this.postMessage({ action: "PLAY_X", payload: index });
-    });
+    return this.run_command('PLAY_X', index);
   }
 
   play_bot_x() {
-    return new Promise((resolve) => {
-      function listen(msg) {
-        if (msg.data.status === "PLAY_BOT_X_COMPLETE") {
-          this.removeEventListener("message", listen);
-
-          resolve();
-        }
-      }
-
-      this.addEventListener("message", listen);
-      this.postMessage({ action: "PLAY_BOT_X" });
-    });
+    return this.run_command('PLAY_BOT_X');
   }
 
   play_o(index) {
+    return this.run_command('PLAY_O', index);
+  }
+
+  reset_board() {
+    return this.run_command('RESET_BOARD');
+  }
+
+  run_command(action, payload) {
     return new Promise((resolve) => {
       function listen(msg) {
-        if (msg.data.status === "PLAY_O_COMPLETE") {
-          this.removeEventListener("message", listen);
+        if (msg.data.status === `${action}_COMPLETE`) {
+          this.removeEventListener('message', listen);
 
           resolve(msg.data.message);
         }
       }
 
-      this.addEventListener("message", listen);
-      this.postMessage({ action: "PLAY_O", payload: index });
-    });
-  }
-
-  reset_board() {
-    return new Promise((resolve) => {
-      function listen(msg) {
-        if (msg.data.status === "RESET_BOARD_COMPLETE") {
-          this.removeEventListener("message", listen);
-
-          resolve();
-        }
-      }
-
-      this.addEventListener("message", listen);
-      this.postMessage({ action: "RESET_BOARD" });
+      this.addEventListener('message', listen);
+      this.postMessage({ action, payload });
     });
   }
 }

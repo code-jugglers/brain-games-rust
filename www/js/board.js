@@ -1,8 +1,8 @@
-import { html, render } from "https://unpkg.com/lit-html?module";
+import { html, render } from 'https://unpkg.com/lit-html?module';
 
 export class Board extends HTMLElement {
   set board_state(board_state) {
-    this.board = board_state.split("");
+    this._board_state = board_state.split('');
 
     this.render();
   }
@@ -15,7 +15,7 @@ export class Board extends HTMLElement {
 
   template() {
     return html`
-      ${this.board.map((space, i) => {
+      ${this._board_state.map((space, i) => {
         const render = [];
 
         if (i > 0 && i % 3 === 0) {
@@ -24,7 +24,10 @@ export class Board extends HTMLElement {
 
         render.push(
           html`
-            <button data-index=${i} .disabled=${space !== "-" || this._disabled}>
+            <button
+              data-index=${i}
+              .disabled=${space !== '-' || this._disabled}
+            >
               ${space}
             </button>
           `
@@ -40,4 +43,4 @@ export class Board extends HTMLElement {
   }
 }
 
-customElements.define("xo-board", Board);
+customElements.define('xo-board', Board);

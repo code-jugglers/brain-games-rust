@@ -1,7 +1,7 @@
-import init, { Game } from "../pkg/brain_games.js";
+import init, { Game } from '../pkg/brain_games.js';
 
 main().then(() => {
-  console.log("GAME INITIALIZED!");
+  console.log('GAME INITIALIZED!');
 });
 
 export async function main() {
@@ -9,55 +9,55 @@ export async function main() {
 
   const game = Game.new(); // initialize game
 
-  self.postMessage({ status: "READY" });
+  self.postMessage({ status: 'READY' });
 
   self.onmessage = (msg) => {
     switch (msg.data.action) {
-      case "TRAIN":
+      case 'TRAIN':
         self.postMessage({
-          status: "TRAINING_COMPLETE",
+          status: 'TRAIN_COMPLETE',
           message: game.train(500000),
         });
 
         break;
 
-      case "GET_BOARD":
+      case 'GET_BOARD':
         self.postMessage({
-          status: "GET_BOARD_COMPLETE",
+          status: 'GET_BOARD_COMPLETE',
           message: game.board(),
         });
 
         break;
 
-      case "PLAY_X":
+      case 'PLAY_X':
         self.postMessage({
-          status: "PLAY_X_COMPLETE",
+          status: 'PLAY_X_COMPLETE',
           message: game.make_move_x(msg.data.payload),
         });
 
         break;
 
-      case "PLAY_BOT_X":
+      case 'PLAY_BOT_X':
         game.make_bot_move_x();
 
         self.postMessage({
-          status: "PLAY_BOT_X_COMPLETE",
+          status: 'PLAY_BOT_X_COMPLETE',
         });
 
         break;
 
-      case "PLAY_O":
+      case 'PLAY_O':
         self.postMessage({
-          status: "PLAY_O_COMPLETE",
+          status: 'PLAY_O_COMPLETE',
           message: game.make_move_o(msg.data.payload),
         });
 
         break;
 
-      case "RESET_BOARD":
+      case 'RESET_BOARD':
         game.reset_board();
 
-        self.postMessage({ status: "RESET_BOARD_COMPLETE" });
+        self.postMessage({ status: 'RESET_BOARD_COMPLETE' });
 
         break;
     }

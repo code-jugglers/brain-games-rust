@@ -1,25 +1,25 @@
-import { GameWorker } from "./game.js";
+import { GameWorker } from './game.js';
 
-const train_btn = document.getElementById("train");
-const reset_btn = document.getElementById("reset");
-const play_o_btn = document.getElementById("play_o");
-const results_container = document.getElementById("train_results");
-const game_results_container = document.getElementById("game_results");
-const board = document.getElementById("board");
+const train_btn = document.getElementById('train');
+const reset_btn = document.getElementById('reset');
+const play_o_btn = document.getElementById('play_o');
+const results_container = document.getElementById('train_results');
+const game_results_container = document.getElementById('game_results');
+const board = document.getElementById('board');
 
-let player = "X";
+let player = 'X';
 
 export async function main() {
-  console.log("APP STARTING");
+  console.log('APP STARTING');
 
   const worker = await GameWorker.create();
 
   await update();
 
-  train_btn.addEventListener("click", onTrainClick);
-  reset_btn.addEventListener("click", onResetClick);
-  play_o_btn.addEventListener("click", onPlayO);
-  board.addEventListener("click", onBoardClick);
+  train_btn.addEventListener('click', onTrainClick);
+  reset_btn.addEventListener('click', onResetClick);
+  play_o_btn.addEventListener('click', onPlayO);
+  board.addEventListener('click', onBoardClick);
 
   async function onTrainClick() {
     let timer = 0;
@@ -40,7 +40,7 @@ export async function main() {
 
     clearInterval(interval);
 
-    results_container.innerHTML = training_results.replaceAll("\n", "<br>");
+    results_container.innerHTML = training_results.replaceAll('\n', '<br>');
     train_btn.disabled = false;
     reset_btn.disabled = false;
     board.disabled = false;
@@ -53,12 +53,12 @@ export async function main() {
 
     board.disabled = false;
     play_o_btn.disabled = false;
-    game_results_container.innerHTML = "";
-    player = "X";
+    game_results_container.innerHTML = '';
+    player = 'X';
   }
 
   async function onPlayO() {
-    player = "O";
+    player = 'O';
     play_o_btn.disabled = true;
 
     await worker.play_bot_x();
@@ -72,7 +72,7 @@ export async function main() {
 
     let winner;
 
-    if (player === "X") {
+    if (player === 'X') {
       winner = await worker.play_x(index);
     } else {
       winner = await worker.play_o(index);
@@ -84,7 +84,7 @@ export async function main() {
       board.disabled = true;
 
       game_results_container.innerHTML =
-        winner === "TIE" ? `It is a tie!` : `${winner} wins!`;
+        winner === 'TIE' ? `It is a tie!` : `${winner} wins!`;
     }
   }
 
