@@ -1,7 +1,8 @@
-import init, { Game } from '../pkg/brain_games.js';
+import { Action, ActionComplete } from "./actions.js";
+import init, { Game } from "../pkg/brain_games.js";
 
 main().then(() => {
-  console.log('GAME INITIALIZED!');
+  console.log("GAME INITIALIZED!");
 });
 
 export async function main() {
@@ -9,55 +10,56 @@ export async function main() {
 
   const game = Game.new(); // initialize game
 
-  self.postMessage({ status: 'READY' });
+  self.postMessage({ status: "READY" }); // signal that game is ready
 
+  // Listen for actions
   self.onmessage = (msg) => {
     switch (msg.data.action) {
-      case 'TRAIN':
+      case Action.Train:
         self.postMessage({
-          status: 'TRAIN_COMPLETE',
-          message: game.train(500000),
+          status: ActionComplete.Train,
+          payload: game.train(500000),
         });
 
         break;
 
-      case 'GET_BOARD':
+      case Action.GetBoard:
         self.postMessage({
-          status: 'GET_BOARD_COMPLETE',
-          message: game.board(),
+          status: ActionComplete.GetBoard,
+          payload: game.board(),
         });
 
         break;
 
-      case 'PLAY_X':
+      case Action.PlayX:
         self.postMessage({
-          status: 'PLAY_X_COMPLETE',
-          message: game.make_move_x(msg.data.payload),
+          status: ActionComplete.PlayX,
+          payload: game.make_move_x(msg.data.payload),
         });
 
         break;
 
-      case 'PLAY_BOT_X':
-        game.make_bot_move_x();
-
+      case Action.PlayBotX:
         self.postMessage({
-          status: 'PLAY_BOT_X_COMPLETE',
+          status: ActionComplete.PlayBotX,
+          payload: game.make_bot_move_x(),
         });
 
         break;
 
-      case 'PLAY_O':
+      case Action.PlayO:
         self.postMessage({
-          status: 'PLAY_O_COMPLETE',
-          message: game.make_move_o(msg.data.payload),
+          status: ActionComplete.PlayO,
+          payload: game.make_move_o(msg.data.payload),
         });
 
         break;
 
-      case 'RESET_BOARD':
-        game.reset_board();
-
-        self.postMessage({ status: 'RESET_BOARD_COMPLETE' });
+      case Action.ResetBoard:
+        self.postMessage({
+          status: ActionComplete.ResetBoard,
+          payload: game.reset_board(),
+        });
 
         break;
     }

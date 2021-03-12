@@ -1,10 +1,12 @@
+import { Action } from "./actions.js";
+
 export class GameWorker extends Worker {
   static create() {
     return new Promise((resolve) => {
       const worker = new GameWorker();
 
-      worker.addEventListener('message', (msg) => {
-        if (msg.data.status === 'READY') {
+      worker.addEventListener("message", (msg) => {
+        if (msg.data.status === "READY") {
           resolve(worker);
         }
       });
@@ -12,44 +14,44 @@ export class GameWorker extends Worker {
   }
 
   constructor() {
-    super('js/game.worker.js', { type: 'module' });
+    super("js/game.worker.js", { type: "module" });
   }
 
   train() {
-    return this.run_command('TRAIN');
+    return this.run_command(Action.Train);
   }
 
   get_board() {
-    return this.run_command('GET_BOARD');
+    return this.run_command(Action.GetBoard);
   }
 
   play_x(index) {
-    return this.run_command('PLAY_X', index);
+    return this.run_command(Action.PlayX, index);
   }
 
   play_bot_x() {
-    return this.run_command('PLAY_BOT_X');
+    return this.run_command(Action.PlayBotX);
   }
 
   play_o(index) {
-    return this.run_command('PLAY_O', index);
+    return this.run_command(Action.PlayO, index);
   }
 
   reset_board() {
-    return this.run_command('RESET_BOARD');
+    return this.run_command(Action.ResetBoard);
   }
 
   run_command(action, payload) {
     return new Promise((resolve) => {
       function listen(msg) {
         if (msg.data.status === `${action}_COMPLETE`) {
-          this.removeEventListener('message', listen);
+          this.removeEventListener("message", listen);
 
-          resolve(msg.data.message);
+          resolve(msg.data.payload);
         }
       }
 
-      this.addEventListener('message', listen);
+      this.addEventListener("message", listen);
       this.postMessage({ action, payload });
     });
   }
