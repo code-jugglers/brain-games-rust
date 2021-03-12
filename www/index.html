@@ -8,34 +8,48 @@
 
   <body>
     <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
       * {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
         font-size: 1.5rem;
       }
 
+      section {
+        margin: 0 auto;
+        max-width: 400px;
+      }
+
       button {
         cursor: pointer;
         display: block;
-        max-width: 400px;
         width: 100%;
+        background: #512da8;
+        color: #fff;
+        border: none;
+        font-size: 1rem;
+        padding: 0.5rem;
       }
 
       button:disabled {
         cursor: not-allowed;
+        background: gray;
       }
 
       .button-container {
         display: flex;
         max-width: 400px;
-        margin-bottom: 2rem;
       }
 
       xo-board {
         display: flex;
-        max-width: 400px;
         flex-wrap: wrap;
-        margin-bottom: 2rem;
+        padding: 1rem 0;
       }
 
       xo-board button {
@@ -43,10 +57,19 @@
         border: none;
         flex: 0 0 33.333333%;
         height: calc(300px / 3);
+        font-size: 1.5rem;
       }
 
       xo-board button:disabled {
-        color: #000000;
+        background: none;
+      }
+
+      xo-board button.X {
+        color: #140078;
+      }
+
+      xo-board button.O {
+        color: #9c27b0;
       }
 
       xo-board button:nth-child(2n) {
@@ -63,6 +86,8 @@
     </style>
 
     <section>
+      <h1 id="title">Can you beat me?</h1>
+
       <div class="button-container">
         <button id="train">Train</button>
       </div>

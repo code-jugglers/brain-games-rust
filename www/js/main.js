@@ -4,8 +4,10 @@ const train_btn = document.getElementById("train");
 const reset_btn = document.getElementById("reset");
 const play_o_btn = document.getElementById("play_o");
 const board = document.getElementById("board");
+const title = document.getElementById("title");
 
 let player = "X";
+let has_trained = false;
 
 export async function main() {
   console.log("APP STARTING");
@@ -20,6 +22,8 @@ export async function main() {
   board.addEventListener("click", onBoardClick);
 
   async function onTrainClick() {
+    title.innerHTML = "Let me practice for a bit.";
+
     await worker.reset_board();
 
     await update();
@@ -36,15 +40,17 @@ export async function main() {
       train_btn.innerHTML = timer;
     }, 1000);
 
-    const training_results = await worker.train();
+    await worker.train();
 
     clearInterval(interval);
-
-    alert("Training Complete \n" + training_results);
 
     train_btn.innerHTML = "Train Again";
 
     enable();
+
+    title.innerHTML = "Now I am ready!";
+
+    has_trained = true;
   }
 
   async function onResetClick() {
@@ -55,6 +61,7 @@ export async function main() {
     enable();
 
     player = "X";
+    title.innerHTML = "Can you beat me?";
   }
 
   async function onPlayO() {
@@ -83,9 +90,21 @@ export async function main() {
     if (winner) {
       board.disabled = true;
 
-      setTimeout(() => {
-        alert(winner === "TIE" ? `It is a tie!` : `${winner} wins!`);
-      }, 40);
+      if (winner === player) {
+        if (has_trained) {
+          title.innerHTML = `You win!`;
+        } else {
+          title.innerHTML = `Wait! I wasn't ready. \n`;
+        }
+      } else if (winner !== "TIE") {
+        if (has_trained) {
+          title.innerHTML = `Gotcha! Well Played`;
+        } else {
+          title.innerHTML = `Wow I wasn't even trying!`;
+        }
+      } else {
+        title.innerHTML = `A tie! Well played!`;
+      }
     }
   }
 
