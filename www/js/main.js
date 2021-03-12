@@ -40,7 +40,9 @@ export async function main() {
       train_btn.innerHTML = timer;
     }, 1000);
 
-    await worker.train();
+    const training_result = await worker.train();
+
+    console.log(training_result);
 
     clearInterval(interval);
 
@@ -89,6 +91,8 @@ export async function main() {
 
     if (winner) {
       board.disabled = true;
+
+      console.log(`Game Result: ${winner}`);
 
       if (winner === player) {
         if (has_trained) {
