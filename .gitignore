@@ -1,4 +1,3 @@
 /target
 **/*.rs.bk
-*.json
 /www/pkg
