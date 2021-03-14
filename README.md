@@ -77,3 +77,14 @@ is seen to be just as good as this one:
 | | |O|
 
 To the bot both moves are equally good since they both lead to a winning result.
+
+When allowing the bot to play as X you can see that it tends to try and build strong shapes that will allow it to win.
+
+For example:
+| | | |
+|-|-|-|
+| | |X|
+| |X|X|
+|O| |O|
+
+It will try to make that shape since that shape leads to a win. It is cool to see the random bot "discover" the same solutions that we know are good.
