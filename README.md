@@ -83,8 +83,8 @@ When allowing the bot to play as X you can see that it tends to try and build st
 For example:
 | | | |
 |-|-|-|
-| | |X|
+|O| |X|
 | |X|X|
-|O| |O|
+|O| | |
 
 It will try to make that shape since that shape leads to a win. It is cool to see the random bot "discover" the same solutions that we know are good.
