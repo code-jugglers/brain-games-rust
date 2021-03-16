@@ -1,0 +1,24 @@
+{
+  "name": "brain-games-rust",
+  "version": "1.0.0",
+  "description": "[Try it here.](https://wasm-games.web.app/)",
+  "main": "index.js",
+  "scripts": {
+    "start": "snowpack dev",
+    "build": "wasm-pack build --target web -d www/pkg --release && snowpack build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deebloo/brain-games-rust.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/deebloo/brain-games-rust/issues"
+  },
+  "homepage": "https://github.com/deebloo/brain-games-rust#readme",
+  "devDependencies": {
+    "snowpack": "^3.0.13"
+  }
+}

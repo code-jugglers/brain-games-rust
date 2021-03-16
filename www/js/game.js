@@ -14,7 +14,7 @@ export class GameWorker extends Worker {
   }
 
   constructor() {
-    super("js/game.worker.js", { type: "module" });
+    super(new URL("game.worker.js", import.meta.url), { type: "module" });
   }
 
   train() {

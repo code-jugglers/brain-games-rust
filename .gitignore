@@ -2,3 +2,5 @@
 **/*.rs.bk
 /www/pkg
 .firebase
+/build
+/node_modules
