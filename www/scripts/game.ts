@@ -1,12 +1,12 @@
-import { Action } from "./actions.js";
+import { Action } from './actions';
 
 export class GameWorker extends Worker {
   static create() {
-    return new Promise((resolve) => {
+    return new Promise<GameWorker>((resolve) => {
       const worker = new GameWorker();
 
-      worker.addEventListener("message", (msg) => {
-        if (msg.data.status === "READY") {
+      worker.addEventListener('message', (msg) => {
+        if (msg.data.status === 'READY') {
           resolve(worker);
         }
       });
@@ -14,18 +14,18 @@ export class GameWorker extends Worker {
   }
 
   constructor() {
-    super(new URL("game.worker.js", import.meta.url), { type: "module" });
+    super(new URL('game.worker.js', import.meta.url), { type: 'module' });
   }
 
   train() {
     return this.run_command(Action.Train);
   }
 
-  get_board() {
+  get_board(): Promise<string> {
     return this.run_command(Action.GetBoard);
   }
 
-  play_x(index) {
+  play_x(index: number) {
     return this.run_command(Action.PlayX, index);
   }
 
@@ -33,7 +33,7 @@ export class GameWorker extends Worker {
     return this.run_command(Action.PlayBotX);
   }
 
-  play_o(index) {
+  play_o(index: number) {
     return this.run_command(Action.PlayO, index);
   }
 
@@ -41,17 +41,17 @@ export class GameWorker extends Worker {
     return this.run_command(Action.ResetBoard);
   }
 
-  run_command(action, payload) {
-    return new Promise((resolve) => {
-      function listen(msg) {
+  private run_command(action: string, payload?: any) {
+    return new Promise<any>((resolve) => {
+      const listen = (msg: MessageEvent) => {
         if (msg.data.status === `${action}_COMPLETE`) {
-          this.removeEventListener("message", listen);
+          this.removeEventListener('message', listen);
 
           resolve(msg.data.payload);
         }
-      }
+      };
 
-      this.addEventListener("message", listen);
+      this.addEventListener('message', listen);
       this.postMessage({ action, payload });
     });
   }

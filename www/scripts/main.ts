@@ -1,28 +1,29 @@
-import { GameWorker } from "./game.js";
+import { Board } from './board';
+import { GameWorker } from './game';
 
-const train_btn = document.getElementById("train");
-const reset_btn = document.getElementById("reset");
-const play_o_btn = document.getElementById("play_o");
-const board = document.getElementById("board");
-const title = document.getElementById("title");
+const train_btn = document.getElementById('train') as HTMLButtonElement;
+const reset_btn = document.getElementById('reset') as HTMLButtonElement;
+const play_o_btn = document.getElementById('play_o') as HTMLButtonElement;
+const board = document.getElementById('board') as Board;
+const title = document.getElementById('title') as HTMLElement;
 
-let player = "X";
+let player = 'X';
 let has_trained = false;
 
 export async function main() {
-  console.log("APP STARTING");
+  console.log('APP STARTING');
 
   const worker = await GameWorker.create();
 
   await update();
 
-  train_btn.addEventListener("click", onTrainClick);
-  reset_btn.addEventListener("click", onResetClick);
-  play_o_btn.addEventListener("click", onPlayO);
-  board.addEventListener("click", onBoardClick);
+  train_btn.addEventListener('click', onTrainClick);
+  reset_btn.addEventListener('click', onResetClick);
+  play_o_btn.addEventListener('click', onPlayO);
+  board.addEventListener('click', onBoardClick);
 
   async function onTrainClick() {
-    title.innerHTML = "Let me practice for a bit.";
+    title.innerHTML = 'Let me practice for a bit.';
 
     await worker.reset_board();
 
@@ -30,14 +31,14 @@ export async function main() {
 
     let timer = 0;
 
-    train_btn.innerHTML = timer;
+    train_btn.innerHTML = timer.toString();
 
     disable();
 
     const interval = setInterval(() => {
       timer++;
 
-      train_btn.innerHTML = timer;
+      train_btn.innerHTML = timer.toString();
     }, 1000);
 
     const training_result = await worker.train();
@@ -46,11 +47,11 @@ export async function main() {
 
     clearInterval(interval);
 
-    train_btn.innerHTML = "Train Again";
+    train_btn.innerHTML = 'Train Again';
 
     enable();
 
-    title.innerHTML = "Now I am ready!";
+    title.innerHTML = 'Now I am ready!';
 
     has_trained = true;
   }
@@ -62,26 +63,28 @@ export async function main() {
 
     enable();
 
-    player = "X";
-    title.innerHTML = "Can you beat me?";
+    player = 'X';
+    title.innerHTML = 'Can you beat me?';
   }
 
   async function onPlayO() {
-    player = "O";
+    player = 'O';
     play_o_btn.disabled = true;
 
     await worker.play_bot_x();
     await update();
   }
 
-  async function onBoardClick(e) {
+  async function onBoardClick(e: MouseEvent) {
     play_o_btn.disabled = true;
 
-    const index = Number(e.target.dataset.index);
+    const target = e.target as HTMLElement;
+
+    const index = Number(target.dataset.index);
 
     let winner;
 
-    if (player === "X") {
+    if (player === 'X') {
       winner = await worker.play_x(index);
     } else {
       winner = await worker.play_o(index);
@@ -100,7 +103,7 @@ export async function main() {
         } else {
           title.innerHTML = `Wait! I wasn't ready. \n`;
         }
-      } else if (winner !== "TIE") {
+      } else if (winner !== 'TIE') {
         if (has_trained) {
           title.innerHTML = `Gotcha! Well Played`;
         } else {

@@ -1,9 +1,10 @@
 module.exports = {
   mount: {
-    www: "/",
+    www: '/',
   },
   optimize: {
     minify: true,
-    target: "esnext",
+    target: 'esnext',
   },
+  plugins: ['@snowpack/plugin-typescript'],
 };

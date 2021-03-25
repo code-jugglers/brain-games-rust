@@ -1,8 +1,11 @@
-import { Action, ActionComplete } from "./actions.js";
-import init, { Game } from "../pkg/brain_games.js";
+/// <reference lib="WebWorker" />
+
+import init, { Game } from '../pkg/brain_games';
+
+import { Action, ActionComplete } from './actions';
 
 main().then(() => {
-  console.log("GAME INITIALIZED!");
+  console.log('GAME INITIALIZED!');
 });
 
 export async function main() {
@@ -10,10 +13,10 @@ export async function main() {
 
   const game = Game.new(); // initialize game
 
-  self.postMessage({ status: "READY" }); // signal that game is ready
+  self.postMessage({ status: 'READY' }); // signal that game is ready
 
   // Listen for actions
-  self.onmessage = (msg) => {
+  self.onmessage = (msg: MessageEvent) => {
     switch (msg.data.action) {
       case Action.Train:
         self.postMessage({

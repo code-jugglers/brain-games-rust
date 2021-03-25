@@ -1,6 +1,7 @@
 /target
 **/*.rs.bk
-/www/pkg
+/pkg
 .firebase
 /build
 /node_modules
+/www/pkg
