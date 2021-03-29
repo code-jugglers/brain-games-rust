@@ -1,6 +1,6 @@
 /// <reference lib="WebWorker" />
 
-import init, { Game } from '../pkg/brain_games';
+import init, { Game } from 'brain_games';
 
 import { Action, ActionComplete } from './actions';
 
@@ -9,7 +9,7 @@ main().then(() => {
 });
 
 export async function main() {
-  await init();
+  await init('/brain_games/brain_games_bg.wasm');
 
   const game = Game.new(); // initialize game
 

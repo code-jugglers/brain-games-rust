@@ -1,1 +1,0 @@
-wasm-pack build --target web -d www/pkg --release && rm -rf www/pkg/brain_games_bg.wasm.d.ts
