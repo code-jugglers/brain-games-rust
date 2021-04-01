@@ -12,7 +12,8 @@ Those output files are loading via a Web Worker to keep the training loop off of
 ## Running in browser
 
 ```BASH
-./build_wasm.sh
+npm run build
+npm start
 ```
 
 Then point a local server to www and play right away or train first.
