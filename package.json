@@ -4,9 +4,11 @@
   "description": "[Try it here.](https://wasm-games.web.app/)",
   "main": "index.js",
   "scripts": {
+    "preinstall": "npm run build:wasm",
     "start": "snowpack dev",
-    "build": "wasm-pack build --target web --release && snowpack build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run build:wasm && snowpack build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:wasm": "wasm-pack build --target web --release"
   },
   "repository": {
     "type": "git",
