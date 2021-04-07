@@ -17,6 +17,7 @@ impl Bot {
         }
     }
 
+    #[allow(dead_code)]
     pub fn load_brain(&mut self, encode_brain: Vec<u8>) {
         self.memory = bincode::deserialize(&encode_brain).unwrap();
     }
