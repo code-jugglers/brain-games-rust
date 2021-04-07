@@ -297,10 +297,7 @@ mod tests {
         board.set(row, 1, BoardSpaceState::Player(Player::X));
         board.set(row, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(
-            board.determine_winner(),
-            Some(BoardSpaceState::Player(Player::X))
-        );
+        assert_eq!(board.determine_winner(), Some(GameResult::XWin));
     }
 
     #[test]
@@ -312,10 +309,7 @@ mod tests {
         board.set(row, 1, BoardSpaceState::Player(Player::X));
         board.set(row, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(
-            board.determine_winner(),
-            Some(BoardSpaceState::Player(Player::X))
-        );
+        assert_eq!(board.determine_winner(), Some(GameResult::XWin));
     }
 
     #[test]
@@ -327,10 +321,7 @@ mod tests {
         board.set(row, 1, BoardSpaceState::Player(Player::X));
         board.set(row, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(
-            board.determine_winner(),
-            Some(BoardSpaceState::Player(Player::X))
-        );
+        assert_eq!(board.determine_winner(), Some(GameResult::XWin));
     }
 
     #[test]
@@ -342,10 +333,7 @@ mod tests {
         board.set(1, col, BoardSpaceState::Player(Player::O));
         board.set(2, col, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(
-            board.determine_winner(),
-            Some(BoardSpaceState::Player(Player::O))
-        );
+        assert_eq!(board.determine_winner(), Some(GameResult::OWin));
     }
 
     #[test]
@@ -357,10 +345,7 @@ mod tests {
         board.set(1, col, BoardSpaceState::Player(Player::O));
         board.set(2, col, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(
-            board.determine_winner(),
-            Some(BoardSpaceState::Player(Player::O))
-        );
+        assert_eq!(board.determine_winner(), Some(GameResult::OWin));
     }
 
     #[test]
@@ -372,10 +357,7 @@ mod tests {
         board.set(1, col, BoardSpaceState::Player(Player::O));
         board.set(2, col, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(
-            board.determine_winner(),
-            Some(BoardSpaceState::Player(Player::O))
-        );
+        assert_eq!(board.determine_winner(), Some(GameResult::OWin));
     }
 
     #[test]
@@ -386,10 +368,7 @@ mod tests {
         board.set(1, 1, BoardSpaceState::Player(Player::X));
         board.set(2, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(
-            board.determine_winner(),
-            Some(BoardSpaceState::Player(Player::X))
-        );
+        assert_eq!(board.determine_winner(), Some(GameResult::XWin));
     }
 
     #[test]
@@ -400,9 +379,6 @@ mod tests {
         board.set(1, 1, BoardSpaceState::Player(Player::O));
         board.set(2, 0, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(
-            board.determine_winner(),
-            Some(BoardSpaceState::Player(Player::O))
-        );
+        assert_eq!(board.determine_winner(), Some(GameResult::OWin));
     }
 }
