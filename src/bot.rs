@@ -5,8 +5,8 @@ use std::collections::HashMap;
 pub type BotMemory = HashMap<String, Vec<u32>>;
 
 pub struct Bot {
-    memory: BotMemory,
-    player: BoardSpaceState,
+    pub memory: BotMemory,
+    pub player: BoardSpaceState,
 }
 
 impl Bot {
@@ -15,6 +15,14 @@ impl Bot {
             memory: HashMap::new(),
             player,
         }
+    }
+
+    pub fn load_brain(&mut self, encode_brain: Vec<u8>) {
+        self.memory = bincode::deserialize(&encode_brain).unwrap();
+    }
+
+    pub fn export_brain(&self) -> Vec<u8> {
+        bincode::serialize(&self.memory).unwrap()
     }
 
     pub fn determine_move(&mut self, board: &Board) -> Option<usize> {

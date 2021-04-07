@@ -29,6 +29,22 @@ impl Game {
         }
     }
 
+    pub fn load_x_brain(&mut self, brain: Vec<u8>) {
+        self.player_x.load_brain(brain);
+    }
+
+    pub fn load_o_brain(&mut self, brain: Vec<u8>) {
+        self.player_o.load_brain(brain);
+    }
+
+    pub fn export_x_brain(&mut self) -> Vec<u8> {
+        self.player_x.export_brain()
+    }
+
+    pub fn export_o_brain(&mut self) -> Vec<u8> {
+        self.player_o.export_brain()
+    }
+
     pub fn board(&self) -> String {
         self.board.key()
     }

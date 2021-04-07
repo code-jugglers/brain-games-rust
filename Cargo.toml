@@ -10,7 +10,13 @@ edition = "2018"
 [dependencies]
 rand = { version = "0.7.3", features = ["wasm-bindgen"] }
 wasm-bindgen = "0.2"
+bincode = "1.3.2"
+wee_alloc = { version = "0.4.5", optional = true}
 
 [profile.release]
 lto = true
-opt-level = "z"
+opt-level = "s"
+
+
+[features]
+default = ["wee_alloc"]

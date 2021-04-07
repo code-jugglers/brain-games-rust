@@ -4,6 +4,7 @@ mod play;
 
 use board::{Board, BoardSpaceState, GameResult, Player};
 use bot::Bot;
+use std::fs;
 
 fn main() {
     let mut board = Board::new();
@@ -33,4 +34,7 @@ fn main() {
     println!("X: {:?}", x_win);
     println!("O: {:?}", o_win);
     println!("TIE: {:?}", tie);
+
+    fs::write("www/bot_x_brain.bin", player_x.export_brain()).unwrap();
+    fs::write("www/bot_o_brain.bin", player_o.export_brain()).unwrap();
 }
