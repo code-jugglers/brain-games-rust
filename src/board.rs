@@ -72,23 +72,24 @@ impl Board {
     }
 
     pub fn key_2(&self) -> u32 {
-        let mut index = (self.spaces.len()) as u32;
+        let board_size = self.spaces.len() as u32;
+        let mut index = 0;
         let mut total: u32 = 0;
 
         for space in &self.spaces {
             match space {
                 &BoardSpaceState::Player(Player::X) => {
-                    total += 2 * (9 as u32).pow(index);
+                    total += 2 * board_size.pow(board_size - index);
                 }
                 &BoardSpaceState::Player(Player::O) => {
-                    total += 1 * (9 as u32).pow(index)
+                    total += 1 * board_size.pow(board_size - index)
                 }
                 &BoardSpaceState::Empty => {
                     total += 0;
                 }
             }
 
-            index -= 1;
+            index += 1;
         }
 
         total
@@ -257,35 +258,35 @@ mod tests {
         )
     }
 
-    // #[test]
-    // fn should_track_past_moves() {
-    //     let mut board = Board::new();
+    #[test]
+    fn should_track_past_moves() {
+        let mut board = Board::new();
 
-    //     board.set(0, 0, BoardSpaceState::Player(Player::X));
-    //     board.set(1, 1, BoardSpaceState::Player(Player::O));
-    //     board.set(2, 2, BoardSpaceState::Player(Player::X));
+        board.set(0, 0, BoardSpaceState::Player(Player::X));
+        board.set(1, 1, BoardSpaceState::Player(Player::O));
+        board.set(2, 2, BoardSpaceState::Player(Player::X));
 
-    //     assert_eq!(
-    //         board.moves,
-    //         [
-    //             Move {
-    //                 index: 0,
-    //                 key: "---------".to_string(),
-    //                 space: BoardSpaceState::Player(Player::X)
-    //             },
-    //             Move {
-    //                 index: 4,
-    //                 key: "X--------".to_string(),
-    //                 space: BoardSpaceState::Player(Player::O)
-    //             },
-    //             Move {
-    //                 index: 8,
-    //                 key: "X---O----".to_string(),
-    //                 space: BoardSpaceState::Player(Player::X)
-    //             }
-    //         ]
-    //     )
-    // }
+        assert_eq!(
+            board.moves,
+            [
+                Move {
+                    index: 0,
+                    key: 0 as u32,
+                    space: BoardSpaceState::Player(Player::X)
+                },
+                Move {
+                    index: 4,
+                    key: 774840978 as u32,
+                    space: BoardSpaceState::Player(Player::O)
+                },
+                Move {
+                    index: 8,
+                    key: 774900027 as u32,
+                    space: BoardSpaceState::Player(Player::X)
+                }
+            ]
+        )
+    }
 
     #[test]
     fn should_check_if_moves_available_1() {

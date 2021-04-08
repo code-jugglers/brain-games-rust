@@ -18,8 +18,8 @@ export async function main() {
 
   const game = Game.new(); // initialize game
 
-  // game.load_x_brain(bot_x_brain);
-  // game.load_o_brain(bot_o_brain);
+  game.load_x_brain(bot_x_brain);
+  game.load_o_brain(bot_o_brain);
 
   self.postMessage({ status: 'READY' }); // signal that game is ready
 
