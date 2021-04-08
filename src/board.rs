@@ -71,7 +71,7 @@ impl Board {
         }
     }
 
-    pub fn key_2(&self) -> u32 {
+    pub fn key_as_u32(&self) -> u32 {
         let board_size = self.spaces.len() as u32;
         let mut index = 0;
         let mut total: u32 = 0;
@@ -96,7 +96,7 @@ impl Board {
     }
 
     #[allow(dead_code)]
-    pub fn key(&self) -> String {
+    pub fn key_as_string(&self) -> String {
         let mut result = String::new();
 
         for space in &self.spaces {
@@ -121,7 +121,7 @@ impl Board {
     pub fn set_by_index(&mut self, index: usize, space: BoardSpaceState) {
         self.moves.push(Move {
             index,
-            key: self.key_2(),
+            key: self.key_as_u32(),
             space,
         });
 

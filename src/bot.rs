@@ -29,7 +29,7 @@ impl Bot {
     pub fn determine_move(&mut self, board: &Board) -> Option<usize> {
         let memory = self
             .memory
-            .entry(board.key_2())
+            .entry(board.key_as_u32())
             .or_insert(Bot::get_default_moves(&board));
 
         let total = memory.iter().fold(0, |a, b| a + b);
