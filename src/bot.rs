@@ -2,7 +2,7 @@ use crate::board::{Board, BoardSpaceState};
 use rand::Rng;
 use std::collections::HashMap;
 
-pub type BotMemory = HashMap<String, Vec<u32>>;
+pub type BotMemory = HashMap<u32, Vec<u32>>;
 
 pub struct Bot {
     pub memory: BotMemory,
@@ -29,7 +29,7 @@ impl Bot {
     pub fn determine_move(&mut self, board: &Board) -> Option<usize> {
         let memory = self
             .memory
-            .entry(board.key())
+            .entry(board.key_2())
             .or_insert(Bot::get_default_moves(&board));
 
         let total = memory.iter().fold(0, |a, b| a + b);
