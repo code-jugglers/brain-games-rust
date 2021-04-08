@@ -46,7 +46,7 @@ impl Game {
     }
 
     pub fn board(&self) -> String {
-        self.board.key()
+        self.board.key_as_string()
     }
 
     pub fn reset_board(&mut self) {

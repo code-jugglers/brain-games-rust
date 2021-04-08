@@ -11,7 +11,15 @@ main().then(() => {
 export async function main() {
   await init();
 
+  const [bot_x_brain, bot_o_brain] = await Promise.all([
+    fetch('../bot_x_brain.bin').then((res) => res.arrayBuffer()),
+    fetch('../bot_o_brain.bin').then((res) => res.arrayBuffer()),
+  ]).then((res) => res.map((buffer) => new Uint8Array(buffer)));
+
   const game = Game.new(); // initialize game
+
+  // game.load_x_brain(bot_x_brain);
+  // game.load_o_brain(bot_o_brain);
 
   self.postMessage({ status: 'READY' }); // signal that game is ready
 

@@ -43,7 +43,7 @@ pub type BoardState = [BoardSpaceState; 9];
 
 #[derive(Debug, PartialEq)]
 pub struct Move {
-    pub key: String,
+    pub key: u32,
     pub space: BoardSpaceState,
     pub index: usize,
 }
@@ -71,7 +71,32 @@ impl Board {
         }
     }
 
-    pub fn key(&self) -> String {
+    pub fn key_as_u32(&self) -> u32 {
+        let board_size = self.spaces.len() as u32;
+        let mut index = 0;
+        let mut total: u32 = 0;
+
+        for space in &self.spaces {
+            match space {
+                &BoardSpaceState::Player(Player::X) => {
+                    total += 2 * board_size.pow(board_size - index);
+                }
+                &BoardSpaceState::Player(Player::O) => {
+                    total += 1 * board_size.pow(board_size - index)
+                }
+                &BoardSpaceState::Empty => {
+                    total += 0;
+                }
+            }
+
+            index += 1;
+        }
+
+        total
+    }
+
+    #[allow(dead_code)]
+    pub fn key_as_string(&self) -> String {
         let mut result = String::new();
 
         for space in &self.spaces {
@@ -96,7 +121,7 @@ impl Board {
     pub fn set_by_index(&mut self, index: usize, space: BoardSpaceState) {
         self.moves.push(Move {
             index,
-            key: self.key(),
+            key: self.key_as_u32(),
             space,
         });
 
@@ -246,17 +271,17 @@ mod tests {
             [
                 Move {
                     index: 0,
-                    key: "---------".to_string(),
+                    key: 0 as u32,
                     space: BoardSpaceState::Player(Player::X)
                 },
                 Move {
                     index: 4,
-                    key: "X--------".to_string(),
+                    key: 774840978 as u32,
                     space: BoardSpaceState::Player(Player::O)
                 },
                 Move {
                     index: 8,
-                    key: "X---O----".to_string(),
+                    key: 774900027 as u32,
                     space: BoardSpaceState::Player(Player::X)
                 }
             ]
