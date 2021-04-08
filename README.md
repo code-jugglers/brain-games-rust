@@ -19,9 +19,9 @@ npm start
 Then point a local server to www and play right away or train first.
 The wasm specific code is in "lib" and the standard rust program starts in "main" (will be updated soon to play and train).
 
-## Running native
+## Prebuilding Brain
 
-Will run one single game (for now)
+If you want to prebuild brains you can run the rust program directly.
 
 ```BASH
 cargo run --release
