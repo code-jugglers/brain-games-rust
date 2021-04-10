@@ -83,7 +83,9 @@ impl Board {
                 &BoardSpaceState::Empty => 0,
             };
 
-            total += space_value * board_size.pow(board_size - index);
+            if space_value > 0 {
+                total += space_value * board_size.pow(index);
+            }
 
             index += 1;
         }
@@ -272,12 +274,12 @@ mod tests {
                 },
                 Move {
                     index: 4,
-                    key: 774840978 as u32,
+                    key: 2 as u32,
                     space: BoardSpaceState::Player(Player::O)
                 },
                 Move {
                     index: 8,
-                    key: 774900027 as u32,
+                    key: 6563 as u32,
                     space: BoardSpaceState::Player(Player::X)
                 }
             ]
