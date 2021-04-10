@@ -83,7 +83,7 @@ impl Board {
                 &BoardSpaceState::Empty => 0,
             };
 
-            total += space_value * board_size.pow(index + 1);
+            total += space_value * board_size.pow(board_size - index);
 
             index += 1;
         }
