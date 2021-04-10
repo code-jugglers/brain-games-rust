@@ -77,17 +77,13 @@ impl Board {
         let mut total: u32 = 0;
 
         for space in &self.spaces {
-            match space {
-                &BoardSpaceState::Player(Player::X) => {
-                    total += 2 * board_size.pow(board_size - index);
-                }
-                &BoardSpaceState::Player(Player::O) => {
-                    total += 1 * board_size.pow(board_size - index)
-                }
-                &BoardSpaceState::Empty => {
-                    total += 0;
-                }
-            }
+            let space_value = match space {
+                &BoardSpaceState::Player(Player::X) => 2,
+                &BoardSpaceState::Player(Player::O) => 1,
+                &BoardSpaceState::Empty => 0,
+            };
+
+            total += space_value * board_size.pow(index + 1);
 
             index += 1;
         }
