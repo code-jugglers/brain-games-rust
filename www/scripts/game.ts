@@ -22,11 +22,11 @@ export class GameWorker extends Worker {
   }
 
   get_board(): Promise<string> {
-    return this.run_command(Action.GetBoard);
+    return this.run_command<string>(Action.GetBoard);
   }
 
   play_x(index: number) {
-    return this.run_command(Action.PlayX, index);
+    return this.run_command<string>(Action.PlayX, index);
   }
 
   play_bot_x() {
@@ -34,15 +34,15 @@ export class GameWorker extends Worker {
   }
 
   play_o(index: number) {
-    return this.run_command(Action.PlayO, index);
+    return this.run_command<string>(Action.PlayO, index);
   }
 
   reset_board() {
     return this.run_command(Action.ResetBoard);
   }
 
-  private run_command(action: string, payload?: any) {
-    return new Promise<any>((resolve) => {
+  private run_command<T = void>(action: string, payload?: any) {
+    return new Promise<T>((resolve) => {
       const listen = (msg: MessageEvent) => {
         if (msg.data.status === `${action}_COMPLETE`) {
           this.removeEventListener('message', listen);
