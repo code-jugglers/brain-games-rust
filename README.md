@@ -84,7 +84,7 @@ When allowing the bot to play as X you can see that it tends to try and build st
 For example:
 | | | |
 |-|-|-|
-|O| |X|
+| |O|X|
 | |X|X|
 |O| | |
 
