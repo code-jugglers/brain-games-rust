@@ -1,10 +1,10 @@
-import { Board } from './board';
+import { BoardElement } from './board';
 import { GameWorker } from './game';
 
 const train_btn = document.getElementById('train') as HTMLButtonElement;
 const reset_btn = document.getElementById('reset') as HTMLButtonElement;
 const play_o_btn = document.getElementById('play_o') as HTMLButtonElement;
-const board = document.getElementById('board') as Board;
+const board = document.getElementById('board') as BoardElement;
 const title = document.getElementById('title') as HTMLElement;
 
 let player = 'X';
