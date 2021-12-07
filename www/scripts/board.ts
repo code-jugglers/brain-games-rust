@@ -1,54 +1,39 @@
-import {
-  component,
-  property,
-  JoistElement,
-  get,
-  State,
-} from '@joist/component';
-import { template, html } from '@joist/component/lit-html';
+import { observable, observe, OnChange } from '@joist/observable';
+import { render, html } from 'lit-html';
 
-interface XoBoardState {
-  board_state: string;
-  disabled: boolean;
-}
+@observable
+export class BoardElement extends HTMLElement implements OnChange {
+  @observe board_state = '---------';
+  @observe disabled = false;
 
-@component<XoBoardState>({
-  tagName: 'xo-board',
-  state: {
-    board_state: '---------',
-    disabled: false,
-  },
-  render: template(({ state: { board_state, disabled } }) => {
+  connectedCallback() {
+    this.render();
+  }
+
+  onChange() {
+    this.render();
+  }
+
+  private template() {
     return html`
-      ${board_state.split('').map((space, i) => {
+      ${this.board_state.split('').map((space, i) => {
         return html`
           ${i > 0 && i % 3 === 0 ? html`<br />` : ''}
-
           <button
             class=${space}
             data-index=${i}
-            .disabled=${space !== '-' || disabled}
+            .disabled=${space !== '-' || this.disabled}
           >
             ${space !== '-' ? space : ''}
           </button>
         `;
       })}
     `;
-  }),
-})
-export class Board extends JoistElement {
-  @get(State)
-  state!: State<XoBoardState>;
+  }
 
-  @property()
-  board_state: string = '---------';
-
-  @property()
-  disabled: boolean = false;
-
-  onPropChanges() {
-    const { board_state, disabled } = this;
-
-    this.state.setValue({ board_state, disabled });
+  private render() {
+    render(this.template(), this);
   }
 }
+
+customElements.define('xo-board', BoardElement);
