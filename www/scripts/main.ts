@@ -1,4 +1,4 @@
-import { BoardElement } from './board';
+import { BoardChangeEvent, BoardElement } from './board';
 import { GameWorker } from './game';
 
 const train_btn = document.getElementById('train') as HTMLButtonElement;
@@ -20,7 +20,7 @@ export async function main() {
   train_btn.addEventListener('click', onTrainClick);
   reset_btn.addEventListener('click', onResetClick);
   play_o_btn.addEventListener('click', onPlayO);
-  board.addEventListener('click', onBoardClick);
+  board.addEventListener('boardchange', onBoardChange);
 
   async function onTrainClick() {
     title.innerHTML = 'Let me practice for a bit.';
@@ -75,19 +75,19 @@ export async function main() {
     await update();
   }
 
-  async function onBoardClick(e: MouseEvent) {
+  async function onBoardChange(e: Event) {
+    const evt = e as BoardChangeEvent;
+
     play_o_btn.disabled = true;
 
     const target = e.target as HTMLElement;
 
-    const index = Number(target.dataset.index);
-
     let winner;
 
     if (player === 'X') {
-      winner = await worker.play_x(index);
+      winner = await worker.play_x(evt.index);
     } else {
-      winner = await worker.play_o(index);
+      winner = await worker.play_o(evt.index);
     }
 
     await update();
