@@ -21,9 +21,9 @@
   },
   "homepage": "https://github.com/deebloo/brain-games-rust#readme",
   "dependencies": {
-    "@joist/di": "alpha",
-    "@joist/observable": "alpha",
-    "@joist/styled": "alpha",
+    "@joist/di": "beta",
+    "@joist/observable": "beta",
+    "@joist/styled": "beta",
     "lit-html": "^1.3.0"
   },
   "devDependencies": {

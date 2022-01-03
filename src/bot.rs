@@ -4,16 +4,32 @@ use std::collections::HashMap;
 
 pub type BotMemory = HashMap<u32, Vec<u32>>;
 
+pub struct BotConfig {
+    pub player: BoardSpaceState,
+    pub winning_move_boost: Option<u32>,
+    pub win_boost: Option<u32>,
+    pub loose_boost: Option<u32>,
+    pub tie_boost: Option<u32>
+}
+
 pub struct Bot {
     pub memory: BotMemory,
     pub player: BoardSpaceState,
+    pub winning_move_boost: u32,
+    pub win_boost: u32,
+    pub loose_boost: u32,
+    pub tie_boost: u32
 }
 
 impl Bot {
-    pub fn new(player: BoardSpaceState) -> Bot {
+    pub fn new(config: BotConfig) -> Bot {
         Bot {
             memory: HashMap::new(),
-            player,
+            player: config.player,
+            winning_move_boost: config.winning_move_boost.unwrap_or(1000),
+            win_boost: config.win_boost.unwrap_or(3),
+            loose_boost: config.loose_boost.unwrap_or(1),
+            tie_boost: config.tie_boost.unwrap_or(0)
         }
     }
 
@@ -65,16 +81,16 @@ impl Bot {
                 game_state_entry[m.index] = if did_win {
                     // If winning move give extreme boost
                     if i == max_moves - 1 {
-                        game_state_entry[m.index] + 1000
+                        game_state_entry[m.index] + self.winning_move_boost
                     } else {
-                        game_state_entry[m.index] + 3
+                        game_state_entry[m.index] + self.win_boost
                     }
                 } else if game_state_entry[m.index] > 0 {
                     // if the bot has lost the game 0 out the last move it made since it failed to prevent a loss
                     if i == max_moves - 2 {
                         0
                     } else {
-                        game_state_entry[m.index] - 1
+                        game_state_entry[m.index] - self.loose_boost
                     }
                 } else {
                     0

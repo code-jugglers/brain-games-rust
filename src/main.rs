@@ -3,13 +3,27 @@ mod bot;
 mod play;
 
 use board::{Board, BoardSpaceState, GameResult, Player};
-use bot::Bot;
+use bot::{Bot, BotConfig};
 use std::fs;
 
 fn main() {
     let mut board = Board::new();
-    let mut player_x = Bot::new(BoardSpaceState::Player(Player::X));
-    let mut player_o = Bot::new(BoardSpaceState::Player(Player::O));
+    
+    let mut player_x = Bot::new(BotConfig { 
+        player: BoardSpaceState::Player(Player::X), 
+        winning_move_boost: None, 
+        win_boost: None, 
+        loose_boost: None, 
+        tie_boost: None 
+    });
+    
+    let mut player_o = Bot::new(BotConfig { 
+        player: BoardSpaceState::Player(Player::O), 
+        winning_move_boost: None, 
+        win_boost: None, 
+        loose_boost: None, 
+        tie_boost: None 
+    });
 
     let mut x_win = 0;
     let mut o_win = 0;

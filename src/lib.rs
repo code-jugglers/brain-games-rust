@@ -3,7 +3,7 @@ mod bot;
 mod play;
 
 use board::{Board, BoardSpaceState, GameResult, Player};
-use bot::Bot;
+use bot::{Bot, BotConfig};
 use wasm_bindgen::prelude::*;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -24,8 +24,20 @@ impl Game {
     pub fn new() -> Game {
         Game {
             board: Board::new(),
-            player_x: Bot::new(BoardSpaceState::Player(Player::X)),
-            player_o: Bot::new(BoardSpaceState::Player(Player::O)),
+            player_x: Bot::new(BotConfig { 
+                player: BoardSpaceState::Player(Player::X), 
+                winning_move_boost: None, 
+                win_boost: None, 
+                loose_boost: None, 
+                tie_boost: None 
+            }),
+            player_o: Bot::new(BotConfig { 
+                player: BoardSpaceState::Player(Player::O), 
+                winning_move_boost: None, 
+                win_boost: None, 
+                loose_boost: None, 
+                tie_boost: None 
+            })
         }
     }
 
