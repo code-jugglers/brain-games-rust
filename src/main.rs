@@ -8,21 +8,21 @@ use std::fs;
 
 fn main() {
     let mut board = Board::new();
-    
-    let mut player_x = Bot::new(BotConfig { 
-        player: BoardSpaceState::Player(Player::X), 
-        winning_move_boost: None, 
-        win_boost: None, 
-        loose_boost: None, 
-        tie_boost: None 
+
+    let mut player_x = Bot::new(BotConfig {
+        player: BoardSpaceState::Player(Player::X),
+        winning_move_boost: None,
+        win_boost: None,
+        loose_boost: None,
+        tie_boost: None,
     });
-    
-    let mut player_o = Bot::new(BotConfig { 
-        player: BoardSpaceState::Player(Player::O), 
-        winning_move_boost: None, 
-        win_boost: None, 
-        loose_boost: None, 
-        tie_boost: None 
+
+    let mut player_o = Bot::new(BotConfig {
+        player: BoardSpaceState::Player(Player::O),
+        winning_move_boost: None,
+        win_boost: None,
+        loose_boost: None,
+        tie_boost: None,
     });
 
     let mut x_win = 0;
@@ -30,16 +30,11 @@ fn main() {
     let mut tie = 0;
 
     for _ in 1..=500000 {
-        let res = play::play(&mut board, &mut player_x, &mut player_o);
-
-        if let Some(res) = res {
-            if res == GameResult::XWin {
-                x_win += 1;
-            } else if res == GameResult::OWin {
-                o_win += 1;
-            } else {
-                tie += 1;
-            }
+        match play::play(&mut board, &mut player_x, &mut player_o) {
+            Some(GameResult::Winner(Player::X)) => x_win += 1,
+            Some(GameResult::Winner(Player::O)) => o_win += 1,
+            Some(GameResult::Tie) => tie += 1,
+            None => {}
         }
 
         board = Board::new();

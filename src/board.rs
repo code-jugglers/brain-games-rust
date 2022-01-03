@@ -22,18 +22,17 @@ impl fmt::Display for BoardSpaceState {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum GameResult {
-    XWin,
-    OWin,
+    Winner(Player),
     Tie,
 }
 
 impl fmt::Display for GameResult {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            GameResult::XWin => write!(f, "X"),
-            GameResult::OWin => write!(f, "O"),
+            GameResult::Winner(Player::X) => write!(f, "X"),
+            GameResult::Winner(Player::O) => write!(f, "O"),
             GameResult::Tie => write!(f, "TIE"),
         }
     }
@@ -192,9 +191,9 @@ impl Board {
 
         if space_1 == space_2 && space_2 == space_3 {
             if space_1 == BoardSpaceState::Player(Player::X) {
-                return Some(GameResult::XWin);
+                return Some(GameResult::Winner(Player::X));
             } else if space_1 == BoardSpaceState::Player(Player::O) {
-                return Some(GameResult::OWin);
+                return Some(GameResult::Winner(Player::O));
             }
         }
 
@@ -320,7 +319,10 @@ mod tests {
         board.set(row, 1, BoardSpaceState::Player(Player::X));
         board.set(row, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(board.determine_winner(), Some(GameResult::XWin));
+        assert_eq!(
+            board.determine_winner(),
+            Some(GameResult::Winner(Player::X))
+        );
     }
 
     #[test]
@@ -332,7 +334,10 @@ mod tests {
         board.set(row, 1, BoardSpaceState::Player(Player::X));
         board.set(row, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(board.determine_winner(), Some(GameResult::XWin));
+        assert_eq!(
+            board.determine_winner(),
+            Some(GameResult::Winner(Player::X))
+        );
     }
 
     #[test]
@@ -344,7 +349,10 @@ mod tests {
         board.set(row, 1, BoardSpaceState::Player(Player::X));
         board.set(row, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(board.determine_winner(), Some(GameResult::XWin));
+        assert_eq!(
+            board.determine_winner(),
+            Some(GameResult::Winner(Player::X))
+        );
     }
 
     #[test]
@@ -356,7 +364,10 @@ mod tests {
         board.set(1, col, BoardSpaceState::Player(Player::O));
         board.set(2, col, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(board.determine_winner(), Some(GameResult::OWin));
+        assert_eq!(
+            board.determine_winner(),
+            Some(GameResult::Winner(Player::O))
+        );
     }
 
     #[test]
@@ -368,7 +379,10 @@ mod tests {
         board.set(1, col, BoardSpaceState::Player(Player::O));
         board.set(2, col, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(board.determine_winner(), Some(GameResult::OWin));
+        assert_eq!(
+            board.determine_winner(),
+            Some(GameResult::Winner(Player::O))
+        );
     }
 
     #[test]
@@ -380,7 +394,10 @@ mod tests {
         board.set(1, col, BoardSpaceState::Player(Player::O));
         board.set(2, col, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(board.determine_winner(), Some(GameResult::OWin));
+        assert_eq!(
+            board.determine_winner(),
+            Some(GameResult::Winner(Player::O))
+        );
     }
 
     #[test]
@@ -391,7 +408,10 @@ mod tests {
         board.set(1, 1, BoardSpaceState::Player(Player::X));
         board.set(2, 2, BoardSpaceState::Player(Player::X));
 
-        assert_eq!(board.determine_winner(), Some(GameResult::XWin));
+        assert_eq!(
+            board.determine_winner(),
+            Some(GameResult::Winner(Player::X))
+        );
     }
 
     #[test]
@@ -402,6 +422,9 @@ mod tests {
         board.set(1, 1, BoardSpaceState::Player(Player::O));
         board.set(2, 0, BoardSpaceState::Player(Player::O));
 
-        assert_eq!(board.determine_winner(), Some(GameResult::OWin));
+        assert_eq!(
+            board.determine_winner(),
+            Some(GameResult::Winner(Player::O))
+        );
     }
 }

@@ -27,28 +27,10 @@ pub fn play(board: &mut Board, player_x: &mut Bot, player_o: &mut Bot) -> Option
         moves_available = board.moves_available();
 
         if let Some(res) = winner {
-            match res {
-                GameResult::XWin => {
-                    player_x.learn(&board, true);
-                    player_o.learn(&board, false);
-
-                    return Some(GameResult::XWin);
-                }
-                GameResult::OWin => {
-                    player_x.learn(&board, false);
-                    player_o.learn(&board, true);
-
-                    return Some(GameResult::OWin);
-                }
-                GameResult::Tie => {
-                    // player_x.learn(&board, false);
-                    // player_o.learn(&board, false);
-
-                    return Some(GameResult::Tie);
-                }
-            }
+            player_x.learn(&board, res);
+            player_o.learn(&board, res);
         }
     }
 
-    None
+    winner
 }

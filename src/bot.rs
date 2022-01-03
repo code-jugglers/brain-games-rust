@@ -1,4 +1,4 @@
-use crate::board::{Board, BoardSpaceState};
+use crate::board::{Board, BoardSpaceState, GameResult};
 use rand::Rng;
 use std::collections::HashMap;
 
@@ -9,7 +9,7 @@ pub struct BotConfig {
     pub winning_move_boost: Option<u32>,
     pub win_boost: Option<u32>,
     pub loose_boost: Option<u32>,
-    pub tie_boost: Option<u32>
+    pub tie_boost: Option<u32>,
 }
 
 pub struct Bot {
@@ -18,7 +18,7 @@ pub struct Bot {
     pub winning_move_boost: u32,
     pub win_boost: u32,
     pub loose_boost: u32,
-    pub tie_boost: u32
+    pub tie_boost: u32,
 }
 
 impl Bot {
@@ -29,7 +29,7 @@ impl Bot {
             winning_move_boost: config.winning_move_boost.unwrap_or(1000),
             win_boost: config.win_boost.unwrap_or(3),
             loose_boost: config.loose_boost.unwrap_or(1),
-            tie_boost: config.tie_boost.unwrap_or(0)
+            tie_boost: config.tie_boost.unwrap_or(0),
         }
     }
 
@@ -69,8 +69,13 @@ impl Bot {
         None
     }
 
-    pub fn learn(&mut self, board: &Board, did_win: bool) {
+    pub fn learn(&mut self, board: &Board, game_result: GameResult) {
         let max_moves = board.moves.len();
+
+        let did_win = match game_result {
+            GameResult::Winner(res) => self.player == BoardSpaceState::Player(res),
+            GameResult::Tie => false,
+        };
 
         for (i, m) in board.moves.iter().enumerate() {
             if m.space == self.player {

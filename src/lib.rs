@@ -24,20 +24,20 @@ impl Game {
     pub fn new() -> Game {
         Game {
             board: Board::new(),
-            player_x: Bot::new(BotConfig { 
-                player: BoardSpaceState::Player(Player::X), 
-                winning_move_boost: None, 
-                win_boost: None, 
-                loose_boost: None, 
-                tie_boost: None 
+            player_x: Bot::new(BotConfig {
+                player: BoardSpaceState::Player(Player::X),
+                winning_move_boost: None,
+                win_boost: None,
+                loose_boost: None,
+                tie_boost: None,
             }),
-            player_o: Bot::new(BotConfig { 
-                player: BoardSpaceState::Player(Player::O), 
-                winning_move_boost: None, 
-                win_boost: None, 
-                loose_boost: None, 
-                tie_boost: None 
-            })
+            player_o: Bot::new(BotConfig {
+                player: BoardSpaceState::Player(Player::O),
+                winning_move_boost: None,
+                win_boost: None,
+                loose_boost: None,
+                tie_boost: None,
+            }),
         }
     }
 
@@ -118,16 +118,11 @@ impl Game {
         let mut tie = 0;
 
         for _ in 1..=game_count {
-            let result = play::play(&mut self.board, &mut self.player_x, &mut self.player_o);
-
-            if let Some(res) = result {
-                if res == GameResult::XWin {
-                    x_win += 1;
-                } else if res == GameResult::OWin {
-                    o_win += 1;
-                } else {
-                    tie += 1;
-                }
+            match play::play(&mut self.board, &mut self.player_x, &mut self.player_o) {
+                Some(GameResult::Winner(Player::X)) => x_win += 1,
+                Some(GameResult::Winner(Player::O)) => o_win += 1,
+                Some(GameResult::Tie) => tie += 1,
+                None => {}
             }
 
             self.reset_board();
