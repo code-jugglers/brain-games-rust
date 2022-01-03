@@ -2,23 +2,23 @@ use crate::board::{Board, BoardSpaceState, GameResult};
 use rand::Rng;
 use std::collections::HashMap;
 
-pub type BotMemory = HashMap<u32, Vec<u32>>;
+pub type BotMemory = HashMap<u32, Vec<i32>>;
 
 pub struct BotConfig {
     pub player: BoardSpaceState,
-    pub winning_move_boost: Option<u32>,
-    pub win_boost: Option<u32>,
-    pub loose_boost: Option<u32>,
-    pub tie_boost: Option<u32>,
+    pub winning_move_boost: Option<i32>,
+    pub win_boost: Option<i32>,
+    pub loose_boost: Option<i32>,
+    pub tie_boost: Option<i32>,
 }
 
 pub struct Bot {
     pub memory: BotMemory,
     pub player: BoardSpaceState,
-    pub winning_move_boost: u32,
-    pub win_boost: u32,
-    pub loose_boost: u32,
-    pub tie_boost: u32,
+    pub winning_move_boost: i32,
+    pub win_boost: i32,
+    pub loose_boost: i32,
+    pub tie_boost: i32,
 }
 
 impl Bot {
@@ -28,7 +28,7 @@ impl Bot {
             player: config.player,
             winning_move_boost: config.winning_move_boost.unwrap_or(1000),
             win_boost: config.win_boost.unwrap_or(3),
-            loose_boost: config.loose_boost.unwrap_or(1),
+            loose_boost: config.loose_boost.unwrap_or(-1),
             tie_boost: config.tie_boost.unwrap_or(0),
         }
     }
@@ -84,34 +84,39 @@ impl Bot {
 
                 // this should be safe. If we panic here something went wrong as the bot was deciding moves
                 game_state_entry[m.index] = if did_win {
-                    // If winning move give extreme boost
+                    // give boosts for winning
+
                     if i == max_moves - 1 {
+                        // If winning move give larger boost
                         game_state_entry[m.index] + self.winning_move_boost
                     } else {
+                        // all other moves get standard boost
                         game_state_entry[m.index] + self.win_boost
                     }
+                } else if game_result == GameResult::Tie {
+                    // add different boost if the game is a tie
+                    game_state_entry[m.index] + self.tie_boost
                 } else if game_state_entry[m.index] > 0 {
                     // if the bot has lost the game 0 out the last move it made since it failed to prevent a loss
                     if i == max_moves - 2 {
                         0
                     } else {
-                        game_state_entry[m.index] - self.loose_boost
+                        game_state_entry[m.index] + self.loose_boost
                     }
                 } else {
                     0
                 };
 
-                let all_0 = game_state_entry.iter().all(|&val| val <= 0);
-
                 // if all values are 0 remove it and let the bot start over
-                if all_0 {
+                // This keeps the bot for "dying"
+                if game_state_entry.iter().all(|&val| val <= 0) {
                     self.memory.remove(&m.key);
                 }
             }
         }
     }
 
-    pub fn get_default_moves(board: &Board) -> Vec<u32> {
+    pub fn get_default_moves(board: &Board) -> Vec<i32> {
         let mut spaces = vec![0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         for available_space in board.get_available_spaces() {
