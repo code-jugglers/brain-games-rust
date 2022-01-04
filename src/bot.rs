@@ -119,7 +119,7 @@ impl Bot {
         let mut spaces = vec![0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         for available_space in board.get_available_spaces() {
-            spaces[available_space] = 10
+            spaces[available_space] = 10;
         }
 
         spaces
