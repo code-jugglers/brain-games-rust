@@ -12,13 +12,19 @@ pub enum BoardSpaceState {
     Player(Player),
 }
 
+impl BoardSpaceState {
+    pub fn to_str(&self) -> &str {
+        match self {
+            BoardSpaceState::Player(Player::X) => "X",
+            BoardSpaceState::Player(Player::O) => "O",
+            BoardSpaceState::Empty => "-",
+        }
+    }
+}
+
 impl fmt::Display for BoardSpaceState {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            BoardSpaceState::Player(Player::X) => write!(f, "X"),
-            BoardSpaceState::Player(Player::O) => write!(f, "O"),
-            BoardSpaceState::Empty => write!(f, "-"),
-        }
+        write!(f, "{}", self.to_str())
     }
 }
 
@@ -202,6 +208,23 @@ impl Board {
 
     fn get_index(&self, row: usize, col: usize) -> usize {
         row * 3 + col
+    }
+}
+
+impl fmt::Display for Board {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut grid = String::new();
+
+        for (i, space) in self.spaces.iter().enumerate() {
+            if i % 3 == 0 {
+                grid += "\n"
+            }
+
+            grid += space.to_str();
+            grid += " ";
+        }
+
+        write!(f, "{}", grid)
     }
 }
 
