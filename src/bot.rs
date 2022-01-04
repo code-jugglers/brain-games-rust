@@ -59,16 +59,14 @@ impl Bot {
         };
 
         for (index, current) in memory.iter().enumerate() {
-            if *current > 0 && random <= *current {
+            let val = *current;
+
+            if val > 0 && random <= val {
                 return Some(index);
             }
 
             // account for negative numbers in arrays
-            if *current >= 0 {
-                random = random - *current;
-            } else {
-                random = random + *current;
-            }
+            random = if val >= 0 { random - val } else { random + val }
         }
 
         None
