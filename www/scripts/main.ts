@@ -6,6 +6,7 @@ const reset_btn = document.getElementById('reset') as HTMLButtonElement;
 const play_o_btn = document.getElementById('play_o') as HTMLButtonElement;
 const board = document.getElementById('board') as BoardElement;
 const title = document.getElementById('title') as HTMLElement;
+const config_form = document.getElementById('config_form') as HTMLFormElement;
 
 let player = 'X';
 let has_trained = false;
@@ -41,7 +42,15 @@ export async function main() {
       train_btn.innerHTML = timer.toString();
     }, 1000);
 
-    const training_result = await worker.train();
+    const data = new FormData(config_form);
+
+    const training_result = await worker.train({
+      game_count: Number(data.get('game_count')!),
+      winning_move_boost: Number(data.get('winning_move_boost')!),
+      win_boost: Number(data.get('win_boost')!),
+      loose_boost: Number(data.get('loose_boost')!),
+      tie_boost: Number(data.get('tie_boost')!),
+    });
 
     console.log(training_result);
 

@@ -11,12 +11,12 @@ main().then(() => {
 export async function main() {
   await init();
 
-  const [bot_x_brain, bot_o_brain] = await Promise.all([
-    fetch('../bot_x_brain.bin').then((res) => res.arrayBuffer()),
-    fetch('../bot_o_brain.bin').then((res) => res.arrayBuffer()),
-  ]).then((res) => res.map((buffer) => new Uint8Array(buffer)));
+  // const [bot_x_brain, bot_o_brain] = await Promise.all([
+  //   fetch('../bot_x_brain.bin').then((res) => res.arrayBuffer()),
+  //   fetch('../bot_o_brain.bin').then((res) => res.arrayBuffer()),
+  // ]).then((res) => res.map((buffer) => new Uint8Array(buffer)));
 
-  const game = Game.new(); // initialize game
+  let game = new Game(); // initialize game
 
   // game.load_x_brain(bot_x_brain);
   // game.load_o_brain(bot_o_brain);
@@ -27,9 +27,19 @@ export async function main() {
   self.onmessage = (msg: MessageEvent) => {
     switch (msg.data.action) {
       case Action.Train:
+        const {
+          game_count,
+          winning_move_boost,
+          win_boost,
+          loose_boost,
+          tie_boost,
+        } = msg.data.payload;
+
+        game = new Game(winning_move_boost, win_boost, loose_boost, tie_boost);
+
         self.postMessage({
           status: ActionComplete.Train,
-          payload: game.train(500000),
+          payload: game.train(game_count),
         });
 
         break;

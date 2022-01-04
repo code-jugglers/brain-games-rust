@@ -63,7 +63,12 @@ impl Bot {
                 return Some(index);
             }
 
-            random = random - *current;
+            // account for negative numbers in arrays
+            if *current >= 0 {
+                random = random - *current;
+            } else {
+                random = random + *current;
+            }
         }
 
         None
@@ -85,7 +90,6 @@ impl Bot {
                 // this should be safe. If we panic here something went wrong as the bot was deciding moves
                 game_state_entry[m.index] = if did_win {
                     // give boosts for winning
-
                     if i == max_moves - 1 {
                         // If winning move give larger boost
                         game_state_entry[m.index] + self.winning_move_boost
@@ -96,15 +100,12 @@ impl Bot {
                 } else if game_result == GameResult::Tie {
                     // add different boost if the game is a tie
                     game_state_entry[m.index] + self.tie_boost
-                } else if game_state_entry[m.index] > 0 {
-                    // if the bot has lost the game 0 out the last move it made since it failed to prevent a loss
-                    if i == max_moves - 2 {
-                        0
-                    } else {
-                        game_state_entry[m.index] + self.loose_boost
-                    }
-                } else {
+                } else if i == max_moves - 2 {
+                    // bot lost! if the last move made lead to loss 0 it out
                     0
+                } else {
+                    // standard move during a loss get loose boost applied
+                    game_state_entry[m.index] + self.loose_boost
                 };
 
                 // if all values are 0 remove it and let the bot start over

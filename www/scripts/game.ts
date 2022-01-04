@@ -1,5 +1,13 @@
 import { Action } from './actions';
 
+export interface TrainConfig {
+  game_count?: number;
+  winning_move_boost?: number;
+  win_boost?: number;
+  loose_boost?: number;
+  tie_boost?: number;
+}
+
 export class GameWorker extends Worker {
   static create() {
     return new Promise<GameWorker>((resolve) => {
@@ -17,8 +25,8 @@ export class GameWorker extends Worker {
     super(new URL('game.worker.js', import.meta.url), { type: 'module' });
   }
 
-  train() {
-    return this.run_command(Action.Train);
+  train(train_config: TrainConfig) {
+    return this.run_command(Action.Train, train_config);
   }
 
   get_board(): Promise<string> {

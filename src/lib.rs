@@ -21,22 +21,28 @@ pub struct Game {
 
 #[wasm_bindgen]
 impl Game {
-    pub fn new() -> Game {
-        Game {
+    #[wasm_bindgen(constructor)]
+    pub fn new(
+        winning_move_boost: Option<i32>,
+        win_boost: Option<i32>,
+        loose_boost: Option<i32>,
+        tie_boost: Option<i32>,
+    ) -> Self {
+        Self {
             board: Board::new(),
             player_x: Bot::new(BotConfig {
                 player: BoardSpaceState::Player(Player::X),
-                winning_move_boost: None,
-                win_boost: None,
-                loose_boost: None,
-                tie_boost: None,
+                winning_move_boost: winning_move_boost,
+                win_boost: win_boost,
+                loose_boost: loose_boost,
+                tie_boost: tie_boost,
             }),
             player_o: Bot::new(BotConfig {
                 player: BoardSpaceState::Player(Player::O),
-                winning_move_boost: None,
-                win_boost: None,
-                loose_boost: None,
-                tie_boost: None,
+                winning_move_boost: winning_move_boost,
+                win_boost: win_boost,
+                loose_boost: loose_boost,
+                tie_boost: tie_boost,
             }),
         }
     }
