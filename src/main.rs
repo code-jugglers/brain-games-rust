@@ -2,7 +2,7 @@ mod board;
 mod bot;
 mod play;
 
-use board::{Board, BoardSpaceState, GameResult, Player};
+use board::{Board, GameResult, Player};
 use bot::{Bot, BotConfig};
 use std::fs;
 
@@ -10,7 +10,7 @@ fn main() {
     let mut board = Board::new();
 
     let mut player_x = Bot::new(BotConfig {
-        player: BoardSpaceState::Player(Player::X),
+        player: Player::X,
         winning_move_boost: None,
         win_boost: None,
         loose_boost: None,
@@ -18,7 +18,7 @@ fn main() {
     });
 
     let mut player_o = Bot::new(BotConfig {
-        player: BoardSpaceState::Player(Player::O),
+        player: Player::O,
         winning_move_boost: None,
         win_boost: None,
         loose_boost: None,

@@ -1,11 +1,11 @@
-use crate::board::{Board, BoardSpaceState, GameResult};
+use crate::board::{Board, BoardSpaceState, GameResult, Player};
 use rand::Rng;
 use std::collections::HashMap;
 
 pub type BotMemory = HashMap<u32, Vec<i32>>;
 
 pub struct BotConfig {
-    pub player: BoardSpaceState,
+    pub player: Player,
     pub winning_move_boost: Option<i32>,
     pub win_boost: Option<i32>,
     pub loose_boost: Option<i32>,
@@ -14,7 +14,7 @@ pub struct BotConfig {
 
 pub struct Bot {
     pub memory: BotMemory,
-    pub player: BoardSpaceState,
+    pub player: Player,
     pub winning_move_boost: i32,
     pub win_boost: i32,
     pub loose_boost: i32,
@@ -76,12 +76,12 @@ impl Bot {
         let max_moves = board.moves.len();
 
         let did_win = match game_result {
-            GameResult::Winner(res) => self.player == BoardSpaceState::Player(res),
+            GameResult::Winner(res) => self.player == res,
             GameResult::Tie => false,
         };
 
         for (i, m) in board.moves.iter().enumerate() {
-            if m.space == self.player {
+            if m.space == BoardSpaceState::Player(self.player) {
                 let key = m.key.clone();
                 let game_state_entry = self.memory.entry(key).or_insert(vec![]);
 

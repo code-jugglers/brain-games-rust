@@ -31,14 +31,14 @@ impl Game {
         Self {
             board: Board::new(),
             player_x: Bot::new(BotConfig {
-                player: BoardSpaceState::Player(Player::X),
+                player: Player::X,
                 winning_move_boost: winning_move_boost,
                 win_boost: win_boost,
                 loose_boost: loose_boost,
                 tie_boost: tie_boost,
             }),
             player_o: Bot::new(BotConfig {
-                player: BoardSpaceState::Player(Player::O),
+                player: Player::O,
                 winning_move_boost: winning_move_boost,
                 win_boost: win_boost,
                 loose_boost: loose_boost,
