@@ -14,41 +14,51 @@ export class BoardElement extends HTMLElement implements OnChange {
   static styles = [
     css`
       :host {
-        display: flex;
-        flex-wrap: wrap;
         padding: 1rem 0;
         min-height: 300px;
+        width: 100%;
       }
 
-      button {
+      * {
+        box-sizing: border-box;
+      }
+
+      .board {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .board button {
         background: none;
         border: none;
         flex: 0 0 33.333333%;
         height: calc(300px / 3);
         font-size: 1.5rem;
         cursor: pointer;
+        margin: 0;
       }
 
-      button:disabled {
+      .board button:disabled {
         background: none;
       }
 
-      button.X {
+      .board button.X {
         color: #140078;
       }
 
-      button.O {
+      .board button.O {
         color: #9c27b0;
       }
 
-      button:nth-child(2n) {
+      .board button:nth-child(2n) {
         border-left: solid 1px gray;
         border-right: solid 1px gray;
       }
 
-      button:nth-child(5),
-      button:nth-child(6),
-      button:nth-child(7) {
+      .board button:nth-child(5),
+      .board button:nth-child(6),
+      .board button:nth-child(7) {
         border-top: solid 1px gray;
         border-bottom: solid 1px gray;
       }
@@ -65,6 +75,7 @@ export class BoardElement extends HTMLElement implements OnChange {
   }
 
   connectedCallback() {
+    console.log('BOARD');
     this.render();
   }
 
@@ -74,18 +85,20 @@ export class BoardElement extends HTMLElement implements OnChange {
 
   private template() {
     return html`
-      ${this.board_state.split('').map((space, i) => {
-        return html`
-          ${i > 0 && i % 3 === 0 ? html`<br />` : ''}
-          <button
-            class=${space}
-            @click=${() => this.onClick(i)}
-            .disabled=${space !== '-' || this.disabled}
-          >
-            ${space !== '-' ? space : ''}
-          </button>
-        `;
-      })}
+      <div class="board">
+        ${this.board_state.split('').map((space, i) => {
+          return html`
+            ${i > 0 && i % 3 === 0 ? html`<br />` : ''}
+            <button
+              class=${space}
+              @click=${() => this.onClick(i)}
+              .disabled=${space !== '-' || this.disabled}
+            >
+              ${space !== '-' ? space : ''}
+            </button>
+          `;
+        })}
+      </div>
     `;
   }
 
