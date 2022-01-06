@@ -1,8 +1,8 @@
 mod board;
 mod bot;
-mod play;
+mod train;
 
-use board::{Board, BoardSpaceState, GameResult, Player};
+use board::{Board, GameResult, Player, Space};
 use bot::{Bot, BotConfig};
 use wasm_bindgen::prelude::*;
 
@@ -72,8 +72,7 @@ impl Game {
     }
 
     pub fn make_move_x(&mut self, index: usize) -> Option<String> {
-        self.board
-            .set_by_index(index, BoardSpaceState::Player(Player::X));
+        self.board.set_by_index(index, Space::Player(Player::X));
 
         if let Some(res) = self.board.determine_winner() {
             return Some(res.to_string());
@@ -82,7 +81,7 @@ impl Game {
         let bot_move = self.player_o.determine_move(&self.board);
 
         self.board
-            .set_by_index(bot_move.unwrap(), BoardSpaceState::Player(Player::O));
+            .set_by_index(bot_move.unwrap(), Space::Player(Player::O));
 
         if let Some(res) = self.board.determine_winner() {
             return Some(res.to_string());
@@ -95,12 +94,11 @@ impl Game {
         let bot_move = self.player_x.determine_move(&self.board);
 
         self.board
-            .set_by_index(bot_move.unwrap(), BoardSpaceState::Player(Player::X));
+            .set_by_index(bot_move.unwrap(), Space::Player(Player::X));
     }
 
     pub fn make_move_o(&mut self, index: usize) -> Option<String> {
-        self.board
-            .set_by_index(index, BoardSpaceState::Player(Player::O));
+        self.board.set_by_index(index, Space::Player(Player::O));
 
         if let Some(res) = self.board.determine_winner() {
             return Some(res.to_string());
@@ -109,7 +107,7 @@ impl Game {
         let bot_move = self.player_x.determine_move(&self.board);
 
         self.board
-            .set_by_index(bot_move.unwrap(), BoardSpaceState::Player(Player::X));
+            .set_by_index(bot_move.unwrap(), Space::Player(Player::X));
 
         if let Some(res) = self.board.determine_winner() {
             return Some(res.to_string());
@@ -124,11 +122,16 @@ impl Game {
         let mut tie = 0;
 
         for _ in 1..=game_count {
-            match play::play(&mut self.board, &mut self.player_x, &mut self.player_o) {
-                Some(GameResult::Winner(Player::X)) => x_win += 1,
-                Some(GameResult::Winner(Player::O)) => o_win += 1,
-                Some(GameResult::Tie) => tie += 1,
-                None => {}
+            match train::play(&mut self.board, &mut self.player_x, &mut self.player_o) {
+                Ok(GameResult::Winner(Player::X)) => x_win += 1,
+                Ok(GameResult::Winner(Player::O)) => o_win += 1,
+                Ok(GameResult::Tie) => tie += 1,
+                Err(player) => {
+                    println!(
+                        "{:?} was unable to find an available move on board:\n {}",
+                        player, self.board
+                    );
+                }
             }
 
             self.reset_board();

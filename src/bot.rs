@@ -1,4 +1,4 @@
-use crate::board::{Board, BoardSpaceState, GameResult, Player};
+use crate::board::{Board, GameResult, Player, Space};
 use rand::Rng;
 use std::collections::HashMap;
 
@@ -22,8 +22,8 @@ pub struct Bot {
 }
 
 impl Bot {
-    pub fn new(config: BotConfig) -> Bot {
-        Bot {
+    pub fn new(config: BotConfig) -> Self {
+        Self {
             memory: HashMap::new(),
             player: config.player,
             winning_move_boost: config.winning_move_boost.unwrap_or(1000),
@@ -50,10 +50,8 @@ impl Bot {
 
         let total = memory.iter().fold(0, |a, b| a + b);
 
-        let mut rng = rand::thread_rng();
-
         let mut random = if total > 1 {
-            rng.gen_range(1, total)
+            rand::thread_rng().gen_range(0..=total)
         } else {
             1
         };
@@ -81,9 +79,8 @@ impl Bot {
         };
 
         for (i, m) in board.moves.iter().enumerate() {
-            if m.space == BoardSpaceState::Player(self.player) {
-                let key = m.key.clone();
-                let game_state_entry = self.memory.entry(key).or_insert(vec![]);
+            if m.space == Space::Player(self.player) {
+                let game_state_entry = self.memory.entry(m.key).or_insert(vec![]);
 
                 // this should be safe. If we panic here something went wrong as the bot was deciding moves
                 game_state_entry[m.index] = if did_win {
