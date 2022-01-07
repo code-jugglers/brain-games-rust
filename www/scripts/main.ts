@@ -89,8 +89,6 @@ export async function main() {
 
     play_o_btn.disabled = true;
 
-    const target = e.target as HTMLElement;
-
     let winner;
 
     if (player === 'X') {
