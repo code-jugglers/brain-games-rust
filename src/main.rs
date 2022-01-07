@@ -2,11 +2,22 @@ mod board;
 mod bot;
 mod train;
 
-use board::{Board, GameResult, Player};
+use board::{Board, GameResult, Player, Space};
 use bot::{Bot, BotConfig};
+use clap::Parser;
 use std::fs;
+use std::io;
 
-fn main() {
+#[derive(Parser, Debug)]
+#[clap(version)]
+struct Args {
+    #[clap(short, long, default_value = "train")]
+    mode: String,
+}
+
+fn main() -> Result<(), ()> {
+    let args = Args::parse();
+
     let mut player_x = Bot::new(BotConfig {
         player: Player::X,
         winning_move_boost: None,
@@ -23,18 +34,26 @@ fn main() {
         tie_boost: None,
     });
 
-    // if let Ok(bin) = fs::read("www/bot_x_brain.bin") {
-    //     player_x.load_brain(bin);
-    // }
+    if let Ok(bin) = fs::read("www/bot_x_brain.bin") {
+        player_x.load_brain(bin);
+    }
 
-    // if let Ok(bin) = fs::read("www/bot_o_brain.bin") {
-    //     player_o.load_brain(bin);
-    // }
+    if let Ok(bin) = fs::read("www/bot_o_brain.bin") {
+        player_o.load_brain(bin);
+    }
 
-    train(&mut player_x, &mut player_o);
+    if args.mode == "train" {
+        train(&mut player_x, &mut player_o)
+    } else if args.mode == "play_as_x" {
+        play(Player::X, &mut player_o)
+    } else if args.mode == "play_as_o" {
+        play(Player::O, &mut player_x)
+    } else {
+        Err(())
+    }
 }
 
-fn train(player_x: &mut Bot, player_o: &mut Bot) {
+fn train(player_x: &mut Bot, player_o: &mut Bot) -> Result<(), ()> {
     let mut board = Board::new();
 
     let mut x_win = 0;
@@ -65,4 +84,52 @@ fn train(player_x: &mut Bot, player_o: &mut Bot) {
 
     fs::write("www/bot_x_brain.bin", player_x.export_brain()).expect("Could not save X brain");
     fs::write("www/bot_o_brain.bin", player_o.export_brain()).expect("Could not save O brain");
+
+    Ok(())
+}
+
+fn play(player: Player, bot: &mut Bot) -> Result<(), ()> {
+    let mut board = Board::new();
+    let mut current_player: Player = Player::X;
+
+    println!("{}", board);
+
+    loop {
+        if current_player == player {
+            let mut buf = String::new();
+
+            io::stdin()
+                .read_line(&mut buf)
+                .expect("could not read from stdin");
+
+            let parsed = buf
+                .trim_matches('\n')
+                .split(&['-', ' ', ':', ',', '/'][..])
+                .map(|i| i.parse::<usize>().unwrap())
+                .collect::<Vec<usize>>();
+
+            board.set(parsed[0], parsed[1], Space::Player(player));
+
+            println!("{}", board);
+        } else {
+            let m = bot.determine_move(&board).unwrap();
+
+            board.set_by_index(m, Space::Player(bot.player));
+
+            println!("{}", board);
+        }
+
+        if let Some(res) = board.determine_winner() {
+            println!("Game Over! Result: {}", res);
+
+            return Ok(());
+        }
+
+        // Toggle current player
+        current_player = if current_player == Player::X {
+            Player::O
+        } else {
+            Player::X
+        };
+    }
 }

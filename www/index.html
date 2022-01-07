@@ -61,7 +61,7 @@
       }
 
       form {
-        padding: 1rem 0 1rem 0;
+        padding: 1rem 0 0 0;
       }
 
       form label {
@@ -84,20 +84,16 @@
       <h1 id="title">Can you beat me?</h1>
 
       <div class="button-container">
-        <button id="train">Train</button>
-      </div>
-
-      <xo-board id="board"></xo-board>
-
-      <div class="button-container">
         <button id="reset">Reset</button>
 
         <button id="play_o">Play O</button>
       </div>
 
-      <a href="https://github.com/deebloo/brain-games-rust" target="_blank">
-        source code
-      </a>
+      <xo-board id="board"></xo-board>
+
+      <div class="button-container">
+        <button id="train">Train</button>
+      </div>
 
       <form id="config_form">
         <label>Game Count</label>
@@ -115,6 +111,14 @@
         <label>Tie Boost</label>
         <input name="tie_boost" value="0" />
       </form>
+
+      <a
+        href="https://github.com/deebloo/brain-games-rust"
+        target="_blank"
+        style="margin-bottom: 1rem; display: block"
+      >
+        source code
+      </a>
     </section>
 
     <script type="module">
