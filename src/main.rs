@@ -96,19 +96,9 @@ fn play(player: Player, bot: &mut Bot) -> Result<(), ()> {
 
     loop {
         if current_player == player {
-            let mut buf = String::new();
+            let input = parse_user_input();
 
-            io::stdin()
-                .read_line(&mut buf)
-                .expect("could not read from stdin");
-
-            let parsed = buf
-                .trim_matches('\n')
-                .split(&['-', ' ', ':', ',', '/'][..])
-                .map(|i| i.parse::<usize>().unwrap())
-                .collect::<Vec<usize>>();
-
-            board.set(parsed[0], parsed[1], Space::Player(player));
+            board.set(input[0], input[1], Space::Player(player));
 
             println!("{}", board);
         } else {
@@ -132,4 +122,17 @@ fn play(player: Player, bot: &mut Bot) -> Result<(), ()> {
             Player::X
         };
     }
+}
+
+fn parse_user_input() -> Vec<usize> {
+    let mut buf = String::new();
+
+    io::stdin()
+        .read_line(&mut buf)
+        .expect("could not read from stdin");
+
+    buf.trim_matches('\n')
+        .split(&['-', '.', ':', ',', '/', ' '][..])
+        .map(|i| i.parse::<usize>().unwrap())
+        .collect::<Vec<usize>>()
 }
