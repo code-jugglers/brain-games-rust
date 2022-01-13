@@ -44,40 +44,40 @@ impl fmt::Display for GameResult {
     }
 }
 
-pub type BoardState = [Space; 9];
+pub type BoardState = Vec<Space>;
 
 #[derive(Debug, PartialEq)]
 pub struct Move {
-    pub key: u32,
+    pub key: u64,
     pub space: Space,
     pub index: usize,
 }
 
 pub struct Board {
+    pub rows: usize,
+    pub cols: usize,
     pub spaces: BoardState,
     pub moves: Vec<Move>,
 }
 
 impl Board {
-    pub fn new() -> Self {
+    pub fn new(rows: usize, cols: usize) -> Self {
+        let mut spaces: Vec<Space> = Vec::new();
+
+        for _ in 0..(rows * cols) {
+            spaces.push(Space::Empty);
+        }
+
         Self {
-            spaces: [
-                Space::Empty,
-                Space::Empty,
-                Space::Empty,
-                Space::Empty,
-                Space::Empty,
-                Space::Empty,
-                Space::Empty,
-                Space::Empty,
-                Space::Empty,
-            ],
+            rows,
+            cols,
+            spaces,
             moves: vec![],
         }
     }
 
-    pub fn key_as_u32(&self) -> u32 {
-        let board_size = self.spaces.len() as u32;
+    pub fn key_as_u64(&self) -> u64 {
+        let board_size = self.spaces.len() as u64;
         let mut index = 0;
         let mut total = 0;
 
@@ -98,7 +98,7 @@ impl Board {
         total
     }
 
-    #[allow(dead_code)]
+    #[allow(unused)]
     pub fn key_as_string(&self) -> String {
         let mut result = String::new();
 
@@ -110,32 +110,42 @@ impl Board {
     }
 
     pub fn get_available_spaces(&self) -> Vec<usize> {
-        let mut available_moves = Vec::new();
+        self.spaces
+            .iter()
+            .enumerate()
+            .filter_map(|(i, space)| {
+                if *space == Space::Empty {
+                    Some(i)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<usize>>()
+    }
 
-        for (index, space) in self.spaces.iter().enumerate() {
-            if space == &Space::Empty {
-                available_moves.push(index);
+    pub fn set_by_index(&mut self, index: usize, space: Space) -> Result<(), ()> {
+        if let Some(current_space) = self.spaces.get(index) {
+            if current_space == &Space::Empty {
+                let key = self.key_as_u64();
+
+                self.moves.push(Move { index, key, space });
+
+                self.spaces[index] = space;
+
+                Ok(())
+            } else {
+                Err(())
             }
+        } else {
+            Err(())
         }
-
-        available_moves
     }
 
-    pub fn set_by_index(&mut self, index: usize, space: Space) {
-        self.moves.push(Move {
-            index,
-            key: self.key_as_u32(),
-            space,
-        });
+    #[allow(unused)]
+    pub fn set(&mut self, row: usize, col: usize, space: Space) -> Result<(), ()> {
+        let index = row * self.rows + col;
 
-        self.spaces[index] = space;
-    }
-
-    #[allow(dead_code)]
-    pub fn set(&mut self, row: usize, col: usize, space: Space) {
-        let index = self.get_index(row, col);
-
-        self.set_by_index(index, space);
+        self.set_by_index(index, space)
     }
 
     pub fn moves_available(&self) -> bool {
@@ -143,69 +153,51 @@ impl Board {
     }
 
     pub fn determine_winner(&self) -> Option<GameResult> {
-        // check rows
-        for row in 0..3 {
-            let check = self.check_spaces(
-                self.get_index(row, 0),
-                self.get_index(row, 1),
-                self.get_index(row, 2),
-            );
+        let mut rl_res: Vec<Space> = Vec::new();
+        let mut lr_res: Vec<Space> = Vec::new();
 
-            if let Some(result) = check {
-                return Some(result);
+        for x in 0..self.rows {
+            rl_res.push(self.spaces[x * self.rows + x]);
+            lr_res.push(self.spaces[x * self.rows + (self.rows - 1 - x)]);
+
+            let mut row_res: Vec<Space> = Vec::new();
+            let mut col_res: Vec<Space> = Vec::new();
+
+            for y in 0..self.cols {
+                row_res.push(self.spaces[x * self.rows + y]);
+                col_res.push(self.spaces[y * self.rows + x]);
+            }
+
+            if row_res.windows(2).all(|w| w[0] == w[1]) {
+                if let Space::Player(player) = row_res[0] {
+                    return Some(GameResult::Winner(player));
+                }
+            }
+
+            if col_res.windows(2).all(|w| w[0] == w[1]) {
+                if let Space::Player(player) = col_res[0] {
+                    return Some(GameResult::Winner(player));
+                }
             }
         }
 
-        // check cols
-        for col in 0..3 {
-            let check = self.check_spaces(
-                self.get_index(0, col),
-                self.get_index(1, col),
-                self.get_index(2, col),
-            );
-
-            if let Some(result) = check {
-                return Some(result);
+        if rl_res.windows(2).all(|w| w[0] == w[1]) {
+            if let Space::Player(player) = rl_res[0] {
+                return Some(GameResult::Winner(player));
             }
         }
 
-        // check diag L -> R
-        if let Some(result) = self.check_spaces(0, 4, 8) {
-            return Some(result);
+        if lr_res.windows(2).all(|w| w[0] == w[1]) {
+            if let Space::Player(player) = lr_res[0] {
+                return Some(GameResult::Winner(player));
+            }
         }
 
-        // check diag R -> L
-        if let Some(result) = self.check_spaces(2, 4, 6) {
-            return Some(result);
-        }
-
-        let moves_available = self.moves_available();
-
-        if !moves_available {
+        if !self.moves_available() {
             return Some(GameResult::Tie);
         }
 
         None
-    }
-
-    fn check_spaces(&self, i_1: usize, i_2: usize, i_3: usize) -> Option<GameResult> {
-        let space_1 = self.spaces[i_1];
-        let space_2 = self.spaces[i_2];
-        let space_3 = self.spaces[i_3];
-
-        if space_1 == space_2 && space_2 == space_3 {
-            if space_1 == Space::Player(Player::X) {
-                return Some(GameResult::Winner(Player::X));
-            } else if space_1 == Space::Player(Player::O) {
-                return Some(GameResult::Winner(Player::O));
-            }
-        }
-
-        None
-    }
-
-    fn get_index(&self, row: usize, col: usize) -> usize {
-        row * 3 + col
     }
 }
 
@@ -214,7 +206,7 @@ impl fmt::Display for Board {
         let mut grid = String::new();
 
         for (i, space) in self.spaces.iter().enumerate() {
-            if i % 3 == 0 {
+            if i % self.rows == 0 {
                 grid += "\n"
             }
 
@@ -232,7 +224,7 @@ mod tests {
 
     #[test]
     fn should_set_by_index() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
 
         board.set_by_index(0, Space::Player(Player::X));
 
@@ -254,7 +246,7 @@ mod tests {
 
     #[test]
     fn should_set_by_row_col() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
 
         board.set(0, 0, Space::Player(Player::X));
         board.set(1, 1, Space::Player(Player::X));
@@ -278,7 +270,7 @@ mod tests {
 
     #[test]
     fn should_track_past_moves() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
 
         board.set(0, 0, Space::Player(Player::X));
         board.set(1, 1, Space::Player(Player::O));
@@ -289,17 +281,17 @@ mod tests {
             [
                 Move {
                     index: 0,
-                    key: 0 as u32,
+                    key: 0 as u64,
                     space: Space::Player(Player::X)
                 },
                 Move {
                     index: 4,
-                    key: 2 as u32,
+                    key: 2 as u64,
                     space: Space::Player(Player::O)
                 },
                 Move {
                     index: 8,
-                    key: 6563 as u32,
+                    key: 6563 as u64,
                     space: Space::Player(Player::X)
                 }
             ]
@@ -308,11 +300,11 @@ mod tests {
 
     #[test]
     fn should_check_if_moves_available_1() {
-        let board = Board::new();
+        let board = Board::new(3, 3);
 
         assert_eq!(board.moves_available(), true);
 
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
 
         for space in 0..9 {
             board.set_by_index(space, Space::Player(Player::X));
@@ -323,7 +315,7 @@ mod tests {
 
     #[test]
     fn should_check_if_moves_available_2() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
 
         board.set_by_index(0, Space::Player(Player::X));
         board.set_by_index(1, Space::Player(Player::O));
@@ -333,7 +325,7 @@ mod tests {
 
     #[test]
     fn should_determine_row_winner_1() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
         let row = 0;
 
         board.set(row, 0, Space::Player(Player::X));
@@ -348,7 +340,7 @@ mod tests {
 
     #[test]
     fn should_determine_row_winner_2() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
         let row = 1;
 
         board.set(row, 0, Space::Player(Player::X));
@@ -363,7 +355,7 @@ mod tests {
 
     #[test]
     fn should_determine_row_winner_3() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
         let row = 2;
 
         board.set(row, 0, Space::Player(Player::X));
@@ -378,7 +370,7 @@ mod tests {
 
     #[test]
     fn should_determine_col_winner_1() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
         let col = 0;
 
         board.set(0, col, Space::Player(Player::O));
@@ -393,7 +385,7 @@ mod tests {
 
     #[test]
     fn should_determine_col_winner_2() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
         let col = 1;
 
         board.set(0, col, Space::Player(Player::O));
@@ -408,7 +400,7 @@ mod tests {
 
     #[test]
     fn should_determine_col_winner_3() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
         let col = 2;
 
         board.set(0, col, Space::Player(Player::O));
@@ -423,7 +415,7 @@ mod tests {
 
     #[test]
     fn should_determine_diag_winner_1() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
 
         board.set(0, 0, Space::Player(Player::X));
         board.set(1, 1, Space::Player(Player::X));
@@ -437,7 +429,7 @@ mod tests {
 
     #[test]
     fn should_determine_diag_winner_2() {
-        let mut board = Board::new();
+        let mut board = Board::new(3, 3);
 
         board.set(0, 2, Space::Player(Player::O));
         board.set(1, 1, Space::Player(Player::O));

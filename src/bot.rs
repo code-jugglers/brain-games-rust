@@ -1,24 +1,25 @@
-use crate::board::{Board, GameResult, Player, Space};
 use rand::Rng;
 use std::collections::HashMap;
 
-pub type BotMemory = HashMap<u32, Vec<i32>>;
+use crate::board::{Board, GameResult, Player, Space};
+
+pub type BotMemory = HashMap<u64, Vec<i64>>;
 
 pub struct BotConfig {
     pub player: Player,
-    pub winning_move_boost: Option<i32>,
-    pub win_boost: Option<i32>,
-    pub loose_boost: Option<i32>,
-    pub tie_boost: Option<i32>,
+    pub winning_move_boost: Option<i64>,
+    pub win_boost: Option<i64>,
+    pub loose_boost: Option<i64>,
+    pub tie_boost: Option<i64>,
 }
 
 pub struct Bot {
     pub memory: BotMemory,
     pub player: Player,
-    pub winning_move_boost: i32,
-    pub win_boost: i32,
-    pub loose_boost: i32,
-    pub tie_boost: i32,
+    pub winning_move_boost: i64,
+    pub win_boost: i64,
+    pub loose_boost: i64,
+    pub tie_boost: i64,
 }
 
 impl Bot {
@@ -33,7 +34,6 @@ impl Bot {
         }
     }
 
-    #[allow(dead_code)]
     pub fn load_brain(&mut self, encode_brain: Vec<u8>) {
         self.memory = bincode::deserialize(&encode_brain).unwrap();
     }
@@ -45,7 +45,7 @@ impl Bot {
     pub fn determine_move(&mut self, board: &Board) -> Option<usize> {
         let memory = self
             .memory
-            .entry(board.key_as_u32())
+            .entry(board.key_as_u64())
             .or_insert(Bot::get_default_moves(&board));
 
         let total = memory.iter().fold(0, |a, b| a + b);
@@ -112,8 +112,8 @@ impl Bot {
         }
     }
 
-    pub fn get_default_moves(board: &Board) -> Vec<i32> {
-        let mut spaces = vec![0, 0, 0, 0, 0, 0, 0, 0, 0];
+    pub fn get_default_moves(board: &Board) -> Vec<i64> {
+        let mut spaces: Vec<i64> = board.spaces.clone().iter().map(|_| 0).collect();
 
         for available_space in board.get_available_spaces() {
             spaces[available_space] = 10;

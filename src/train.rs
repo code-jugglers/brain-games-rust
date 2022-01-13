@@ -11,7 +11,9 @@ pub fn play(
     loop {
         if current_player == Player::X {
             if let Some(current_move) = player_x.determine_move(board) {
-                board.set_by_index(current_move, Space::Player(current_player));
+                board
+                    .set_by_index(current_move, Space::Player(current_player))
+                    .unwrap();
 
                 current_player = Player::O;
             } else {
@@ -19,7 +21,9 @@ pub fn play(
             }
         } else {
             if let Some(current_move) = player_o.determine_move(board) {
-                board.set_by_index(current_move, Space::Player(current_player));
+                board
+                    .set_by_index(current_move, Space::Player(current_player))
+                    .unwrap();
 
                 current_player = Player::X;
             } else {

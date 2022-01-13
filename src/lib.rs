@@ -2,9 +2,10 @@ mod board;
 mod bot;
 mod train;
 
-use board::{Board, GameResult, Player, Space};
-use bot::{Bot, BotConfig};
 use wasm_bindgen::prelude::*;
+
+use crate::board::{Board, GameResult, Player, Space};
+use crate::bot::{Bot, BotConfig};
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -23,13 +24,13 @@ pub struct Game {
 impl Game {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        winning_move_boost: Option<i32>,
-        win_boost: Option<i32>,
-        loose_boost: Option<i32>,
-        tie_boost: Option<i32>,
+        winning_move_boost: Option<i64>,
+        win_boost: Option<i64>,
+        loose_boost: Option<i64>,
+        tie_boost: Option<i64>,
     ) -> Self {
         Self {
-            board: Board::new(),
+            board: Board::new(3, 3),
             player_x: Bot::new(BotConfig {
                 player: Player::X,
                 winning_move_boost: winning_move_boost,
@@ -68,11 +69,13 @@ impl Game {
     }
 
     pub fn reset_board(&mut self) {
-        self.board = Board::new();
+        self.board = Board::new(3, 3);
     }
 
     pub fn make_move_x(&mut self, index: usize) -> Option<String> {
-        self.board.set_by_index(index, Space::Player(Player::X));
+        self.board
+            .set_by_index(index, Space::Player(Player::X))
+            .unwrap();
 
         if let Some(res) = self.board.determine_winner() {
             return Some(res.to_string());
@@ -81,7 +84,8 @@ impl Game {
         let bot_move = self.player_o.determine_move(&self.board);
 
         self.board
-            .set_by_index(bot_move.unwrap(), Space::Player(Player::O));
+            .set_by_index(bot_move.unwrap(), Space::Player(Player::O))
+            .unwrap();
 
         if let Some(res) = self.board.determine_winner() {
             return Some(res.to_string());
@@ -94,11 +98,14 @@ impl Game {
         let bot_move = self.player_x.determine_move(&self.board);
 
         self.board
-            .set_by_index(bot_move.unwrap(), Space::Player(Player::X));
+            .set_by_index(bot_move.unwrap(), Space::Player(Player::X))
+            .unwrap();
     }
 
     pub fn make_move_o(&mut self, index: usize) -> Option<String> {
-        self.board.set_by_index(index, Space::Player(Player::O));
+        self.board
+            .set_by_index(index, Space::Player(Player::O))
+            .unwrap();
 
         if let Some(res) = self.board.determine_winner() {
             return Some(res.to_string());
@@ -107,7 +114,8 @@ impl Game {
         let bot_move = self.player_x.determine_move(&self.board);
 
         self.board
-            .set_by_index(bot_move.unwrap(), Space::Player(Player::X));
+            .set_by_index(bot_move.unwrap(), Space::Player(Player::X))
+            .unwrap();
 
         if let Some(res) = self.board.determine_winner() {
             return Some(res.to_string());

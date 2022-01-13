@@ -2,17 +2,24 @@ mod board;
 mod bot;
 mod train;
 
-use board::{Board, GameResult, Player, Space};
-use bot::{Bot, BotConfig};
 use clap::Parser;
-use std::fs;
+use std::fs::{read, write};
 use std::io;
+
+use crate::board::{Board, GameResult, Player, Space};
+use crate::bot::{Bot, BotConfig};
 
 #[derive(Parser, Debug)]
 #[clap(version)]
 struct Args {
     #[clap(short, long, default_value = "train")]
     mode: String,
+    #[clap(short, long, default_value = "1000000")]
+    game_count: u32,
+    #[clap(short, long, default_value = "3")]
+    rows: usize,
+    #[clap(short, long, default_value = "3")]
+    cols: usize,
 }
 
 fn main() -> Result<(), ()> {
@@ -34,34 +41,36 @@ fn main() -> Result<(), ()> {
         tie_boost: None,
     });
 
-    if let Ok(bin) = fs::read("www/bot_x_brain.bin") {
+    if let Ok(bin) = read(format!("www/bot_{}x{}_x_brain.bin", args.rows, args.cols)) {
         player_x.load_brain(bin);
     }
 
-    if let Ok(bin) = fs::read("www/bot_o_brain.bin") {
+    if let Ok(bin) = read(format!("www/bot_{}x{}_o_brain.bin", args.rows, args.cols)) {
         player_o.load_brain(bin);
     }
 
     if args.mode == "train" {
-        train(&mut player_x, &mut player_o)
+        train(&mut player_x, &mut player_o, &args)
     } else if args.mode == "play_as_x" {
-        play(Player::X, &mut player_o)
+        play(Player::X, &mut player_o, &args)
     } else if args.mode == "play_as_o" {
-        play(Player::O, &mut player_x)
+        play(Player::O, &mut player_x, &args)
     } else {
         Err(())
     }
 }
 
-fn train(player_x: &mut Bot, player_o: &mut Bot) -> Result<(), ()> {
-    let mut board = Board::new();
+fn train(player_x: &mut Bot, player_o: &mut Bot, args: &Args) -> Result<(), ()> {
+    let mut board = Board::new(args.rows, args.cols);
 
     let mut x_win = 0;
     let mut o_win = 0;
     let mut tie = 0;
 
-    for count in 1..=1_000_000 {
-        match train::play(&mut board, player_x, player_o) {
+    for count in 1..=args.game_count {
+        let game_res = train::play(&mut board, player_x, player_o);
+
+        match game_res {
             Ok(GameResult::Winner(Player::X)) => x_win += 1,
             Ok(GameResult::Winner(Player::O)) => o_win += 1,
             Ok(GameResult::Tie) => tie += 1,
@@ -74,37 +83,56 @@ fn train(player_x: &mut Bot, player_o: &mut Bot) -> Result<(), ()> {
         if count % 10_000 == 0 {
             println!("{}", board);
             println!("============");
+            println!("Result: {:?}", game_res);
             println!("X: {}", x_win);
             println!("O: {}", o_win);
             println!("TIE: {}", tie);
         }
 
-        board = Board::new();
+        board = Board::new(args.rows, args.cols);
     }
 
-    fs::write("www/bot_x_brain.bin", player_x.export_brain()).expect("Could not save X brain");
-    fs::write("www/bot_o_brain.bin", player_o.export_brain()).expect("Could not save O brain");
+    write(
+        format!("www/bot_{}x{}_x_brain.bin", args.rows, args.cols),
+        player_x.export_brain(),
+    )
+    .expect("Could not save X brain");
+
+    write(
+        format!("www/bot_{}x{}_o_brain.bin", args.rows, args.cols),
+        player_o.export_brain(),
+    )
+    .expect("Could not save O brain");
 
     Ok(())
 }
 
-fn play(player: Player, bot: &mut Bot) -> Result<(), ()> {
-    let mut board = Board::new();
+fn play(player: Player, bot: &mut Bot, args: &Args) -> Result<(), ()> {
+    let mut board = Board::new(args.rows, args.cols);
     let mut current_player: Player = Player::X;
 
     println!("{}", board);
 
     loop {
         if current_player == player {
-            let input = parse_user_input();
+            let mut complete = false;
 
-            board.set(input[0], input[1], Space::Player(player));
+            while !complete {
+                let input = parse_user_input();
 
-            println!("{}", board);
+                if board.set(input[0], input[1], Space::Player(player)).is_ok() {
+                    println!("{}", board);
+
+                    complete = true;
+                } else {
+                    println!("Move is invalid, Try again");
+                }
+            }
         } else {
             let m = bot.determine_move(&board).unwrap();
 
-            board.set_by_index(m, Space::Player(bot.player));
+            // This should be safe since the bot should not be able to make an invalid move
+            board.set_by_index(m, Space::Player(bot.player)).unwrap();
 
             println!("{}", board);
         }
