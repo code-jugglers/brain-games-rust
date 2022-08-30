@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::board::{Board, GameResult, Player, Space};
 
-pub type BotMemory = HashMap<u64, Vec<i32>>;
+pub type BotMemory = HashMap<u32, Vec<i32>>;
 
 pub struct BotConfig {
     pub player: Player,
@@ -45,7 +45,7 @@ impl Bot {
     pub fn determine_move(&mut self, board: &Board) -> Option<usize> {
         let memory = self
             .memory
-            .entry(board.key_as_u64())
+            .entry(board.key_as_u32())
             .or_insert(Bot::get_default_moves(&board));
 
         let total = memory.iter().fold(0, |a, b| a + b);

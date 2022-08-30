@@ -48,7 +48,7 @@ pub type BoardState = Vec<Space>;
 
 #[derive(Debug, PartialEq)]
 pub struct Move {
-    pub key: u64,
+    pub key: u32,
     pub space: Space,
     pub index: usize,
 }
@@ -76,8 +76,8 @@ impl Board {
         }
     }
 
-    pub fn key_as_u64(&self) -> u64 {
-        let board_size = self.spaces.len() as u64;
+    pub fn key_as_u32(&self) -> u32 {
+        let board_size = self.spaces.len() as u32;
         let mut index = 0;
         let mut total = 0;
 
@@ -126,7 +126,7 @@ impl Board {
     pub fn set_by_index(&mut self, index: usize, space: Space) -> Result<(), ()> {
         if let Some(current_space) = self.spaces.get(index) {
             if current_space == &Space::Empty {
-                let key = self.key_as_u64();
+                let key = self.key_as_u32();
 
                 self.moves.push(Move { index, key, space });
 
@@ -226,7 +226,7 @@ mod tests {
     fn should_set_by_index() {
         let mut board = Board::new(3, 3);
 
-        board.set_by_index(0, Space::Player(Player::X));
+        board.set_by_index(0, Space::Player(Player::X)).unwrap();
 
         assert_eq!(
             board.spaces,
@@ -248,9 +248,9 @@ mod tests {
     fn should_set_by_row_col() {
         let mut board = Board::new(3, 3);
 
-        board.set(0, 0, Space::Player(Player::X));
-        board.set(1, 1, Space::Player(Player::X));
-        board.set(2, 2, Space::Player(Player::X));
+        board.set(0, 0, Space::Player(Player::X)).unwrap();
+        board.set(1, 1, Space::Player(Player::X)).unwrap();
+        board.set(2, 2, Space::Player(Player::X)).unwrap();
 
         assert_eq!(
             board.spaces,
@@ -272,26 +272,26 @@ mod tests {
     fn should_track_past_moves() {
         let mut board = Board::new(3, 3);
 
-        board.set(0, 0, Space::Player(Player::X));
-        board.set(1, 1, Space::Player(Player::O));
-        board.set(2, 2, Space::Player(Player::X));
+        board.set(0, 0, Space::Player(Player::X)).unwrap();
+        board.set(1, 1, Space::Player(Player::O)).unwrap();
+        board.set(2, 2, Space::Player(Player::X)).unwrap();
 
         assert_eq!(
             board.moves,
             [
                 Move {
                     index: 0,
-                    key: 0 as u64,
+                    key: 0 as u32,
                     space: Space::Player(Player::X)
                 },
                 Move {
                     index: 4,
-                    key: 2 as u64,
+                    key: 2 as u32,
                     space: Space::Player(Player::O)
                 },
                 Move {
                     index: 8,
-                    key: 6563 as u64,
+                    key: 6563 as u32,
                     space: Space::Player(Player::X)
                 }
             ]
@@ -307,7 +307,7 @@ mod tests {
         let mut board = Board::new(3, 3);
 
         for space in 0..9 {
-            board.set_by_index(space, Space::Player(Player::X));
+            board.set_by_index(space, Space::Player(Player::X)).unwrap();
         }
 
         assert_eq!(board.moves_available(), false);
@@ -317,8 +317,8 @@ mod tests {
     fn should_check_if_moves_available_2() {
         let mut board = Board::new(3, 3);
 
-        board.set_by_index(0, Space::Player(Player::X));
-        board.set_by_index(1, Space::Player(Player::O));
+        board.set_by_index(0, Space::Player(Player::X)).unwrap();
+        board.set_by_index(1, Space::Player(Player::O)).unwrap();
 
         assert_eq!(board.moves_available(), true);
     }
@@ -328,10 +328,9 @@ mod tests {
         let mut board = Board::new(3, 3);
         let row = 0;
 
-        board.set(row, 0, Space::Player(Player::X));
-        board.set(row, 1, Space::Player(Player::X));
-        board.set(row, 2, Space::Player(Player::X));
-
+        board.set(row, 0, Space::Player(Player::X)).unwrap();
+        board.set(row, 1, Space::Player(Player::X)).unwrap();
+        board.set(row, 2, Space::Player(Player::X)).unwrap();
         assert_eq!(
             board.determine_winner(),
             Some(GameResult::Winner(Player::X))
@@ -343,9 +342,9 @@ mod tests {
         let mut board = Board::new(3, 3);
         let row = 1;
 
-        board.set(row, 0, Space::Player(Player::X));
-        board.set(row, 1, Space::Player(Player::X));
-        board.set(row, 2, Space::Player(Player::X));
+        board.set(row, 0, Space::Player(Player::X)).unwrap();
+        board.set(row, 1, Space::Player(Player::X)).unwrap();
+        board.set(row, 2, Space::Player(Player::X)).unwrap();
 
         assert_eq!(
             board.determine_winner(),
@@ -358,9 +357,9 @@ mod tests {
         let mut board = Board::new(3, 3);
         let row = 2;
 
-        board.set(row, 0, Space::Player(Player::X));
-        board.set(row, 1, Space::Player(Player::X));
-        board.set(row, 2, Space::Player(Player::X));
+        board.set(row, 0, Space::Player(Player::X)).unwrap();
+        board.set(row, 1, Space::Player(Player::X)).unwrap();
+        board.set(row, 2, Space::Player(Player::X)).unwrap();
 
         assert_eq!(
             board.determine_winner(),
@@ -373,9 +372,9 @@ mod tests {
         let mut board = Board::new(3, 3);
         let col = 0;
 
-        board.set(0, col, Space::Player(Player::O));
-        board.set(1, col, Space::Player(Player::O));
-        board.set(2, col, Space::Player(Player::O));
+        board.set(0, col, Space::Player(Player::O)).unwrap();
+        board.set(1, col, Space::Player(Player::O)).unwrap();
+        board.set(2, col, Space::Player(Player::O)).unwrap();
 
         assert_eq!(
             board.determine_winner(),
@@ -388,9 +387,9 @@ mod tests {
         let mut board = Board::new(3, 3);
         let col = 1;
 
-        board.set(0, col, Space::Player(Player::O));
-        board.set(1, col, Space::Player(Player::O));
-        board.set(2, col, Space::Player(Player::O));
+        board.set(0, col, Space::Player(Player::O)).unwrap();
+        board.set(1, col, Space::Player(Player::O)).unwrap();
+        board.set(2, col, Space::Player(Player::O)).unwrap();
 
         assert_eq!(
             board.determine_winner(),
@@ -403,9 +402,9 @@ mod tests {
         let mut board = Board::new(3, 3);
         let col = 2;
 
-        board.set(0, col, Space::Player(Player::O));
-        board.set(1, col, Space::Player(Player::O));
-        board.set(2, col, Space::Player(Player::O));
+        board.set(0, col, Space::Player(Player::O)).unwrap();
+        board.set(1, col, Space::Player(Player::O)).unwrap();
+        board.set(2, col, Space::Player(Player::O)).unwrap();
 
         assert_eq!(
             board.determine_winner(),
@@ -417,9 +416,9 @@ mod tests {
     fn should_determine_diag_winner_1() {
         let mut board = Board::new(3, 3);
 
-        board.set(0, 0, Space::Player(Player::X));
-        board.set(1, 1, Space::Player(Player::X));
-        board.set(2, 2, Space::Player(Player::X));
+        board.set(0, 0, Space::Player(Player::X)).unwrap();
+        board.set(1, 1, Space::Player(Player::X)).unwrap();
+        board.set(2, 2, Space::Player(Player::X)).unwrap();
 
         assert_eq!(
             board.determine_winner(),
@@ -431,9 +430,9 @@ mod tests {
     fn should_determine_diag_winner_2() {
         let mut board = Board::new(3, 3);
 
-        board.set(0, 2, Space::Player(Player::O));
-        board.set(1, 1, Space::Player(Player::O));
-        board.set(2, 0, Space::Player(Player::O));
+        board.set(0, 2, Space::Player(Player::O)).unwrap();
+        board.set(1, 1, Space::Player(Player::O)).unwrap();
+        board.set(2, 0, Space::Player(Player::O)).unwrap();
 
         assert_eq!(
             board.determine_winner(),
