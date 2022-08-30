@@ -13,6 +13,7 @@ export class GameWorker extends Worker {
     return new Promise<GameWorker>((resolve) => {
       const worker = new GameWorker();
 
+
       worker.addEventListener('message', (msg) => {
         if (msg.data.status === 'READY') {
           resolve(worker);
@@ -22,7 +23,7 @@ export class GameWorker extends Worker {
   }
 
   constructor() {
-    super(new URL('game.worker.js', import.meta.url), { type: 'module' });
+    super(new URL('game.worker.ts', import.meta.url), { type: 'module' });
   }
 
   train(train_config: TrainConfig) {

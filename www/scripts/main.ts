@@ -13,8 +13,10 @@ let has_trained = false;
 
 export async function main() {
   console.log('APP STARTING');
+  
 
   const worker = await GameWorker.create();
+
 
   await update();
 

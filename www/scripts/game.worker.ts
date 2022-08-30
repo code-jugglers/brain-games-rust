@@ -4,11 +4,13 @@ import init, { Game } from '../pkg/brain_games';
 
 import { Action, ActionComplete } from './actions';
 
+console.log('TEST')
+
 main().then(() => {
   console.log('GAME INITIALIZED!');
 });
 
-export async function main() {
+async function main() {
   await init();
 
   // const [bot_x_brain, bot_o_brain] = await Promise.all([

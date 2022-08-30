@@ -122,9 +122,10 @@
     </section>
 
     <script type="module">
-      import './scripts/board.js';
+      import { BoardElement } from './scripts/board';
+      import { main } from './scripts/main';
 
-      import { main } from './scripts/main.js';
+      customElements.define('xo-board', BoardElement);
 
       main();
     </script>

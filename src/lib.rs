@@ -24,10 +24,10 @@ pub struct Game {
 impl Game {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        winning_move_boost: Option<i64>,
-        win_boost: Option<i64>,
-        loose_boost: Option<i64>,
-        tie_boost: Option<i64>,
+        winning_move_boost: Option<i32>,
+        win_boost: Option<i32>,
+        loose_boost: Option<i32>,
+        tie_boost: Option<i32>,
     ) -> Self {
         Self {
             board: Board::new(3, 3),

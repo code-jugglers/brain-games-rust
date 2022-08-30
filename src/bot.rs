@@ -3,23 +3,23 @@ use std::collections::HashMap;
 
 use crate::board::{Board, GameResult, Player, Space};
 
-pub type BotMemory = HashMap<u64, Vec<i64>>;
+pub type BotMemory = HashMap<u64, Vec<i32>>;
 
 pub struct BotConfig {
     pub player: Player,
-    pub winning_move_boost: Option<i64>,
-    pub win_boost: Option<i64>,
-    pub loose_boost: Option<i64>,
-    pub tie_boost: Option<i64>,
+    pub winning_move_boost: Option<i32>,
+    pub win_boost: Option<i32>,
+    pub loose_boost: Option<i32>,
+    pub tie_boost: Option<i32>,
 }
 
 pub struct Bot {
     pub memory: BotMemory,
     pub player: Player,
-    pub winning_move_boost: i64,
-    pub win_boost: i64,
-    pub loose_boost: i64,
-    pub tie_boost: i64,
+    pub winning_move_boost: i32,
+    pub win_boost: i32,
+    pub loose_boost: i32,
+    pub tie_boost: i32,
 }
 
 impl Bot {
@@ -112,8 +112,8 @@ impl Bot {
         }
     }
 
-    pub fn get_default_moves(board: &Board) -> Vec<i64> {
-        let mut spaces: Vec<i64> = board.spaces.clone().iter().map(|_| 0).collect();
+    pub fn get_default_moves(board: &Board) -> Vec<i32> {
+        let mut spaces: Vec<i32> = board.spaces.clone().iter().map(|_| 0).collect();
 
         for available_space in board.get_available_spaces() {
             spaces[available_space] = 10;

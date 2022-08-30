@@ -1,4 +1,4 @@
-import { observable, observe, OnChange } from '@joist/observable';
+import {  observable, observe, OnPropertyChanged } from '@joist/observable';
 import { styled, css } from '@joist/styled';
 import { render, html } from 'lit-html';
 
@@ -10,7 +10,7 @@ export class BoardChangeEvent extends Event {
 
 @observable
 @styled
-export class BoardElement extends HTMLElement implements OnChange {
+export class BoardElement extends HTMLElement implements OnPropertyChanged {
   static styles = [
     css`
       :host {
@@ -79,7 +79,7 @@ export class BoardElement extends HTMLElement implements OnChange {
     this.render();
   }
 
-  onChange() {
+  onPropertyChanged(): void {
     this.render();
   }
 
@@ -111,4 +111,4 @@ export class BoardElement extends HTMLElement implements OnChange {
   }
 }
 
-customElements.define('xo-board', BoardElement);
+

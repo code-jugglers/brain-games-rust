@@ -5,4 +5,5 @@
 /build
 /node_modules
 /www/pkg
+/www/dist
 /www/*_brain.bin
