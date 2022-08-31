@@ -125,7 +125,7 @@ export async function main() {
   }
 
   async function update() {
-    board.board_state = await worker.get_board();
+    board.setAttribute('board_state', await worker.get_board())
   }
 }
 
