@@ -3,10 +3,10 @@
 [Try it here.](https://wasm-games.web.app/)
 
 A simple tic tac toe bot.
-The program that trains two "dumb" bots over 1,000,000 games, one playing Xs and one playing Os.
-What you should observe is that the bots will begin to tie the further along they get until neither bot can gain an advantage.
-
+The program that trains two "dumb" bots, one playing Xs and one playing Os.
 The training portion of the program is written in rust and compiled with wasm-pack.
+You can run the training program in the browser directly or build them directly and import the brains.
+
 Those output files are loading via a Web Worker to keep the training loop off of the main thread.
 
 ## Running in browser
