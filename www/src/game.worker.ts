@@ -11,7 +11,9 @@ main().then(() => {
 });
 
 async function main() {
-  await init();
+  await init(
+    new URL('../pkg/brain_games_bg.wasm', import.meta.url)
+  );
 
   // const [bot_x_brain, bot_o_brain] = await Promise.all([
   //   fetch('../bot_x_brain.bin').then((res) => res.arrayBuffer()),

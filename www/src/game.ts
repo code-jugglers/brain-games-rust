@@ -8,22 +8,20 @@ export interface TrainConfig {
   tie_boost?: number;
 }
 
-export class GameWorker extends Worker {
+export class GameWorker {
+  worker = new Worker(new URL('./game.worker.ts', import.meta.url), { type: 'module' });
+
   static create() {
     return new Promise<GameWorker>((resolve) => {
-      const worker = new GameWorker();
+      const game = new GameWorker();
 
 
-      worker.addEventListener('message', (msg) => {
+      game.worker.addEventListener('message', (msg) => {
         if (msg.data.status === 'READY') {
-          resolve(worker);
+          resolve(game);
         }
       });
     });
-  }
-
-  constructor() {
-    super(new URL('game.worker.ts', import.meta.url), { type: 'module' });
   }
 
   train(train_config: TrainConfig) {
@@ -54,14 +52,14 @@ export class GameWorker extends Worker {
     return new Promise<T>((resolve) => {
       const listen = (msg: MessageEvent) => {
         if (msg.data.status === `${action}_COMPLETE`) {
-          this.removeEventListener('message', listen);
+          this.worker.removeEventListener('message', listen);
 
           resolve(msg.data.payload);
         }
       };
 
-      this.addEventListener('message', listen);
-      this.postMessage({ action, payload });
+      this.worker.addEventListener('message', listen);
+      this.worker.postMessage({ action, payload });
     });
   }
 }
