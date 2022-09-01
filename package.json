@@ -23,13 +23,13 @@
   "dependencies": {
     "@joist/di": "2.0.1",
     "@joist/observable": "2.0.1",
-    "@joist/styled": "2.0.1",
-    "@joist/query": "2.0.1"
+    "@joist/query": "2.0.1",
+    "@joist/styled": "2.0.1"
   },
   "devDependencies": {
     "@snowpack/plugin-typescript": "^1.2.1",
     "firebase-tools": "^9.23.0",
-    "snowpack": "^3.8.8",
+    "prettier": "^2.7.1",
     "typescript": "^4.5.2",
     "vite": "^3.0.9"
   }

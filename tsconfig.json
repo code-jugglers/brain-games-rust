@@ -14,7 +14,7 @@
     // "declarationMap": true,                      /* Generates a sourcemap for each corresponding '.d.ts' file. */
     // "sourceMap": true,                           /* Generates corresponding '.map' file. */
     // "outFile": "./",                             /* Concatenate and emit output to single file. */
-    "outDir": "out-tsc" /* Redirect output structure to the directory. */,
+    "outDir": "target" /* Redirect output structure to the directory. */,
     // "rootDir": "./",                             /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "composite": true,                           /* Enable project compilation */
     // "tsBuildInfoFile": "./",                     /* Specify file to store incremental compilation information */
@@ -35,8 +35,8 @@
     // "alwaysStrict": true,                        /* Parse in strict mode and emit "use strict" for each source file. */
 
     /* Additional Checks */
-    // "noUnusedLocals": true,                      /* Report errors on unused locals. */
-    // "noUnusedParameters": true,                  /* Report errors on unused parameters. */
+    "noUnusedLocals": true /* Report errors on unused locals. */,
+    "noUnusedParameters": true /* Report errors on unused parameters. */,
     // "noImplicitReturns": true,                   /* Report error when not all code paths in function return a value. */
     // "noFallthroughCasesInSwitch": true,          /* Report errors for fallthrough cases in switch statement. */
     // "noUncheckedIndexedAccess": true,            /* Include 'undefined' in index signature results */

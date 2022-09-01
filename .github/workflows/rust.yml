@@ -2,9 +2,9 @@ name: Rust
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 env:
   CARGO_TERM_COLOR: always
@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: jetli/wasm-pack-action@v0.3.0
-    
-    - name: Build
-      run: wasm-pack build
-      
-    - name: Run tests
-      run: cargo test --verbose
+      - uses: actions/checkout@v2
+      - uses: jetli/wasm-pack-action@v0.3.0
+
+      - name: Build
+        run: wasm-pack build
+
+      - name: Run tests
+        run: cargo test --verbose

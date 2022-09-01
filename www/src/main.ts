@@ -1,5 +1,5 @@
 import { BoardChangeEvent, BoardElement } from './board';
-import { GameWorker } from './game';
+import { Game } from './game';
 
 const train_btn = document.getElementById('train') as HTMLButtonElement;
 const reset_btn = document.getElementById('reset') as HTMLButtonElement;
@@ -15,7 +15,7 @@ export async function main() {
   console.log('APP STARTING');
   
 
-  const worker = await GameWorker.create();
+  const worker = await Game.create();
 
 
   await update();

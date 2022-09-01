@@ -1,4 +1,4 @@
-import {  attr, observable, observe, OnPropertyChanged } from '@joist/observable';
+import { attr, observable, observe, OnPropertyChanged } from '@joist/observable';
 import { styled, css } from '@joist/styled';
 import { queryAll } from '@joist/query';
 
@@ -61,17 +61,17 @@ export class BoardElement extends HTMLElement implements OnPropertyChanged {
     `,
   ];
 
-  @observe 
-  @attr({ 
-    read: val => val.split(''),
-    write: val => val.join('')
-  }) 
+  @observe
+  @attr({
+    read: (val) => val.split(''),
+    write: (val) => val.join(''),
+  })
   board_state = ['-', '-', '-', '-', '-', '-', '-', '-', '-'];
 
   @observe @attr disabled = false;
 
   @queryAll('button')
-  spaces!: NodeListOf<HTMLButtonElement>
+  spaces!: NodeListOf<HTMLButtonElement>;
 
   constructor() {
     super();
@@ -79,7 +79,7 @@ export class BoardElement extends HTMLElement implements OnPropertyChanged {
     const shadow = this.attachShadow({ mode: 'open' });
 
     this.board_state.forEach((space, i) => {
-      if(i > 0 && i % 3 === 0) {
+      if (i > 0 && i % 3 === 0) {
         shadow.appendChild(document.createElement('br'));
       }
 
@@ -89,7 +89,7 @@ export class BoardElement extends HTMLElement implements OnPropertyChanged {
       btn.disabled = space !== '-' || this.disabled;
       btn.innerHTML = space !== '-' ? space : '';
       btn.onclick = () => {
-        this.dispatchEvent(new BoardChangeEvent(i))
+        this.dispatchEvent(new BoardChangeEvent(i));
       };
 
       shadow.appendChild(btn);
@@ -106,5 +106,3 @@ export class BoardElement extends HTMLElement implements OnPropertyChanged {
     });
   }
 }
-
-

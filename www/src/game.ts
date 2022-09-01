@@ -8,12 +8,14 @@ export interface TrainConfig {
   tie_boost?: number;
 }
 
-export class GameWorker {
+const initializeToken = Symbol();
+
+export class Game {
   worker = new Worker(new URL('./game.worker.ts', import.meta.url), { type: 'module' });
 
   static create() {
-    return new Promise<GameWorker>((resolve) => {
-      const game = new GameWorker();
+    return new Promise<Game>((resolve) => {
+      const game = new Game(initializeToken);
 
 
       game.worker.addEventListener('message', (msg) => {
@@ -22,6 +24,12 @@ export class GameWorker {
         }
       });
     });
+  }
+
+  constructor(token: Symbol) {
+    if(token !== initializeToken) {
+      throw new Error('Game needs to be initialized async. Use Game.create instead');
+    }
   }
 
   train(train_config: TrainConfig) {
